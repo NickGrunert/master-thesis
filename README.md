@@ -1,5 +1,6 @@
 # template-typst-thesis
 
+TODO
 This repository is a template for writing one's Bachelor's or Master's thesis at the Hochschule Hannover. The template is not affiliated with the university; therefore, ask one's supervisor before using it. Further, there is no guarantee that this template satisfies the style guidelines.
 
 ## Installation
@@ -18,9 +19,6 @@ Set the details in `metadata.typ` file. One can work with the files locally. Onc
 ```sh
 # Creates `thesis.pdf` in working directory.
 typst compile thesis.typ
-
-# Creates `proposal.pdf` in working directory.
-typst compile proposal.typ
 
 # Creates PDF file at the desired path.
 typst compile thesis.typ path/to/output.pdf

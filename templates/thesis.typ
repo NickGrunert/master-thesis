@@ -3,7 +3,6 @@
   import "../modules/cover.typ": cover
   import "../modules/disclaimer.typ": disclaimer
   import "../modules/acknowledgement.typ": acknowledgement
-  import "../modules/abstract_de.typ": abstract_de
   import "../modules/abstract_en.typ": abstract_en
 
   // ==========================================================================
@@ -57,8 +56,6 @@
   acknowledgement()
 
   abstract_en()
-
-  abstract_de()
 
   // ============================================================================
   // TOC

@@ -1,5 +1,5 @@
 {
-  description = "A very basic flake";
+  description = "Master Thesis Flake containing Typst";
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";

@@ -1,36 +1,34 @@
 #let details = (
-  title: "Titel der Arbeit",
-  date: "29. Feburar 2024",
-  language: "de",
-  degree: "Bachelor",
+  title: "Optimizing Training Data Generation for Building Analysis in Aerial Imagery Using the Segment Anything Model (SAM)",
+  date: "21. November 2024",
+  language: "en",
+  degree: "Master",
   field: "Angewandte Informatik",
   fontSize: 12pt,
   doubleSided: true,
   author: (
-    name: "Max Mustermann",
+    name: "Nick Grunert",
     role: "Autor",
     details: (
-      "Matrikelnummer", 
-      "Email Adresse"
+      "Matrikelnummer: 1717171", 
+      "nick.marlon.grunert@gmail.com"
     ),
   ),
   examiners: (
   (
     role: "Erstprüfer",
     details: (
-       "Prof. Dr. Vorname Name",
+       "Prof. Dr. Volker Ahlers",
        "Abteilung Informatik, Fakultät IV",
        "Hochschule Hannover",
-       "Email Adresse",
+       "volker.ahlers@hs-hannover.de",
     ),
   ),
   (
     role: "Zweitprüfer",
     details: (
-       "Prof. Dr. Vorname Name",
-       "Abteilung Informatik, Fakultät IV",
-       "Hochschule Hannover",
-       "Email Adresse",
+       "Dipl. ing. Valentina Schmidt",
+       "valentina.schmidt@lgln.niedersachsen.de",
     ),
   ),
   ),
