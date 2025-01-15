@@ -1,11 +1,18 @@
 #import "templates/thesis.typ": project
 #import "metadata.typ": details
+#import "modules/data.typ": data
+#import "modules/prompting.typ": prompting
+#import "modules/ndsm_analysis.typ": ndsm_analysis
 
 #show: body => project(details, body)
 
-= Example with Lorem Ipsum
+= Example
 
-#lorem(450)
+#data()
+
+#prompting()
+
+#ndsm_analysis()
 
 = Introduction
 #rect(
