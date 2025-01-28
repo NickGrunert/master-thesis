@@ -27,6 +27,46 @@
       ],
     )
 
+    === Scoring System
+    It became clear, that a function is neccessary to evaluate the quality of the generated surfaces. 
+    This function should be able to evaluate the quality of the surfaces based on the following criteria:
+    - The coherence of the surface's values, meaning that optimaly the surface should have a similar value over the whole surface.
+      While realistically this value will not achieve a perfect score, it should be as high as possible.
+      This is due to the fact that most roof surfaces are not perfectly even is derivative values.
+      In experiments it becomes clears that almost no surface has a perfect derivative across all values or if it does, it is also possible that an actually bigger surface go split too much by the algorithm.
+    - The size of the surface. 
+      To address the algorithm cutting down surfaces too much, I propose to add a reward for bigger surfaces.
+      This should be done in a way that the reward is not too big, as it could lead to the algorithm just merging all surfaces into one big surface.
+      A bigger surface which is not coherent should be penalized accordingly.
+
+    For this purpose an algorithm was developed which evaluates the quality of a surface.
+    It does this by analyzing each surfaces derivative values, in each direction meaning x, y and their combination.
+    For each direction the algorithm tries to generate plateaus, which are areas with a similar derivative value, or at least not sudden changes in the derivative value.
+    By simpe multiplication of a surfaces size and the number of coherent values, the algorithm can generate a score for each surface.
+    As required, this score naturally lies between 0 and 1, where 1 is the best possible score.
+    To realize the aforementioned reward for bigger surfaces, the algorithm multiplies the score with the size of the surface squared.
+    This way a perfect big surface will outscore two perfect small surfaces, but a perfect small surface will outscore a big surface with a lot of incoherent values.
+
+    Also a failsafe was added which harshly penalizes a surface which has more than one plateau, meaning that the surface shows signes of being a two surfaces being merged into one.
+    For now this penalty simply makes each of these wrong surfaces have a score of 0.
+    Practice has shown that this is neccessary due to the fact that the existence of weak edges can lead to multiple surfaces being merged into one.
+    If this happens, the algorithm can by itself not detect two same-derivative-surfaces being connected through another surface, as no spatial information is used in the algorithm.
+
+    Using spatial information by for example using labeling through DBSCAN failed in almost every case due to the data inconsistency inside even perfect surfaces.
+    The algorithm may be able to detect that something wrong, but not consistently enough to be used in the scoring system or in generell serious evaluation.
+    Further experimentation with the algorithms parameter of epsilon and minimum sample number may be possible, and quick tests have shown that the algorithms quality can highly vary depending on these, but achieving satisfying results seems unfeesable.
+    #figure(
+      grid(
+        columns: 3,
+        gutter: 2mm,
+        image("../figures/dbscan_test/1.png", width: 100%),
+        image("../figures/dbscan_test/2.png", width: 100%),
+        image("../figures/dbscan_test/3.png", width: 100%),
+      ),
+      caption: [
+        One iteration of the DBSCAN results. Clustering here was only done on derivative data not on spatial information, since the algorithm would otherwise only detect the fact that, yes of course, it is spatially connected.
+      ],
+    )
   ]
 
   pagebreak()
