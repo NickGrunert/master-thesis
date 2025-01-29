@@ -128,6 +128,73 @@
       ],
       label: <fig:scores2>,
     )
+
+    Following the individual scoring of the surfaces, the generated scores need to be put together to create a final score which evaluates the segmentation of the roof as a whole.
+    This is done by the aforementioned even scoring between the three directions, which is then multiplied by the sum of the squares of the surface sizes.
+    @fig:score:segmentation shows the results of the scoring algorithm on an example house.
+    Here, It quickly becomes visible why the algorithm needs to be expanded by a negative score.
+    Run on some example values on the input parameters, the algorithm performs quite well, which as expected results in high scores.
+
+    #figure(
+      image("../figures/scoring_algorithm/segmentation_scoring/1.png", width: 100%),
+      caption: [
+        The result of each step inside the surface pipeline. The parameter used here are 50% minimum overlap for the Best Surfaces as well as the Filtered Surfaces.
+      ],
+    ) <fig:score:segmentation>
+
+    However, the algorithm at this point did not take into account that values which are too high clip the image in a way that the surface overlapping filters out too much area of the roof.
+    When a parameter change is made, which results in a good surface being completely filtered out, the score of the algorithm should be lower.
+    For this purpose the algorithm splits the score into a positive and a negative score.
+    In addition to the positive score the negative score is calculated by the percentage of the combined area of the filtered surfaces to the total area of the roof, which is given in the input data.
+    This way the algorithm aquires the ability to detect missing house areas, which are not covered by the generated surfaces.
+    While the exact roof structure inside the input data may be unusable due to their missing quality, the area covered by the house is good enough for usage in the algorithm.
+    With having both a positive and a negative score ranging from 0 to 1, which both having 1 as the optimal result, the final score may be a weighted multiplication of those two, but for now, an equal weighting is deemed sufficient as for example lower wighing of the negative score would lead to the algorithm not detecting missing areas as good as it should.
+    $ S_P &= (sum_(i=0)^n ((S_x (i) + S_y (i) + S_m (i)) / 3 * abs(i)²)) / (sum_(i=0)^n (abs(i)²)) \
+      S_N &= (sum_(i=0)^n abs(i)) / N \
+      S &= S_P * p + S_N * (1 - p) $
+
+    In @fig:scores:squareornot the difference between using the square of the surface size and not using it is shown.
+    Looking at the positive score, it becomes clear that it does indeed have the intended effect, as in @fig:scores:squareornot:a the bigger surface is rewarded more than the smaller one, while in @fig:scores:squareornot:b the smaller surface is rewarded more than the bigger one which in turn leads to the clearly worse segmentation on the right having the same positive score, even though the noise edges inside surfaces are clearly visible and divide big surfaces into multiple smaller ones.
+    On the other hand this example also shows the working effect of the negative score, as the more an image is to the right the lower the resulting score, due to the fact that the right images have a lot of area falsely filtered out.
+
+    #subpar.grid(
+      columns: 1,
+      gutter: 1mm,
+      figure(image("../figures/scoring_algorithm/segmentation_scoring/2.png"), caption: [
+        Using the square of the surface size
+      ]), <fig:scores:squareornot:a>,
+      figure(image("../figures/scoring_algorithm/segmentation_scoring/3.png"), caption: [
+        Not using the square of the surface size
+      ]), <fig:scores:squareornot:b>,
+      caption: [
+        Example comparison betweens using or not using the square of the surface size.
+      ],
+      label: <fig:scores:squareornot>,
+    )
+
+    Looking at the results of this scoring led to the invastigation on why the results show some minor errors.
+    @fig:scores:founderror shows the intermediary steps on how the roof got segmented.
+    Here it becomes visible, that it is inconvenient to use the refinement used in the surface pipeline when generating the surfaces on the clipped values to generate the house's base area to filter from.
+    Accordingly, changing this in the code leads to @fig:scores:founderror:c, which does indeed show a better segmentation.
+    However it also becomes clear that this change only minimaly effects overall performance, as the "All Surfaces" column clearly shows the edge detection having problems on the thin roof part due to it having bad alignment with the pictures axes.
+
+    #subpar.grid(
+      columns: 1,
+      gutter: 1mm,
+      figure(image("../figures/scoring_algorithm/found_mistake/1.png"), caption: [
+        Edge Detection Pipeline.
+      ]), <fig:scores:founderror:a>,
+      figure(image("../figures/scoring_algorithm/found_mistake/2.png"), caption: [
+        Surface generation using refinement of the clipped surfaces.
+      ]), <fig:scores:founderror:b>,
+      figure(image("../figures/scoring_algorithm/found_mistake/3.png"), caption: [
+        Surface generation without using any form of refinemnt.
+      ]), <fig:scores:founderror:c>,
+      caption: [
+        Comparison between using and not using the refinement of the clipped surfaces.
+      ],
+      label: <fig:scores:founderror>,
+    )
   ]
 
   pagebreak()
