@@ -2,7 +2,22 @@
 
 #let ndsm_analysis() = {
   text(lang:"en")[
-    === NDSM Analysis
+    == NDSM Analysis
+    Since we clarified the need for better ground truths to enable trustworthy prompting, this section will focus on algorithmic analysis of the NDSM data.
+    The goal is to create a pipeline which is able to segment the roof of a house into individual surfaces which in contrast to the input data as accurately as possible represent the roof's structure.
+    The following theories will provide a basis for the development of the pipeline:
+    - The NDSM data contains the height information of the roof, which can be used to generate derivatives across the roof.
+      Therefore, this data can be used to create viable segmentations of the roof.
+    - There are multiple aspects about the optimal segmentation which may be hard to algorithmically approach.
+      For example, the algorithm may have problems with surfaces which are not perfectly even in their derivative values.
+      This is due to the fact that the algorithm may split the surface into multiple surfaces, as it detects a sudden change in the derivative values.
+      This is a problem, as most roof surfaces are not perfectly even in their derivative values, for reasons as simple as the existence of roof tiles, that we would like to not regard solar panels as a separate surface or even round roof tiles.
+    - Not only can the algorithm create segmentations, but it can also evaluate the quality of the generated surfaces.
+      By analyzing the derivative values the surfaces can be evaluated using the coherence of the values.
+      This score is then used to evaluate the quality of the surface, again, with the goal of representing the roof's structure as accurately as possible while acknowledging the limitations of this approach.
+
+    === Edge Detection Pipeline
+
     Using the Logarithm on the original, but normalized, NDSM Image data will help to enhance the contrast of the image. This will not only make the image more visually appealing but also easier to interpret. 
     The following image shows the differences when applying the Logarithm.
     We can observe that the image which contains logarithmic normalization has less extreme maxima and minima, which makes it easier to interpret the image, due to the smaller values being more prominent, leading to a more balanced image in intensity.
@@ -13,7 +28,7 @@
     Further experiments will continue to use the logarithmic normalization, as it is a simple and effective way to enhance the contrast of the image, which in turn results in a wider or better scope for parameter tuning.
 
     #figure(
-      image("../figures/apply_log/Result_Log_V3.png", width: 100%),
+      image("../figures/apply_log/Result.png", width: 100%),
       caption: [
         Comparison between using the Logarithm on the original, but normalized, NDSM Image data and the original NDSM Image data without prior adjustments.
       ],
@@ -148,14 +163,20 @@
     In addition to the positive score the negative score is calculated by the percentage of the combined area of the filtered surfaces to the total area of the roof, which is given in the input data.
     This way the algorithm aquires the ability to detect missing house areas, which are not covered by the generated surfaces.
     While the exact roof structure inside the input data may be unusable due to their missing quality, the area covered by the house is good enough for usage in the algorithm.
-    With having both a positive and a negative score ranging from 0 to 1, which both having 1 as the optimal result, the final score may be a weighted multiplication of those two, but for now, an equal weighting is deemed sufficient as for example lower wighing of the negative score would lead to the algorithm not detecting missing areas as good as it should.
-    $ S_P &= (sum_(i=0)^n ((S_x (i) + S_y (i) + S_m (i)) / 3 * abs(i)²)) / (sum_(i=0)^n (abs(i)²)) \
-      S_N &= (sum_(i=0)^n abs(i)) / N \
-      S &= S_P * p + S_N * (1 - p) $
+    With having both a positive and a negative score ranging from 0 to 1, which both having 1 as the optimal result, the final score may be a weighted sum of those two.
+    For now, an equal weighting is deemed sufficient as lower weighing of the negative score could lead to the algorithm not detecting missing areas as good as it should.
+    From this, the resulting formula can be seen in @formula:score, where p currently is as said 0.5 and N is the total number of pixels belonging to the house according to the data given.
+    $ S_"pos" &= (sum_(i=0)^n ((S_x (i) + S_y (i) + S_m (i)) / 3 * abs(i)²)) / (sum_(i=0)^n (abs(i)²)) \
+      S_"neg" &= (sum_(i=0)^n abs(i)) / N \
+      S &= S_"pos" * p + S_"neg" * (1 - p) $ <formula:score>
 
     In @fig:scores:squareornot the difference between using the square of the surface size and not using it is shown.
     Looking at the positive score, it becomes clear that it does indeed have the intended effect, as in @fig:scores:squareornot:a the bigger surface is rewarded more than the smaller one, while in @fig:scores:squareornot:b the smaller surface is rewarded more than the bigger one which in turn leads to the clearly worse segmentation on the right having the same positive score, even though the noise edges inside surfaces are clearly visible and divide big surfaces into multiple smaller ones.
     On the other hand this example also shows the working effect of the negative score, as the more an image is to the right the lower the resulting score, due to the fact that the right images have a lot of area falsely filtered out.
+    Also the absolute values of positive scores are not comparible between the two approaches, since the squared scores have a higher variety of values, since there denominator becomes bigger.
+    This in turn leads to the negative score having different influence on the resulting score, which may lead to a therorical need for adjustments.
+    In reality this is only a minor influence to the overall performance.
+    Continuing foreward, the algorithm will use the squaring method, as the results are more satisfying.
 
     #subpar.grid(
       columns: 1,
@@ -176,7 +197,9 @@
     @fig:scores:founderror shows the intermediary steps on how the roof got segmented.
     Here it becomes visible, that it is inconvenient to use the refinement used in the surface pipeline when generating the surfaces on the clipped values to generate the house's base area to filter from.
     Accordingly, changing this in the code leads to @fig:scores:founderror:c, which does indeed show a better segmentation.
-    However it also becomes clear that this change only minimaly effects overall performance, as the "All Surfaces" column clearly shows the edge detection having problems on the thin roof part due to it having bad alignment with the pictures axes.
+    However, it also becomes clear that this change only minimaly effects overall performance, as the "All Surfaces" column clearly shows the edge detection having problems on the thin roof part due to it having bad alignment with the pictures axes.
+    While this also only minorly influences the result, it may be worth noting that this simple change increases the score by 1%.
+    This again may not seem much but may later on prove to be crucial between deciding between segmentations.
 
     #subpar.grid(
       columns: 1,
@@ -188,7 +211,7 @@
         Surface generation using refinement of the clipped surfaces.
       ]), <fig:scores:founderror:b>,
       figure(image("../figures/scoring_algorithm/found_mistake/3.png"), caption: [
-        Surface generation without using any form of refinemnt.
+        Surface generation without refinement.
       ]), <fig:scores:founderror:c>,
       caption: [
         Comparison between using and not using the refinement of the clipped surfaces.
