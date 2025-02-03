@@ -90,7 +90,17 @@
     
     However as this may lead to some real surfaces being split into multiple surfaces, a re-linking step is neccessary.
     For this, the algorithm calculates the mean derivative of each surface and connects surfaces which are close enough in their mean derivative.
-    This should in generel give a good result, as the mean derivative of a surface should be quite similar across the whole surface whilest the derivative of two distinct surfaces should be different enough to not be connected.
+
+    In turn, this leads to the introduction of the next parameter, the absolute minimum difference between the mean derivative of two surfaces to be connected, later simply called threshold.
+    A threshold too high leads to rightly separated surfaces being falsely reconnected while a threshold too low, which is less problematic, leads to surfaces being split into multiple surfaces, which mostly happens on smaller surfaces.
+    The threshold value thereby is absolute, as any form of percentage based threshold leads to a false bias against flat roof structures and too highly encoureages the algorithm to combine high derivative surfaces.
+
+    Later on afte @scoring, the algorithm may be able to dynamically determine the threshold, but for now it is set to a fixed value, which was found to be the best for the current data whilest admitting limitaions.
+    Also, merging based on this value may not be the best approach at all.
+    There may later on be a better approach by simply testing if the merging of two surfaces leads to a higher score, which should in theory lead to the same or rather better results.
+    For now however, this remains theoretical and only a possibility for future improvements.
+
+    In general this leads to good results, as the mean derivative of a surface should be quite similar across the whole surface whilest the derivative of two distinct surfaces should be different enough to not be connected.
     Two disjunct surfaces in question can only have about the same mean derivative if they are connected through another surface, which in turn should be detected by the algorithm, because after re-linking they are spatially not connected.
     On the other hand they could have the same mean if they have a gap in height between them, which should definitely be detected by the edge detection algorithm, or at least this concern would need to be addressed there.
 
@@ -135,7 +145,7 @@
         The result of each step inside the surface pipeline. The parameter used here are 50% minimum overlap for the Best Surfaces as well as the Filtered Surfaces.
       ],
     ) <fig:surfaces_pipeline>
-    
+
     Additionaly the example house shown in the image shows that the algorithm without dynamic determination of parameters is not sufficient to solve the problem, because the house's small squared flat roof in the middle got merged with two outer roofs, which is plain wrong and should be detected and fixed.
     Respectively, the next section is about exactly that, the scoring system, which is neccessary to evaluate the quality of the generated surfaces.
 
