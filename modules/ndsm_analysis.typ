@@ -18,34 +18,129 @@
 
     === Edge Detection Pipeline
 
-    Using the Logarithm on the original, but normalized, NDSM Image data will help to enhance the contrast of the image. This will not only make the image more visually appealing but also easier to interpret. 
-    The following image shows the differences when applying the Logarithm.
-    We can observe that the image which contains logarithmic normalization has less extreme maxima and minima, which makes it easier to interpret the image, due to the smaller values being more prominent, leading to a more balanced image in intensity.
-    In the Image without logarithmic scaling applied, most colours become very pale whilest only the extreme values on for example the edges of the house become intensively coloured, leading to the fact, that the image becomes hard to interpret by human eyes whe ntrying to evaulate or validate the calculated data.
-    The results of both are of quite different quality, which is due to the parameter of 'clipped percentage’ and input parameter for the Canny Edge Detection algorithm. 
-    It appears that they could be changed in such a way that both images are much more similar in quality, but this is not researched in depth, as the benefit of this is uncertain.
-    Most probably investing time into this would not be worth, as the results do not appear to bring groundbreaking quality improvements.
-    Further experiments will continue to use the logarithmic normalization, as it is a simple and effective way to enhance the contrast of the image, which in turn results in a wider or better scope for parameter tuning.
+    @fig:edp:pipeline shows the full pipeline used for the edge detection.
+    For now, the pipeline is kept simple, as the main goal is to create a basis for further experiments.
+    The derivatives are distinguished between x and y directions, as using the combined values in the form of magnitude creates error.
+    This problems stem from the fact that opposing roofs can have mirrored signs in their derivative values, which in turn leads to the algorithm interpreting them as the same surface even though their x and y values may highly differ.
 
     #figure(
-      image("../figures/apply_log/Result.png", width: 100%),
+      image("../figures/edge detection/pipeline1.png", width: 100%),
       caption: [
-        Comparison between using the Logarithm on the original, but normalized, NDSM Image data and the original NDSM Image data without prior adjustments.
+        Later Iteration of the Edge Detection Pipeline using found Improvements in calculation and visualisation.
       ],
-    )
-    === Canny Edge Detection
+    ) <fig:edp:pipeline>
 
-    === Surface Growth
+    For better comparisons accross multiple roofs as well as better generalization, between each step the data gets normalized.
+    The pipeline starts with the calculation of the derivative of the NDSM data using the Sobel operator @SobelOperator.
+    Interestingely, visualizing the absolute values inside the bars plots shows the roof segments quite clearly, as the graph is a layering of the individual segments graphs.
+    While the clipping which follows in the next step was introduced to improve the contrast in the values, we also apply logarithmic scaling to the output values of the derivative.
+    Further discussed in @log, this step is helpful in enhancing the contrast of the image, which in turn makes it easier to interpret.
+
+    The next step is clipping the extreme values of the derivative data.
+    This step may not be neccessary, but it adds nice and wanted improvements to the algorithm.
+    These are, the most extreme values are ver likely to belong to the houses surface and are also very likely to outlier in regards to the rest of the data due to them simply logically being the highest changes in height.
+    Therefore, clipping them has two effects:
+    - The contrast in the values is increased, which makes the image easier to interpret.
+      Not only visually but also for the algorithm, as the edges between roofs are more pronounced, which in turn leads to the algorithm being able to detect them more easily.
+    - Using the clipped values gives a base for guessing the layout of the house.
+      This is theoretically not neccessary, as the input data regarding the house's layout is given and of acceptable quality, but it may be useful for further experiments, as the algorithm may be able to detect missing areas of the house, which are not covered by the input data.
+    However, this step creates a hyperparameter, which may need to be adjusted for each house, as the perfect percentage of clipped values may vary between houses.
+    Using a value too high may lead to atrifacts inside the roof segments or even clipping entire surfaces together, using a value too low may lead to the algorithm not being able to detect house layout, meaning all surfaces will be filtered out, see @surface_growth.
+
+    Disregarding the visual step back, @fig:clipping shows the difference between using and not using the clipping step.
+    After clipping the data, the hills stemming from the roof segments are clearly visible.
+    This however is not only visual for analysis but also helps the last edge detection step to find edges, since the absolute value of the inner edges is not overshadowed as much by the outer house edges.
+
+    #subpar.grid(
+      columns: 1,
+      gutter: 2mm,
+      figure(image("../figures/clipping/0.png"), caption: [
+        Edge detection without clipping any values
+      ]), <fig:clipping:a>,
+      figure(image("../figures/clipping/7.png"), caption: [
+        Edge detection clipping the highest and lowest 7% of values
+      ]), <fig:clipping:b>,
+      caption: [
+        Edge Detection pipeline comparing the difference between no clipping and clipping 7% of maxima values.
+      ],
+      label: <fig:clipping>,
+    )
+
+    A crucial step in the pipeline is blurring the data.
+    This step is neccessary, as the derivative data is very noisy accross segments.
+    Blurring the data leads to much improvement in the quality of the detected edges, as less noise inside a coherent surface is strong enough to be detected as an edge which in turn leads to the algorithm being less likely to split surfaces into multiple surfaces.
+    However, it can be noted that due to the small size of the image this blurring leads to a loss of detail, meaning problems in the detection of thin roof parts.
+    In earlier iterations of the algorithm, the blurring was done after shifting the data between 0 and 255, which the following edge detection algorithm uses.
+    This, however small it was, lead to a minor loss of quality due to integer rounding so it was changed to be done before the shifting.
+
+    The final step in the pipeline is the application of the Canny Edge Detection algorithm @CannyOperator.
+    For now, due to short experiments showing the most promising results without further need for parameter tuning, the algorithm is used with lower and higher threshold being based on the 10th and 90th percentile of the blurred data, because this way of dynamic calculation leads to the best results on different houses, which simply put may not be satisfyingly segmentable with a fixed threshold.
+    These found edges in x and y direction are then combined to create the final edge detection image, which is then used in the surface generation following in @surface_growth.
+
+    === Surface Growth <surface_growth>
+
+    Using the edges calculated in the edge detection pipeline, the algorithm is able to generate surfaces.
+    This is done by simply letting all non-edge pixel #quote("grow") into all directions until only edge pixel are left and thereby all disjunct pixel structures represent a surface.
+    While this in itself is relatively simple, @fig:surface_separation shows further improvements on this.
+    Generally speaking, they are failsafes to prevent the algorithm from connecting surfaces on loose connections due to the edges having minor error.
+    This is done by categorizing pixel touching edges as edge-pixel and separating surfaces which were only connecting through such.
+    There were attempts to use erosion and dilation to achieve this, but they were not successful, as they lead to the algorithm not being able to detect thin roof parts.
+    Simply put, no matter how small for example the erosion kernel was, it would always lead to too many pixels being lost, meaning in turn small or thin parts of the roof would be filtered out, due to the small image size.
+    As this was not satisfying, the current approach of pixel categorization was developed, as it also simplifies re-adding the removed pixel.
+    
+    However as this may lead to some real surfaces being split into multiple surfaces, a re-linking step is neccessary.
+    For this, the algorithm calculates the mean derivative of each surface and connects surfaces which are close enough in their mean derivative.
+    This should in generel give a good result, as the mean derivative of a surface should be quite similar across the whole surface whilest the derivative of two distinct surfaces should be different enough to not be connected.
+    Two disjunct surfaces in question can only have about the same mean derivative if they are connected through another surface, which in turn should be detected by the algorithm, because after re-linking they are spatially not connected.
+    On the other hand they could have the same mean if they have a gap in height between them, which should definitely be detected by the edge detection algorithm, or at least this concern would need to be addressed there.
+
+    #subpar.grid(
+      columns: 4,
+      gutter: 2mm,
+      figure(image("../figures/surface_separation/1.png"), caption: [
+        Surface Growth.
+      ]), <fig:surface_separation:a>,
+      figure(image("../figures/surface_separation/2.png"), caption: [
+        Separation.
+      ]), <fig:surface_separation:b>,
+      figure(image("../figures/surface_separation/3.png"), caption: [
+        Re-linking.
+      ]), <fig:surface_separation:c>,
+      figure(image("../figures/surface_separation/4.png"), caption: [
+        Magnitude.
+      ]), <fig:surface_separation:d>,
+      caption: [
+        Example of what happens internly during the Surface Growth algorithm. 
+        The effect of separation and re-linking are clearly visible here. 
+        Since the previous edge detection algorithm did not supply sufficient edges, the splitting is neccessary to create a good segmentation, while the linking is neccessary to not split thin edges more than needed.
+      ],
+      label: <fig:surface_separation>,
+    )
+
+    The final step in the surface generation is the filtering of the surfaces.
+    This is done by using the same Surface Grwoth algorithm to generate surfaces on the image of clipped pixels instead of the edge pixel.
+    Albeit not perfect, this algorithms then takes the input data into account, in which the house's base layout is given.
+    For simplification and to prevent the algorithm from filtering out too much, we take into account all clipped surfaces which have an overlap of at least 50% with the house's base layout.
+    Then again we take this 50% parameter to filter out surfaces from the edge pixel images which do not have sufficient overlap.
+
+    @fig:surfaces_pipeline shows the results of each step inside the surface pipeline.
+    It is visible that this successfully filters out the non-house surfaces from the image as well as filters out many small surfaces which were generated due to the algorithm having certain problems near clipped pixels.
+    An example for this is the visible imperfection near the red surface on ther lower right side of the house.
+
+    The soft cyan and lime green clipped surfaces also show that indeed the algorithm can not just take the one best surfaces as balconies or similar structures need to be taking into account.
 
     #figure(
       image("../figures/surfaces/surfaces_pipeline.png", width: 100%),
       caption: [
         The result of each step inside the surface pipeline. The parameter used here are 50% minimum overlap for the Best Surfaces as well as the Filtered Surfaces.
       ],
-    )
+    ) <fig:surfaces_pipeline>
+    
+    Additionaly the example house shown in the image shows that the algorithm without dynamic determination of parameters is not sufficient to solve the problem, because the house's small squared flat roof in the middle got merged with two outer roofs, which is plain wrong and should be detected and fixed.
+    Respectively, the next section is about exactly that, the scoring system, which is neccessary to evaluate the quality of the generated surfaces.
 
-    === Scoring System
-    It became clear, that a function is neccessary to evaluate the quality of the generated surfaces. 
+    === Scoring System <scoring>
+    It became clear, that a function is neccessary to evaluate the quality of the generated surfaces.
     This function should be able to evaluate the quality of the surfaces based on the following criteria:
     - The coherence of the surface's values, meaning that optimaly the surface should have a similar value over the whole surface.
       While realistically this value will not achieve a perfect score, it should be as high as possible.
@@ -218,6 +313,33 @@
       ],
       label: <fig:scores:founderror>,
     )
+
+    === Experiments
+
+    ==== Logarithm <log>
+
+    Using the Logarithm on the original, but normalized, NDSM Image data will help to enhance the contrast of the image. This will not only make the image more visually appealing but also easier to interpret. 
+    @fig:edp:log shows the difference when applying the Logarithm directly after calculating the derivative.
+    It is observable that the image which contains logarithmic normalization has less extreme maxima and minima, which makes it easier to interpret the image, due to the smaller values being more prominent, leading to a more balanced image in intensity.
+    In the Image not using logarithmic scaling, most colours become very pale whilest only the extreme values on for example the edges of the house become intensively coloured, leading to the fact, that the image becomes hard to interpret by human eyes when trying to evaluate or validate the calculated data.
+    The results of both are of quite different quality, which is due to the parameter of 'clipped percentage’ and input parameter for the Canny Edge Detection algorithm. 
+    It appears that they could be changed in such a way that both images are much more similar in quality, but this is not researched in depth until after @scoring, when better experimentation is possible due to the scoring system.
+    For now, further experiments will continue to use the logarithmic normalization, as it is a simple and effective way to enhance the contrast of the image, which in turn results in a wider or better scope for parameter tuning.
+
+    #figure(
+      image("../figures/apply_log/Result.png", width: 100%),
+      caption: [
+        Comparison between using the Logarithm on the original NDSM Image data and the original NDSM Image data without prior adjustments.
+      ],
+    ) <fig:edp:log>
+
+    ==== Edge Detection
+
+    @ScharrOperator
+
+    ==== Blurring
+
+    @GaussianOperator
   ]
 
   pagebreak()
