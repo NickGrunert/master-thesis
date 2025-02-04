@@ -2,18 +2,25 @@
 
 #let ndsm_analysis() = {
   text(lang:"en")[
-    == NDSM Analysis
-    Since we clarified the need for better ground truths to enable trustworthy prompting, this section will focus on algorithmic analysis of the NDSM data.
-    The goal is to create a pipeline which is able to segment the roof of a house into individual surfaces which in contrast to the input data as accurately as possible represent the roof's structure.
-    The following theories will provide a basis for the development of the pipeline:
-    - The NDSM data contains the height information of the roof, which can be used to generate derivatives across the roof.
-      Therefore, this data can be used to create viable segmentations of the roof.
+    == Identification of Roof Structures through Analysis of nDSM Data
+    Since we clarified the need for better ground truths to enable trustworthy prompting, this section will focus on algorithmic analysis of the nDSM data.
+    The goal is the creation of a pipeline which hopefully delivers high quality roof segmentations in regards to finding out the vague shape, location and number of segments.
+    In turn, this segmentation is to be used as a basis for input prompting when using SAM.
+    This means this section does not neccessitate the creation of a perfect segmentation, but rather a sufficiently good enough segmentation to be used as a basis for further experiments.
+
+    The following hypotheses will provide a basis for the development of the pipeline:
+    - The nDSM data contains the house's height information relative to the ground.
+      Using this, derivatives across the roof can be calculated and used to create viable segmentations.
     - There are multiple aspects about the optimal segmentation which may be hard to algorithmically approach.
       For example, the algorithm may have problems with surfaces which are not perfectly even in their derivative values.
       This is due to the fact that the algorithm may split the surface into multiple surfaces, as it detects a sudden change in the derivative values.
       This is a problem, as most roof surfaces are not perfectly even in their derivative values, for reasons as simple as the existence of roof tiles, that we would like to not regard solar panels as a separate surface or even round roof tiles.
+      // TODO: Valentina said it is normal for nDSM to be piecewise not smooth due to interpolations in calculation...
     - Not only can the algorithm create segmentations, but it can also evaluate the quality of the generated surfaces.
       By analyzing the derivative values the surfaces can be evaluated using the coherence of the values.
+      A roof segment's height sould always be piecewise representable as a continuous function, meaning that the derivative values should be similar or rather constant across the whole surface.
+      While a rounded surface has continuous derivative values, a normal roof segment should hav constant derivative values across it.
+      If the values of a surface are not coherent or continuous, it is an implication that it has an edge inside it, which in turn should be detected by the algorithm and the surface should be split into multiple surfaces.
       This score is then used to evaluate the quality of the surface, again, with the goal of representing the roof's structure as accurately as possible while acknowledging the limitations of this approach.
 
     === Edge Detection Pipeline
@@ -31,7 +38,7 @@
     ) <fig:edp:pipeline>
 
     For better comparisons accross multiple roofs as well as better generalization, between each step the data gets normalized.
-    The pipeline starts with the calculation of the derivative of the NDSM data using the Sobel operator @SobelOperator.
+    The pipeline starts with the calculation of the derivative of the nDSM data using the Sobel operator @SobelOperator.
     Interestingely, visualizing the absolute values inside the bars plots shows the roof segments quite clearly, as the graph is a layering of the individual segments graphs.
     While the clipping which follows in the next step was introduced to improve the contrast in the values, we also apply logarithmic scaling to the output values of the derivative.
     Further discussed in @log, this step is helpful in enhancing the contrast of the image, which in turn makes it easier to interpret.
@@ -66,7 +73,7 @@
       label: <fig:clipping>,
     )
 
-    A crucial step in the pipeline is blurring the data.
+    A crucial step in the pipeline is applying Gaussian Blur @GaussianOperator to reduce noise through smoothing.
     This step is neccessary, as the derivative data is very noisy accross segments.
     Blurring the data leads to much improvement in the quality of the detected edges, as less noise inside a coherent surface is strong enough to be detected as an edge which in turn leads to the algorithm being less likely to split surfaces into multiple surfaces.
     However, it can be noted that due to the small size of the image this blurring leads to a loss of detail, meaning problems in the detection of thin roof parts.
@@ -84,7 +91,7 @@
     While this in itself is relatively simple, @fig:surface_separation shows further improvements on this.
     Generally speaking, they are failsafes to prevent the algorithm from connecting surfaces on loose connections due to the edges having minor error.
     This is done by categorizing pixel touching edges as edge-pixel and separating surfaces which were only connecting through such.
-    There were attempts to use erosion and dilation to achieve this, but they were not successful, as they lead to the algorithm not being able to detect thin roof parts.
+    There were attempts to apply morpholigcal operations such as erosion and dilation @MorphologicalOperator to achieve this, but they were not successful, as they lead to the algorithm not being able to detect thin roof parts.
     Simply put, no matter how small for example the erosion kernel was, it would always lead to too many pixels being lost, meaning in turn small or thin parts of the roof would be filtered out, due to the small image size.
     As this was not satisfying, the current approach of pixel categorization was developed, as it also simplifies re-adding the removed pixel.
     
@@ -95,7 +102,7 @@
     A threshold too high leads to rightly separated surfaces being falsely reconnected while a threshold too low, which is less problematic, leads to surfaces being split into multiple surfaces, which mostly happens on smaller surfaces.
     The threshold value thereby is absolute, as any form of percentage based threshold leads to a false bias against flat roof structures and too highly encoureages the algorithm to combine high derivative surfaces.
 
-    Later on afte @scoring, the algorithm may be able to dynamically determine the threshold, but for now it is set to a fixed value, which was found to be the best for the current data whilest admitting limitaions.
+    Later on after @scoring, the algorithm may be able to dynamically determine the threshold, but for now it is set to a fixed value, which was found to be the best for the current data whilest admitting limitaions.
     Also, merging based on this value may not be the best approach at all.
     There may later on be a better approach by simply testing if the merging of two surfaces leads to a higher score, which should in theory lead to the same or rather better results.
     For now however, this remains theoretical and only a possibility for future improvements.
@@ -149,18 +156,27 @@
     Additionaly the example house shown in the image shows that the algorithm without dynamic determination of parameters is not sufficient to solve the problem, because the house's small squared flat roof in the middle got merged with two outer roofs, which is plain wrong and should be detected and fixed.
     Respectively, the next section is about exactly that, the scoring system, which is neccessary to evaluate the quality of the generated surfaces.
 
-    === Scoring System <scoring>
-    It became clear, that a function is neccessary to evaluate the quality of the generated surfaces.
+    === Objective Segmentation evaluation using a Scoring System <scoring>
+
+    While for the earlier tests the quality of most surfaces was sufficiently evaluatbable by human eyes, a greater need for objective criterion arose.
     This function should be able to evaluate the quality of the surfaces based on the following criteria:
     - The coherence of the surface's values, meaning that optimaly the surface should have a similar value over the whole surface.
-      While realistically this value will not achieve a perfect score, it should be as high as possible.
-      This is due to the fact that most roof surfaces are not perfectly even is derivative values.
-      In experiments it becomes clears that almost no surface has a perfect derivative across all values or if it does, it is also possible that an actually bigger surface go split too much by the algorithm.
+      While realistically this value will not achieve a perfect score due to the aforementioned noise and imperfection of input data, it should be as high as possible.
+      In experiments it becomes clears that almost no surface has a perfect derivative across all values or even if it does, it is also possible that an actually bigger surface go split too much by the algorithm.
     - The size of the surface. 
       To address the algorithm cutting down surfaces too much, I propose to add a reward for bigger surfaces.
+      // TODO: valentina mentioned oversegmentation here
       This should be done in a way that the reward is not too big, as it could lead to the algorithm just merging all surfaces into one big surface.
       A bigger surface which is not coherent should be penalized accordingly.
+    
+    Also note that for better visual clarity most figures in this section or rather from now on use magnitude colouring.
+    What this means is that the colour of a surface is determined by the mean magnitude calculated from x and y direction.
+    While most algorithms do not use the magnitude for calculation, for example the edge detection pipeline using x and y directions distinctly, this is a still a good way for simple visualization of the data.
+    While two magnitudes of defintely disjunct roof tiles can be the same, which can be confusing to look at, it is still preferebly to random colouring of surfaces, as random colouring across multiple images in a series of experiments creates unnecessary hardship when evaluating the data.
 
+    ==== Trying to use DBSCAN for surface evaluation
+
+    // TODO: DBSCAN source and why it theoretically could have been used
     Using spatial information by for example using labeling through DBSCAN failed in almost every case due to the data inconsistency inside even perfect surfaces.
     The algorithm may be able to detect that something wrong, but not consistently enough to be used in the scoring system or in generell serious evaluation.
     Further experimentation with the algorithms parameter of epsilon and minimum sample number may be possible, and quick tests have shown that the algorithms quality can highly vary depending on these, but achieving satisfying results seems unfeesable.
@@ -185,9 +201,12 @@
       label: <dbscanfig>,
     )
 
+    ==== Custom Plateau Algorithm for segment analysis
+
     For this purpose a custom algorithm was developed which evaluates the quality of a surface.
     It does this by analyzing each surfaces derivative values, in each direction meaning x, y and their combination.
-    For each direction the algorithm tries to generate plateaus, which are areas with a similar derivative value, or at least not sudden changes in the derivative value.
+    For each direction the algorithm tries to generate plateaus, which are areas with approximately constant derivative values, or at least no sudden or big changes in the derivative value.
+    // TODO: better explanation or find a formula for each surface
     By simpe multiplication of a surfaces size and the number of coherent values, the algorithm can generate a score for each surface.
     As required, this score naturally lies between 0 and 1, where 1 is the best possible score.
     To realize the aforementioned reward for bigger surfaces, the algorithm multiplies the score with the size of the surface squared.
@@ -328,7 +347,7 @@
 
     ==== Logarithm <log>
 
-    Using the Logarithm on the original, but normalized, NDSM Image data will help to enhance the contrast of the image. This will not only make the image more visually appealing but also easier to interpret. 
+    Using the Logarithm on the original, but normalized, nDSM Image data will help to enhance the contrast of the image. This will not only make the image more visually appealing but also easier to interpret. 
     @fig:edp:log shows the difference when applying the Logarithm directly after calculating the derivative.
     It is observable that the image which contains logarithmic normalization has less extreme maxima and minima, which makes it easier to interpret the image, due to the smaller values being more prominent, leading to a more balanced image in intensity.
     In the Image not using logarithmic scaling, most colours become very pale whilest only the extreme values on for example the edges of the house become intensively coloured, leading to the fact, that the image becomes hard to interpret by human eyes when trying to evaluate or validate the calculated data.
@@ -339,7 +358,7 @@
     #figure(
       image("../figures/apply_log/Result.png", width: 100%),
       caption: [
-        Comparison between using the Logarithm on the original NDSM Image data and the original NDSM Image data without prior adjustments.
+        Comparison between using the Logarithm on the original nDSM Image data and the original nDSM Image data without prior adjustments.
       ],
     ) <fig:edp:log>
 
