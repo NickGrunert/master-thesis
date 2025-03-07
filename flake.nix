@@ -16,6 +16,9 @@
       formatter = pkgs.alejandra;
       devShells.default = pkgs.mkShell {
         packages = with pkgs; [
+          (writeShellScriptBin "run" ''
+            typst watch thesis.typ
+          '')
           typst
           typst-live
         ];
