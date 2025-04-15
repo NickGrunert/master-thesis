@@ -44,10 +44,10 @@
     import numpy as np
     from scipy.stats import pearsonr
 
-    scores = np.array([0.5, 0.6, 0.7, 0.8])
-    truth_scores = np.array([0.5, 0.6, 0.7, 0.8])
+    scores = [0.5, 0.6, 0.7, 0.8]
+    truth_scores = [0.5, 0.6, 0.7, 0.8]
 
-    r, _ = pearsonr(scores), truth_scores)
+    r, _ = pearsonr(scores, truth_scores)
     print(f"Pearson r: {r:.3f}")  # Output: Pearson r: 1.000 (perfect linear correlation)
     ```
 
