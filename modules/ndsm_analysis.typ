@@ -483,14 +483,6 @@
     Regardless, the decision was made to also use the $F_0.5$ score wen calculating the final scores out of positive and negative scores.
     This introduces a bias towards bigger surfaces and lessens the impact of missing surface area.
 
-    The actual comparison of the score calculated from the segmentation algorithm and it's comparison score towards the ground truth will be done via the Pearson coefficient shown in @formula:pearson.
-    This calculation should give us a good idea on how well the scoring system is able to evaluate the segmentation algorithm.
-    At the very least, a sinking score from the algorithm should mean reduced precision or recall, meaning a worse score in regards to the ground truth.
-    By that assumption we when run on multiple segmentations given we expect a positive correlation between the two scores.
-    The Pearson Coefficient should then output a positive value close to 1, which would mean a high correlation between the two scores.
-
-    $ r = (n * sum(x * y) - sum(x) * sum(y)) / sqrt((n * sum(x^2) - sum(x)^2) * (n * sum(y^2) - sum(y)^2)) $ <formula:pearson>
-
     === Experiments
 
     ==== Logarithm <log>
