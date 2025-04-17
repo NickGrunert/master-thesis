@@ -2,9 +2,9 @@
 
 #let truth_compare() = {
   text(lang:"en")[
-    == Objective Analysis of Score by Comparison with Truth Data
+    = Objective Analysis of Score by Comparison with Truth Data
 
-    === Creating Ground Truth images
+    == Creating Ground Truth images
     For actual evaluation and validation of the algorithms it is necessary to at least create at least some objective data to compare the algorithm to.
     This ground truth data will be the reference point onto which the algorithm will be compared, which in turn will allow an actual quantitative evaluation of the algorithms performance.
     It will serve as proof of the algorithms accuracy and reliability.
@@ -19,10 +19,10 @@
     However these challenges, a sufficiently accurate ground truth is assumed to be sufficient in creating a general idea whether the algorithm is performing in a satisfactory manner or not.
     Therefore in the following sections we will take a look at the different metrics which are used to evaluate the algorithm.
 
-    === Metrics
+    == Metrics
 
-    Originally i had intended to write this sections structured in a way such that all theoretical explanations come first, before the results are combined and explained together.
-    However, this approach was deemed not practical, as in reality each approach was thought of and tested, before analyzing the results and on their basis thinking of the next one.
+    This section was originally structured in a way such that all theoretical explanations were to be done beforehand, before the results are combined and explained together.
+    However, this approach was deemed not practical, as in reality each approach was thought of and tested, before analyzing the results and on their basis creating of the next one.
     Especially the final approach is a clear derivation developed from the previous approaches' results.
     Therefore, the following sections about by which metric the algorithm came to be evaluated each of the metrics will be eplained, example results will be shown and the lessons learned will directly be discussed.
 
@@ -32,21 +32,23 @@
       radius: 4pt,
     )
 
+    === Pearson Coefficient
 
+    #heading(depth: 5, numbering: none, bookmarked: false)[Formula]
+    $ r = (n * sum(x * y) - sum(x) * sum(y)) / sqrt((n * sum(x^2) - sum(x)^2) * (n * sum(y^2) - sum(y)^2)) $ <formula:pearson>
 
-
-    ==== Pearson
-
+    #heading(depth: 5, numbering: none, bookmarked: false)[Explanation]
     The Pearson Coefficient can measure the linear correlation between two datasets.
     It measures between -1 and 1 on how much the two datasets correlate with each other, with 1 being a perfect correlation and -1 being a perfect anti-correlation.
     The Pearson Coefficient is calculated by taking the covariance of the two datasets and dividing it by the product of the standard deviation of both datasets, which can be seen in @formula:pearson.
     A pearson coefficient of 1 during experimentation would mean that the two datasets are perfectly correlated, meaning that the score calculated from the segmentation algorithm and the ground truth data are indeed comparable. @Pearson2 @Pearson3 @Pearson4
 
-    $ r = (n * sum(x * y) - sum(x) * sum(y)) / sqrt((n * sum(x^2) - sum(x)^2) * (n * sum(y^2) - sum(y)^2)) $ <formula:pearson>
 
+
+    #heading(depth: 5, numbering: none, bookmarked: false)[Code Snippet]
     However, since scipy offers the pearsonr function, we do not need to implement this ourselves @Pearson1.
     The function takes two arrays as input and returns the Pearson coefficient and the p-value, whereas the latter will not be used here.
-    A short abstract of code can be seen in the following pseudo-code snippet.
+    A short abstract of code can be seen in the following example code snippet.
 
     ```python
     from scipy.stats import pearsonr
@@ -58,6 +60,7 @@
     print(f"Pearson r: {r:.3f}")  # Output: Pearson r: 1.000 (perfect linear correlation)
     ```
 
+    #heading(depth: 5, numbering: none, bookmarked: false)[Results]
     @fig:truth_compare:pearson shows three different calculations of the Pearson Coefficient on different example images.
     Some of the individual results clearly show a very good correlation close to 1, which would be the ideal case for the algorithm.
     However, some of the values, especially in @fig:truth_compare:pearson:c are outliers to this.
@@ -91,15 +94,21 @@
 
 
 
-    ==== Cosine Similiarity TODO
 
+
+    === Cosine Similiarity TODO
+
+    #heading(depth: 5, numbering: none, bookmarked: false)[Formula]
+    $ "cosine similiarty" = (arrow(x) dot arrow(y)) / (||arrow(x)|| dot ||arrow(y)||) $ <formula:cosine>
+
+    #heading(depth: 5, numbering: none, bookmarked: false)[Explanation]
     Another approach to measure the correlation between two datasets is the Cosine Similarity @Cosine2.
     Since it essentially measures the similiarity between the data point vectors, this approach was thought of to try to measure how good the scoring is in terms of direction.
     The cosine similarity is calculated by taking the dot product of the two vectors and dividing it by the product of the magnitudes of both vectors, which can be seen in @formula:cosine.
 
-    $ "cosine similiarty" = (arrow(x) dot arrow(y)) / (||arrow(x)|| dot ||arrow(y)||) $ <formula:cosine>
 
-    While once again we could calculate this ourselves, the scikit-learn library offers a function to calculate this @Cosine1, as shown in te short pseudo-code example below.
+    #heading(depth: 5, numbering: none, bookmarked: false)[Code Snippet]
+    While once again we could calculate this ourselves, the scikit-learn library offers a function to calculate this @Cosine1, as shown in the code example below.
 
     ```python
     from sklearn.metrics.pairwise import cosine_similarity
@@ -113,8 +122,14 @@
 
 
 
-    ==== Using common other metrics
 
+
+    === MAE, MSE, RMSE and R2 Score
+
+    #heading(depth: 5, numbering: none, bookmarked: false)[Formula]
+    $ R^2 = 1 - (sum_(i=1)^n (y_i - accent(y, hat)_i)^2)/(sum_(i=1)^n (y_i - accent(y, macron))^2) $ <formula:r2>
+
+    #heading(depth: 5, numbering: none, bookmarked: false)[Explanation]
     The next approach was to use more common statistical metrics for measuring the difference between two datasets.
     Namely these are the Mean Squared Error (MSE), the Mean Absolute Error (MAE), the Root Mean Squared Error (RMSE) and the R2 Score.
 
@@ -124,9 +139,9 @@
     The R2 Score however, is a measure of how well the data fits into a linear model, named the coefficient of determination.
     This is calculated by taking the variance of the two datasets and dividing it by the variance of the first dataset, shown in @formula:r2.
 
-    $ R^2 = 1 - (sum_(i=1)^n (y_i - accent(y, hat)_i)^2)/(sum_(i=1)^n (y_i - accent(y, macron))^2) $ <formula:r2>
 
-    Once again, the below pseudo-code shows their simple implementation by using library functions.
+    #heading(depth: 5, numbering: none, bookmarked: false)[Code Snippet]
+    Once again, the below code shows their simple implementation by using library functions, instead of implementing the formulas ourselves.
 
     ```python
     from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
@@ -145,6 +160,7 @@
     print("R2:", r2)
     ```
 
+    #heading(depth: 5, numbering: none, bookmarked: false)[Results]
     The Learnings from the experiments are as follow:
     - The MAE and RMSE are very similar. 
       This is due to the space constraint of the data inside the range of 0 to 1 and essentially means that using the MAE alone is sufficient for data analysis.
@@ -156,20 +172,26 @@
       It is enough to merely assume a linear relationship between the datasets without having to assume this line could not be shifted or tilted.
       The only actual requirement that exists is reliability of the algorithm, meaning a better score should actually perform better than a worse score.
 
-    ==== Combination of Metrics by using a Linear Regressor
+    === Combination of Metrics by using a Linear Regressor
 
+    #heading(depth: 5, numbering: none, bookmarked: false)[Explanation]
     Taking into account especially the learning from the last section, the next step was to combine the different metrics into one single metric.
-    For this, the following was deemed neccessary:
-    - Any kind of linear relationship and metrical comparison to that relationship.
+    For this, the requirement is essentially just calculating any kind of linear relationship and using metrical comparison towards that relationship.
 
     This was achieved by using a simple Linear Regressor @LinearRegressor, which fits and calculates the linear regression line between the two datasets.
     Using SciPy's LinearRegression function, we can easily fit the data and calculate the R2 Score and the Mean Absolute Error (MAE) of the linear regression line.
     This fulfils the requirement of a non strict 1-to-1 linear relationship between the two datasets, as well as returns the metrics which indicate the performance of the algorithm.
 
     To calculate the correlation score, a simple weighted average of the R2 Score and the MAE is used.
-    For this, the MAE is normalized as well as inverted, as the MAE is an error matric and therefore should be minimized, while we are looking for a score, which should be maximized.
-    Once again, the pseudo-code below shows the implementation of this approach.
+    However, MAE by itself is an error metric.
+    To create a resulting score, after normaliting the MAE to the range of 0 to 1, the MAE is subtracted from 1.
+    This is done to move the MAE into the same range as the R2 Score, and fullfill the requiremt of the optimal resulting score being 1.
+    The resulting correlation score itself is then calculated by taking the weighted average of the R2 Score and the MAE, which can be seen in the code example below.
+    For simplicity the alpha value is set to 0.5, meaning that both metrics are weighted equally.
+    While it probably would make sense to weight the R2 Score higher, as it is a measure of how well the data fits a linear model.
+    This was however not done due to the fact that an objective analysis on the actual use of this weighing would be too difficult to achieve here.
 
+    #heading(depth: 5, numbering: none, bookmarked: false)[Code Snippet]
     ```python
     from sklearn.linear_model import LinearRegression
     from sklearn.metrics import mean_absolute_error
@@ -192,6 +214,7 @@
     print(f"Correlation Score: {correlation_score:.3f}") # Output: Correlation Score: 1.000 (perfect correlation)
     ```
 
+    #heading(depth: 5, numbering: none, bookmarked: false)[Results]
     #subpar.grid(
       columns: 4,
       gutter: 2mm,
@@ -221,28 +244,8 @@
     However, since this iteration of results shows no negative values for the R2 score, this is a clear improvement over the previous iterations of the algorithm.
     This namely means, that we are no longer assuming a wrong relationship between the data, like it was done in the previous iteration where we essentially always compared to a diagonal from (0, 0) to (1, 1).
 
-    === Results
+    == Results
 
-    #subpar.grid(
-      columns: 4,
-      gutter: 2mm,
-      figure(image("../figures/truth_compare/metrics/pearson.png"), caption: [
-        Surface Growth.
-      ]), <fig:truth_compare:metrics:a>,
-      figure(image("../figures/truth_compare/metrics/cosine.png"), caption: [
-        Separation.
-      ]), <fig:truth_compare:metrics:b>,
-      figure(image("../figures/truth_compare/metrics/error_metrices.png"), caption: [
-        Re-linking.
-      ]), <fig:truth_compare:metrics:c>,
-      figure(image("../figures/truth_compare/metrics/new_score.png"), caption: [
-        Magnitude.
-      ]), <fig:truth_compare:metrics:d>,
-      caption: [
-        The four iterations of metrics which try to evaluate the scoring system to ground truth data
-      ],
-      label: <fig:truth_compare:metrics>,
-    )
   ]
 
   pagebreak()
