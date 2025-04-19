@@ -1,4 +1,5 @@
 #import "@preview/subpar:0.2.0"
+#import "@preview/acrostiche:0.5.1": *
 
 #let truth_compare() = {
   text(lang:"en")[
@@ -34,8 +35,7 @@
 
     This section was originally structured in a way such that all theoretical explanations were to be done beforehand, before the results are combined and explained together.
     However, this approach was deemed not practical, as in reality each approach was thought of and tested, before analyzing the results.
-    Each approach was created by taking the learnings from the previous approach into account and trying to improve upon it.
-    Especially the final approach is a clear derivation developed from the previous approaches' results.
+    Each approach was created by taking the learnings from the previous approach into account and trying to improve upon it with regards to the previous approaches' results.
     Therefore, the following sections about by which metric the algorithm came to be evaluated each of the metrics will be eplained, example results will be shown and the lessons learned will directly be discussed.
 
     The example images used in the following sections are all taken from the same three example houses, meaning that the result of @fig:truth_compare:metrics:a is the same as the result of @fig:truth_compare:pearson:a and @fig:truth_compare:correlation:a, just taking different metrics into account build on @fig:truth_compare:examples:a.
@@ -73,7 +73,7 @@
     One approach was to use common statistical metrics for measuring the difference between two datasets.
     Namely these are the Mean Squared Error (MSE), the Mean Absolute Error (MAE), the Root Mean Squared Error (RMSE) and the R2 Score.
 
-    The MSE, MAE and RMSE are all error metrics, which directly measure differences between the two datasets' values in regards to the assumption that the two datasets are directly corralate 1-to-1.
+    The #acr("MAE"), #acr("MSE") and #acr("RMSE") are all error metrics, which directly measure differences between the two datasets' values in regards to the assumption that the two datasets are directly corralate 1-to-1.
     The R2 Score on the other hand is a measure of how well the data fits into a linear model, also named the coefficient of determination.
     This ranges from $(-infinity, 1]$, with 1 being a perfect fit and negative values indicating that the data does not fit into the linear model at all.
 
@@ -150,7 +150,7 @@
 
 
 
-    === Pearson Coefficient
+    === Pearson Coefficient <section:pearson>
 
     #heading(depth: 5, numbering: none, bookmarked: false)[Formula]
     $ "cosine similiarty" = (arrow(x) dot arrow(y)) / (||arrow(x)|| dot ||arrow(y)||) $ <formula:cosine>
@@ -226,21 +226,24 @@
     === Combination of Metrics by using a Linear Regressor
 
     #heading(depth: 5, numbering: none, bookmarked: false)[Explanation]
-    Taking into account especially the learning from the last section, the next step was to combine the different metrics into one single metric.
-    For this, the requirement is essentially just calculating any kind of linear relationship and using metrical comparison towards that relationship.
+    Building on the basis of the last approach, the next step was to create a linear function ourselves and trying to calculate the correlation between the two datasets directly from that.
+    For this, the requirement is essentially calculating the best possible linear relationship and using appropriate metrical comparison of the data towards that relationship.
 
     This was achieved by using a simple Linear Regressor @LinearRegressor, which fits and calculates the linear regression line between the two datasets.
     Using SciPy's LinearRegression function, we can easily fit the data and calculate the R2 Score and the Mean Absolute Error (MAE) of the linear regression line.
     This fulfils the requirement of a non strict 1-to-1 linear relationship between the two datasets, as well as returns the metrics which indicate the performance of the algorithm.
+    Also, the R2 Score her, unlike in the previous iterations, is constrained to the range of 0 to 1, since at worst the algorithm is 0 due to the fitting of the linear regression line.
+    This is a clear improvement over the previous iterations, where the R2 Score was not constrained and could be negative.
 
-    To calculate the correlation score, a simple weighted average of the R2 Score and the MAE is used.
+    As discussed in @section:metrics, the MAE is a good indicator of the error of the algorithm, while the R2 Score is a good indicator of how well the data fits into a linear model.
+    To calculate the resulting correlation score, a simple weighted average of the R2 Score and the MAE is used.
     However, MAE by itself is an error metric.
-    To create a resulting score, after normaliting the MAE to the range of 0 to 1, the MAE is subtracted from 1.
-    This is done to move the MAE into the same range as the R2 Score, and fullfill the requiremt of the optimal resulting score being 1.
+    Threfore, after normalizing the MAE to the range of 0 to 1, it is subtracted from 1, inverting the task to maximization.
+    This is done to move the MAE into the same range as the R2 Score, and fullfill the requirement of the optimal resulting score being 1.
+
     The resulting correlation score itself is then calculated by taking the weighted average of the R2 Score and the MAE, which can be seen in the code example below.
+    Due to the inverting of the MAE and the constrained range of the R2 Score, the resulting correlation score is also constrained to the range of 0 to 1, which is already te desired property of the algorithm.
     For simplicity the alpha value is set to 0.5, meaning that both metrics are weighted equally.
-    While it probably would make sense to weight the R2 Score higher, as it is a measure of how well the data fits a linear model.
-    This was however not done due to the fact that an objective analysis on the actual use of this weighing would be too difficult to achieve here.
 
     #heading(depth: 5, numbering: none, bookmarked: false)[Code Snippet]
     ```python
@@ -266,16 +269,29 @@
     ```
 
     #heading(depth: 5, numbering: none, bookmarked: false)[Results]
-    Shown in @fig:truth_compare:correlation are the results of the new metric applied to exempt example images.
-    The results are very promising, as they far better than the previous approaches correlate to expected scores.
-    None of the results, show particularly high absolute errors towards their respective linear fit.
-    However, the R2 scores could be improved, as in some of the cases the values are not particularly high, indicating that the linear regression line does not fit the data particularly well.
+    Shown in @fig:truth_compare:correlation are the results of the new correlation metric applied to the example images.
+    While the results are promising in showing of the algorihtm's performance, the results unfortunately show no particular improvement over @section:pearson.
+    
+    All scores essentially compare to the pearson coefficient values, which is not surprising, since the algorithm is still based on the same principle of measuring the correlation between the two datasets essentially further proving that the pearson coefficients values are indeed a good indicator of the algorithm's performance.
 
-    Using the Sobel derivative in @fig:truth_compare:correlation:c shows one such example, where the R2 score is very low.
-    In a way however, this is the expected result, as looking at the calculated scores does indeed reveal that the algorithm utterly fails to produce good results in this case, which is represented by this low comparison score.
-    Using the Scharr Operator in @fig:truth_compare:correlation:b also shows this failure to produce results be represented by its R2 score.
-    However, since this iteration of results shows no negative values for the R2 score, this is a clear improvement over the previous iterations of the algorithm.
-    This namely means, that we are no longer assuming a wrong relationship between the data, like it was done in the previous iteration where we essentially always compared to a diagonal from (0, 0) to (1, 1).
+    None of the results, show particularly high absolute errors towards their respective linear fit.
+    Looking at @fig:truth_compare:correlation:a and @fig:truth_compare:correlation:c shows that the algorithm is indeed able to produce good results, which is reflected in the normalized MAE as well as the R2 Score.
+
+    The more interesting comparsion lies in the example of @fig:truth_compare:correlation:b.
+    Here, the algorithm's scores are clearly not able to produce satisfying results.
+    The problem here is, that while the cores do reflect the worse quality compared to the other two examples, it does not represent this as well as before.
+    This is due to the fact that even here the MAE is not particularly high, since the fit itself is not bad, it simply is build on bad data.
+    This is reflected in the R2 Score well, however, since we are evenly weighting the two metrics, the resulting correlation score is not as low as it probably should be.
+
+    An actualy more substantial problem that can be seen is in the result of this example using the Sobel derivative.
+    The R2 Score here, whilest still comparatively low, shows signs of improvement over the other derivatives.
+    This is problematicely not due to the fact that the data actually improvement, but rather to the fact that indeed the data matches a linear relationship better than the other three example.
+    However, this is not a good thing, since that linear relationship shows a clear anti-correlation with the ground truth data.
+    A better score indicating a worse truth score is not faithful to expectation.
+    This is no longer represented inside this score unlike it was indicated by a negative pearson correlation score before.
+
+    Due to this problems and failure to improve upon the pearson coefficient, the resulting analysis of the algorithm's performance will be done using the pearson coefficient.
+    The only viable improvement in this section was the more simple way to visually represent the linear correlation between the two datasets.
 
     #subpar.grid(
       columns: 4,
