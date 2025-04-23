@@ -2,7 +2,7 @@
 
 #let ndsm_analysis() = {
   text(lang:"en")[
-    == Identification of Roof Structures through Analysis of nDSM Data
+    = Identification of Roof Structures through Analysis of nDSM Data
     Since we clarified the need for better ground truths to enable trustworthy prompting, this section will focus on algorithmic analysis of the nDSM data.
     The goal is the creation of a pipeline which hopefully delivers high quality roof segmentations in regards to finding out the vague shape, location and number of segments.
     In turn, this segmentation is to be used as a basis for input prompting when using SAM.
@@ -23,7 +23,7 @@
       If the values of a surface are not coherent or continuous, it is an implication that it has an edge inside it, which in turn should be detected by the algorithm and the surface should be split into multiple surfaces.
       This score is then used to evaluate the quality of the surface, again, with the goal of representing the roof's structure as accurately as possible while acknowledging the limitations of this approach.
 
-    === Edge Detection Pipeline
+    == Edge Detection Pipeline
 
     @fig:edp:pipeline shows the full pipeline used for the edge detection.
     For now, the pipeline is kept simple, as the main goal is to create a basis for further experiments.
@@ -84,7 +84,7 @@
     For now, due to short experiments showing the most promising results without further need for parameter tuning, the algorithm is used with lower and higher threshold being based on the 10th and 90th percentile of the blurred data, because this way of dynamic calculation leads to the best results on different houses, which simply put may not be satisfyingly segmentable with a fixed threshold.
     These found edges in x and y direction are then combined to create the final edge detection image, which is then used in the surface generation following in @surface_growth.
 
-    === Surface Growth <surface_growth>
+    == Surface Growth <surface_growth>
 
     Using the edges calculated in the edge detection pipeline, the algorithm is able to generate surfaces.
     This is done by simply letting all non-edge pixel #quote("grow") into all directions until only edge pixel are left and thereby all disjunct pixel structures represent a surface.
@@ -156,7 +156,7 @@
     Additionaly the example house shown in the image shows that the algorithm without dynamic determination of parameters is not sufficient to solve the problem, because the house's small squared flat roof in the middle got merged with two outer roofs, which is plain wrong and should be detected and fixed.
     Respectively, the next section is about exactly that, the scoring system, which is neccessary to evaluate the quality of the generated surfaces.
 
-    === Objective Segmentation evaluation using a Scoring System <scoring>
+    == Objective Segmentation evaluation using a Scoring System <scoring>
 
     While for the earlier tests the quality of most surfaces was sufficiently evaluatbable by human eyes, a greater need for objective criterion arose.
     This function should be able to evaluate the quality of the surfaces based on the following criteria:
@@ -174,7 +174,7 @@
     While most algorithms do not use the magnitude for calculation, for example the edge detection pipeline using x and y directions distinctly, this is a still a good way for simple visualization of the data.
     While two magnitudes of defintely disjunct roof tiles can be the same, which can be confusing to look at, it is still preferebly to random colouring of surfaces, as random colouring across multiple images in a series of experiments creates unnecessary hardship when evaluating the data.
 
-    ==== Trying to use DBSCAN for surface evaluation
+    === Trying to use DBSCAN for surface evaluation
 
     // TODO: DBSCAN source and why it theoretically could have been used
     Using spatial information by for example using labeling through DBSCAN failed in almost every case due to the data inconsistency inside even perfect surfaces.
@@ -201,7 +201,7 @@
       label: <dbscanfig>,
     )
 
-    ==== Custom Plateau Algorithm for segment analysis
+    === Custom Plateau Algorithm for segment analysis
 
     For this purpose a custom algorithm was developed which evaluates the quality of a surface.
     It does this by analyzing each surfaces derivative values, in each direction meaning x, y and their combination.
@@ -348,144 +348,10 @@
 
 
 
-    === Completeness and Correctness of the Segmentation
 
-    ==== Bigger Picture
+    == Experiments
 
-    @DataCompleteness describes three core factors of important data quality, completeness, accuracy and consistency.
-    However, our focus will be on completeness and accuracy, since consistency is not that relevant in the current use case.
-    Consistency amongs data sets would also be hard to describe here exactly.
-    A way of describing it would be that Segment Anything Model (SAM) receives reliable data across multiple roofs given to it, without mayor drops in their segmentation quality.
-    We already tried to identify, whether all types of roofs are inside the dataset, while using the classification by the faulty input data.
-    However consistency in this specific case would also mean that the algorithms score can be trusted regardless of roof type.
-    As this would create an actual need for many testing examples and extended identification or clasification of our calculated examples, for now it will not be further discussed.
-    Therefore the assumption is once again made, that an algorithm which performs well on normal roofs and normal roof type variations will also perform well on other roof types, for example flat roofs, and that normal and flat roofs make out the majority of the dataset.
-    Further evaluation on special roofs may be postponed.
-
-    Completeness can be interpreted as two things.
-    For one, the entire data set of roofs has to ensure that all relevant types of roofs are represented.
-    On the other hand, in this specific example we are rather using it to evaluate each individual segmentation from the algorithm which is to be given to SAM.
-    In that sense, completeness means that the calculated segmentation includes the entire actual surfaces.
-
-    Lastly, accuracy is the most important factor in this use case.
-    @DataCompleteness2 differentiates between accuracy and reliability.
-    While they describe reliability as not in itself contradicting, which could be interpreted as a pixel not being able to be part of multiple surfaces.
-    This in not possible in the current algorithm, which is important, however, i still support the description of needing reliable data outputted from the segmentation algorithm in regards to whether we can trust the data to be correct.
-    To describe this both factors, i will further only use accuracy or correctness.
-    The algorithm has to ensure informational correctness, meaning the expactation is given, that all data identified as roof by the algorithm has to actually be part of the roof.
-    Classifying pixels outside the house as roof could cause a big problem, whilest misclassifying one segment's pixels as part of another segment may cause problems, but not as severe ones which are either more easily fixable or may not even be a problem at all.
-    Regardless, since misidentifyed roof segments even inside the entire roof structure are problematic, no bias towards either will be introduced, simplyfing the problem to does pixels belonging to the surface map onto exactly one real-world surface.
-
-    ==== Segmentation Evaluation
-
-    Remember, the primary objective of the segmentation calculated here is to provide sufficiently accurate points within each segment to prompt SAM.
-    In turn, this means an incomplete segment will still be reduced to a valid point inside the real structure, while an incorrect segment could lead to an invalid point outdide the real structure.
-    As this could confuse the model, it is important to ensure that the algorithm is correct, even if it is incomplete.
-    Since SAM requires only hints of sufficient quality about the potential locations of surfaces, there is no actual need for the segmentation to be perfect.
-
-    However, creating ground truths for the roofs is too time consuming, not feasible for the current project and in generel the very thing we are trying to avoid.
-    Therefore a different approach was chosen.
-    The scoring system shown in @scoring is used to evaluate the quality of the segmentation.
-    If we trust that scoring system to accurately evaluate the quality of the segmentation, it's input points will be sufficient for further analysis.
-    Running the algorithm and evaluating the performance on representaive houses will give us performance metrics on the algorithm, which in turn will give us a good idea on how well the algorithm performs on the given data.
-    It must be acknowledged that of course testing the algorithm this way on only a few hand-picked houses may not serve as statistial proof.
-    Since however, it is a good tradeof between objective evaluation and only medium effort neccessary, we may assume that the algorithm will perform similarly on other houses.
-
-    Since we are not evaluating data sets but specific comparisons between a geometry representing a calculated surface and one representing a ground truth, we can break down the problem to be analyzed via the statistical metrics of recall and precision.
-    Also, since we do have connected geographical structures without complex information structures, the problem can be simplified to be solved wit ha simple confusion matrix.
-    This is possible since the tuple of pixel coordinates can be classified as true positives (TP), false positives (FP), and false negatives (FN) in a simple manner.
-    @ConfusionMatrix shows such way of calculation for Object Classification, which can be adapted to the current problem.
-
-    - Recall measures the completeness of the segmentation, meaning whether all or how much of the actual roof is covered by the calculated segmentation:
-      $ "Recall" = "TP" / ("TP" + "FN") $ <formula:recall>
-
-    - Precision measures the correctness of the segmentation, which answers the question of how accurate positive classifications by the alorithm are:
-      $ "Precision" = "TP" / ("TP" + "FP") $ <formula:precision>
-
-    ==== Execution
-
-    While this may sound simple to calculate, the exact calculation must be discussed in further detail.
-    There is the possibility of evaluating the entire structure. meaning the combination of all surfaces in regards to the ground truth structure overall.
-    This may show us for example whether all pixels of the roof are identified correctly and how many pixel are identified as roof which are not.
-    In regards to the actual task however, this is not sufficient, as it tells nothing about identifying indiviual surfaces correctly.
-    Therefore, the evaluation must be done on a per-surface basis.
-    This means that the recall and precision are calculated for each surface individually and then averaged to get the overall performance of the algorithm.
-    The problem thereby is, that not all surfaces will be identified percetly.
-    Some may very well be split apart into two surfaces, because of abnormalies inside the surface being detected on an edge, or for that matter edges in the direction of axes being by nature of higher contrast value, meaning easier for the algorithm to misclassify.
-    This in turn leads to the problem of how to evaluate the recall and precision of a surface which is split into two surfaces.
-
-    The easiest and probably best solution is a simple one to one mapping.
-    For each ground truth surface, we must find the best calculated surface, determined by highest Intersection over Union (IoU) value.
-    This is the best way because of various reasons.
-    For one, assuming the algorithm would be perfect, a one to one mapping would actually be the expected result.
-    Since we already decided the minor need for completeness, even relatively low values in that aspect are sufficient, as long as the correctness values are high.
-    Having a low completeness may only be a sign that the algorithm splits surfaces too much, which would be a helpful hint, if we were trying to perfect it.
-
-    In general, this is a problem about under- and oversegmentation @underAndOversegmentation @underAndOversegmentation2.
-    Oversegmentation in this case means that one of the roof surfaces is split into multiple parts.
-    This is not a mayor problem, as long as the parts are not misclassified, however, later we will need to address this problem as it may lead to multiple prompts for the same surface or would create prompts which would become invalid negative prompts for SAM.
-    For now this Fragmentation needs to be kept in mind, but will not be algorithmically addressed in the segmentation calculation.
-    Later work may try to fix this problem by dynamically merging surfaces and re-calculing the score, looking for improvements.
-
-    The worse case is undersegmentation, which means that multiple roof surfaces are merged into one.
-    This creates a wrong assumption about the general roofs part umber as well as may lead to wrong prompts for SAM, which should be avoided in any case.
-
-    Whilest having said that, for general analysis @fig:scores:completeness shows the calculated recall and precision for different numbers of calculated surfaces matched to one ground truth surface.
-    It is visible that the recall, here named correctness, is overall quite high, meaning a good accuracy of classified pixel.
-    Whilest a perfect score would probably be impossible anyway, the only outlier can be seen in the blue and light brown surfaces on the lower left, where transition between house and ground is not clear.
-    An overall high accuracy even in @fig:scores:completeness:d, where up to 10 surfaces are matched to one ground truth surface, is a good sign for the algorithm's performance.
-    This means that even if one of the surfaces which could be described as wrong are transformed into SAM input prompts, there should not be a mayor problem in regards to correctness.
-    However the problem is that there is no simple way of filtering out such surfaces, as they are not wrong in the sense of being misclassified, but rather in the sense of being split too much.
-    One way of fixing this may be actual improvement on the algorithm, however, for now this problem will be ignored.
-    There will of course be an effort in fixing this problem when actually doing the prompting, for example by dynamically choosing input prompts by surfaces which are not yet represented by earlier prompts, more on this later.
-
-    To at least say it, the completeness of the surfaces is kind of as expected.
-    The biggest improvement can be seen when upping the limit from one match to two, meaning a tendency to at least split surfaces once.
-    Most smaller surfaces which are added in the higher limit runs in actuality add little to the resulting structure.
-    As they have little impact on the overall score, they are not a mayor concern.
-    This is only a problem on some instances, where small connections lead to relevant splitting, but because this is caused by low pixel images and approximations done, fixing this seams fairly unplausable without mayor time investment.
-
-    #subpar.grid(
-      columns: 2,
-      gutter: 1mm,
-      figure(image("../figures/scoring_algorithm/completeness/1.png"), caption: [
-        Evaluation when enforcing exact 1 to 1 Matches
-      ]), <fig:scores:completeness:a>,
-      figure(image("../figures/scoring_algorithm/completeness/2.png"), caption: [
-        Matching 2 Calculated Surfaces to 1 Ground Truth
-      ]), <fig:scores:completeness:b>,
-      figure(image("../figures/scoring_algorithm/completeness/4.png"), caption: [
-        Matching 4 Calculated Surfaces to 1 Ground Truth
-      ]), <fig:scores:completeness:c>,
-      figure(image("../figures/scoring_algorithm/completeness/10.png"), caption: [
-        Matching up to 10 Calculated Surfaces to 1 Ground Truth
-      ]), <fig:scores:completeness:d>,
-      caption: [
-        Graphical representation of the calculated recall and precision for different numbers of calculated surfaces matched to one ground truth surface.
-      ],
-      label: <fig:scores:completeness>,
-    )
-
-    A useful metric for combining the two score values is the F1 score.
-    However as already said since we do not strive for equal valuing of recall (completeness) and precision (correctness), there is a need to introduce a bias.
-    Therefore, we are going to use the formula shown in @formula:fß, which is the so called Fß score, which generalizes the F1 score by adding a weighting coefficient ß to the formula. @Fß
-
-    $ F_ß = ( 1 + ß² ) * ("precision" * "recall") / ((ß² * "precision") + "recall") $ <formula:fß>
-
-    As the bias needs to be towards favouring the precision, the $F_0.5$ score will be used, which is the $F_ß$ score with $ß = 0.5$.
-    Calculating those values for the one to one exact matches gives us a score of $F_β≈0.887$, which highlights the bias pretty well, as the harmonic mean would only be around 0.75.
-
-    While it may make sense to actually not include the completeness in this calculation at all, it serves the purpose of creating a better comparability towards the scoring system.
-    As in generel we are trying to use this as a metric for whether we can trust he scoring system, and that algorithm uses positive and negative scores, it simply makes sense.
-    However we could argue that a removal of the negative score could also have the same effect, as we now clarified the irrelevance of missing pixel points inside the surfaces.
-    I would rather not do this, as it would simply worsen the results, which may not be a real problem, but if it is not neccessary i would like to avoid doing it.
-    // experimantal -> find out if this makes sense
-    Regardless, the decision was made to also use the $F_0.5$ score wen calculating the final scores out of positive and negative scores.
-    This introduces a bias towards bigger surfaces and lessens the impact of missing surface area.
-
-    === Experiments
-
-    ==== Logarithm <log>
+    === Logarithm <log>
 
     Using the Logarithm on the original, but normalized, nDSM Image data will help to enhance the contrast of the image. This will not only make the image more visually appealing but also easier to interpret. 
     @fig:edp:log shows the difference when applying the Logarithm directly after calculating the derivative.
@@ -502,11 +368,11 @@
       ],
     ) <fig:edp:log>
 
-    ==== Edge Detection
+    === Edge Detection
 
     @ScharrOperator
 
-    ==== Blurring
+    === Blurring
 
     @GaussianOperator
   ]

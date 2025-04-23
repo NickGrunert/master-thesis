@@ -4,6 +4,7 @@
   import "../modules/disclaimer.typ": disclaimer
   import "../modules/acknowledgement.typ": acknowledgement
   import "../modules/abstract_en.typ": abstract_en
+  import "../templates/terms.typ": abbreviation-list
 
   // ==========================================================================
   // SETTINGS
@@ -119,6 +120,9 @@
 
   body
 
+  set heading(numbering: none)
+  abbreviation-list()
+
   // List of figures.
   outline(
     title: 
@@ -126,18 +130,18 @@
         {[Abbildungsverzeichnis]} 
       else 
         {[List of Figures]},
-    target: figure.where(kind: image),
+    target: figure//.where(kind: image),
   )
 
   // List of tables.
-  outline(
-    title: 
-      if details.language == "de" 
-        {[Tabellenverzeichnis]} 
-      else 
-        {[List of Tables]},
-    target: figure.where(kind: table),
-  )
+  // outline(
+  //   title: 
+  //     if details.language == "de" 
+  //       {[Tabellenverzeichnis]} 
+  //     else 
+  //       {[List of Tables]},
+  //   target: figure.where(kind: table),
+  // )
 
   // Appendix.
   set heading(numbering: "A")
