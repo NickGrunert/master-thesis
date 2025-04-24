@@ -59,8 +59,8 @@
 }
 
 #let abbreviation-list() = {
-  set heading(level: 2)
-  heading[Abbreviations]
+  set heading(level: 1)
+  heading[List of Abbreviations]
   v(1em)
   
   // Sort terms alphabetically

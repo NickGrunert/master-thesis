@@ -44,34 +44,6 @@
 
     == Segmentation Evaluation
 
-    === Bigger Picture
-
-    @DataCompleteness describes three core factors of important data quality, completeness, accuracy and consistency.
-    However, our focus will be on completeness and accuracy, since consistency is not that relevant in the current use case.
-    Consistency amongs data sets would also be hard to describe here exactly.
-    A way of describing it would be that Segment Anything Model (SAM) receives reliable data across multiple roofs given to it, without mayor drops in their segmentation quality.
-    We already tried to identify, whether all types of roofs are inside the dataset, while using the classification by the faulty input data.
-    However consistency in this specific case would also mean that the algorithms score can be trusted regardless of roof type.
-    As this would create an actual need for many testing examples and extended identification or clasification of our calculated examples, for now it will not be further discussed.
-    Therefore the assumption is once again made, that an algorithm which performs well on normal roofs and normal roof type variations will also perform well on other roof types, for example flat roofs, and that normal and flat roofs make out the majority of the dataset.
-    Further evaluation on special roofs may be postponed.
-
-    Completeness can be interpreted as two things.
-    For one, the entire data set of roofs has to ensure that all relevant types of roofs are represented.
-    On the other hand, in this specific example we are rather using it to evaluate each individual segmentation from the algorithm which is to be given to SAM.
-    In that sense, completeness means that the calculated segmentation includes the entire actual surfaces.
-
-    Lastly, accuracy is the most important factor in this use case.
-    @DataCompleteness2 differentiates between accuracy and reliability.
-    While they describe reliability as not in itself contradicting, which could be interpreted as a pixel not being able to be part of multiple surfaces.
-    This in not possible in the current algorithm, which is important, however, i still support the description of needing reliable data outputted from the segmentation algorithm in regards to whether we can trust the data to be correct.
-    To describe this both factors, i will further only use accuracy or correctness.
-    The algorithm has to ensure informational correctness, meaning the expactation is given, that all data identified as roof by the algorithm has to actually be part of the roof.
-    Classifying pixels outside the house as roof could cause a big problem, whilest misclassifying one segment's pixels as part of another segment may cause problems, but not as severe ones which are either more easily fixable or may not even be a problem at all.
-    Regardless, since misidentifyed roof segments even inside the entire roof structure are problematic, no bias towards either will be introduced, simplyfing the problem to does pixels belonging to the surface map onto exactly one real-world surface.
-
-    ==== Segmentation Evaluation
-
     Remember, the primary objective of the segmentation calculated here is to provide sufficiently accurate points within each segment to prompt SAM.
     In turn, this means an incomplete segment will still be reduced to a valid point inside the real structure, while an incorrect segment could lead to an invalid point outdide the real structure.
     As this could confuse the model, it is important to ensure that the algorithm is correct, even if it is incomplete.
@@ -85,91 +57,127 @@
     It must be acknowledged that of course testing the algorithm this way on only a few hand-picked houses may not serve as statistial proof.
     Since however, it is a good tradeof between objective evaluation and only medium effort neccessary, we may assume that the algorithm will perform similarly on other houses.
 
-    Since we are not evaluating data sets but specific comparisons between a geometry representing a calculated surface and one representing a ground truth, we can break down the problem to be analyzed via the statistical metrics of recall and precision.
-    Also, since we do have connected geographical structures without complex information structures, the problem can be simplified to be solved wit ha simple confusion matrix.
-    This is possible since the tuple of pixel coordinates can be classified as true positives (TP), false positives (FP), and false negatives (FN) in a simple manner.
-    @ConfusionMatrix shows such way of calculation for Object Classification, which can be adapted to the current problem.
 
-    - Recall measures the completeness of the segmentation, meaning whether all or how much of the actual roof is covered by the calculated segmentation:
-      $ "Recall" = "TP" / ("TP" + "FN") $ <formula:recall>
 
-    - Precision measures the correctness of the segmentation, which answers the question of how accurate positive classifications by the alorithm are:
-      $ "Precision" = "TP" / ("TP" + "FP") $ <formula:precision>
 
-    ==== Execution
 
-    While this may sound simple to calculate, the exact calculation must be discussed in further detail.
-    There is the possibility of evaluating the entire structure. meaning the combination of all surfaces in regards to the ground truth structure overall.
-    This may show us for example whether all pixels of the roof are identified correctly and how many pixel are identified as roof which are not.
-    In regards to the actual task however, this is not sufficient, as it tells nothing about identifying indiviual surfaces correctly.
-    Therefore, the evaluation must be done on a per-surface basis.
-    This means that the recall and precision are calculated for each surface individually and then averaged to get the overall performance of the algorithm.
-    The problem thereby is, that not all surfaces will be identified perfectly.
-    Some may very well be split apart into two surfaces, because of abnormalies inside the surface being detected on an edge, or for that matter edges in the direction of axes being by nature of higher contrast value, meaning easier for the algorithm to misclassify.
-    This in turn leads to the problem of how to evaluate the recall and precision of a surface which is split into two surfaces.
+
+
+
+
+
+
+
+
+    === Comparing Segments via IOU
+    #heading(depth: 5, numbering: none, bookmarked: false)[Formula]
+    $ "IoU"_"A,B" = ("A" \u{2229} "B") / ("A" #sym.union "B") $ <formula:iou>
+
+    #heading(depth: 5, numbering: none, bookmarked: false)[Explanation]
+    A widely accepted approach for the comparison of two segments is the calculation of the Intersection over Union (IoU) @iou1 @iou2.
+    It is generally recognized as being computationally efficient and has become a staple component in the realm of computer vision workflows.
+    The intersection over union (IoU) metric is a quantitative measure of the overlap between two segments.
+    Although the algorithm is frequently employed for bounding box comparisons @iou3, it is also capable of performing a pixel-wise set comparison on the two surfaces.
+    The resulting score is calculated by dividing the area of intersection by the area of union, as demonstrated in @formula:iou.
+    This calculation provides a quantitative metric of the degree of similarity between two segments. 
+    A value of 1 indicates a perfect match, while a value of 0 indicates no overlap.
+    Furthermore, it imposes a penalty on either of the two segments if their respective areas fall outside the boundaries of the other segment.
+
+    #heading(depth: 5, numbering: none, bookmarked: false)[Code Snippet]
+    The following code shows a simple implementation of the IoU calculation.
+    The individual segments are first redefined as sets for computational efficiency, since it allow for faster membership testing and set operations via binary operations.
+    ```python
+    def calculate_iou(seg1, seg2):
+      set1, set2 = set(seg1), set(seg2)
+      intersection = len(set1 & set2)
+      union = len(set1 | set2)
+      return intersection / union if union > 0 else 0
+    ```
+
+
+
+    === Calculating Recall and Precision
+    #heading(depth: 5, numbering: none, bookmarked: false)[Formula]
+    $ "Accuracy" = ("TP" + "TN") / ("TP" + "TN" + "FP" + "FN") $ <formula:accuracy>
+    $ "Recall" = "TP" / ("TP" + "FN") $ <formula:recall>
+    $ "Precision" = "TP" / ("TP" + "FP") $ <formula:precision>
+
+    #heading(depth: 5, numbering: none, bookmarked: false)[Explanation]
+    @DataCompleteness delineates three fundamental components of data quality: completeness, accuracy, and consistency.
+    However, our primary concern at this stage is to prioritize completeness and accuracy, given the relatively low priority accorded to consistency in the current use case.
+    The degree of consistency among the data sets would be challenging to precisely delineate in this context.
+    One possible description of the methodology would be capability of receiving reliable data across multiple roofs without significant deterioration in segmentation quality.
+    An initial investigation was conducted to ascertain the presence of all roof types within the dataset.
+    Nevertheless, in this particular instance, maintaining consistency would also imply that the algorithms' scores can be relied upon, irrespective of the roof type.
+    Although extensive testing on the algorithm's performance on different roof types is not part of the current study, the testing examples do include a few non-normal roof types, on which the performance will be measured briefly.
+    For instance, given the prevalence of flat roofs in the input data and their relatively uncomplicated structural nature, the successful performance on a limited number of instances can be extrapolated to infer the efficacy on the entire dataset.
+    This assertion is equally applicable to other roof types, given the substantial comparability of standard roof components.
+
+    As we are not evaluating data sets but rather specific comparisons between a geometry representing a calculated surface and one representing a ground truth, it is possible to break down the problem to be analyzed via statistical metrics.
+    Additionally, given the existence of interconnected geographical structures devoid of intricate information systems, the problem can be streamlined for resolution through the utilization of a confusion matrix.
+    This is due to the fact that the tuple of pixel coordinates can be classified as true positives (TP), false positives (FP), and false negatives (FN) in a straightforward manner.
+    @ConfusionMatrix presents a method for calculating object classification that can be adapted to the current problem.
+
+    @DataCompleteness3 explores such analysis by describing the metrics of accuracy, recall, and precision.
+    The utilization of accuracy, as demonstrated in @formula:accuracy, would not be advantageous in this instance. 
+    While the calculation of the number of true negatives is possible, its practical application is limited.
+    The issue with this approach is that the algorithm is not attempting to differentiate between pixels as belonging to a roof or not, but rather is focused on the classification of each individual roof segment.
+    This would, however, be a possibility when attempting to evaluate the mask utilized for the filtration of segments from all surfaces generated subsequent to edge detection.
+
+    In this particular instance, the completeness will be evaluated using the recall metric, which is defined as the ratio of true positives to the sum of true positives and false negatives, as shown in @formula:recall.
+    This approach quantifies the proportion of correctly identified pixels in context to the entire ground truth surface, thereby estimating the completeness of the prediction.
+
+    The precision metric, as demonstrated in @formula:precision, is defined as the ratio of true positives to the sum of true positives and false positives.
+    The metric will be employed to assess the correctness of the prediction and is therefore also a measure of accuracy.
+    It is the ratio of correctly identified pixels to the total number of pixels predicted as part of the surface. 
+    Consequently, it can either increase or decrease, contingent on the number of pixels that are not part of the surface but are predicted as such.
+
+
+
+
+    While this calculation may appear straightforward, a more thorough discussion is necessary to ensure its proper execution.
+    The evaluation of the entire structure, encompassing the combination of all surfaces in relation to the ground truth structure, is a possibility.
+    This may demonstrate whether the identification of pixels on the roof is accurate, and if so, the number of pixels identified as roof that are not roof.
+    With regard to the task at hand, however, this proves inadequate, as it fails to address the accurate identification of individual surfaces.
+    Consequently, the evaluation process must be conducted on a per-surface basis.
+    This approach entails the calculation of recall and precision for each surface individually, followed by an aggregation of these values to obtain the algorithm's resulting score.
+    The issue arises from the fact that not all surfaces will be identified with absolute precision.
+    In some cases, surfaces may be subdivided into two surfaces due to the presence of abnormalities detected along an edge. 
+    Alternatively, derivatives oriented along the axes may exhibit higher contrast values, which can be more readily misclassified as edges by the algorithm.
+    This, in turn, gives rise to the issue of evaluating the recall and precision of a surface that has been divided into two surfaces.
+
+    A general problem exists regarding under- and oversegmentation @underAndOversegmentation @underAndOversegmentation2.
+    In this context, the term "oversegmentation" refers to the division of a single roof surface into multiple predicted segments.
+    Regardless, this issue is not a significant concern, provided each individual component for itself is not misclassified. 
+    However, it is imperative to address this matter at a later stage, as it may result in the generation of multiple prompts for a given surface or the creation of invalid negative prompts for SAM.
+    This is not problematic for the generation of exclusively positive input points, as reiterating the same mask does not constitute an error.
+    At this stage, it is imperative to bear in mind the issue of fragmentation. 
+    However, it should be noted that this will not be addressed through the implementation of an algorithm in the calculation of segmentation.
+    Subsequent work may attempt to rectify this issue by dynamically merging surfaces and recalculating the score to identify areas for enhancement.
+
+    A more significant concern pertains to the issue of undersegmentation, which occurs when multiple roof surfaces are combined into a single prediction.
+    This erroneous assumption can result in inaccurate estimations of the number of roof components, which, in turn, may prompt erroneous input prompts for SAM. 
+    It is imperative to refrain from such input prompts under any circumstances.
+    The prior scoring algorithm, which employs the plateau algorithm, imposes a significant penalty on this issue, incentivizing the algorithm to avoid it.
+    This scoring system is not designed to perform the aforementioned function, as doing so would introduce significant complexity, since, for example, the IOU does not directly account for false positives.
+    @section:fß outlines an approach to address this issue to a certain extent by placing a greater emphasis on precision over recall. 
+    In essence, it penalizes false positives to a greater extent than false negatives when calculating the score.
+
+
+
+
 
     The easiest and probably best solution is a simple one to one mapping.
     For each ground truth surface, we must find the best calculated surface, determined by highest Intersection over Union (IoU) value.
     This is the best way because of various reasons.
     For one, assuming the algorithm would be perfect, a one to one mapping would be the expected result.
-    Since we already decided the minor need for completeness, even relatively low values in that aspect are sufficient, as long as the correctness values are high.
-    Having a low completeness may only be a sign that the algorithm splits surfaces too much, which would be a helpful hint, if we were trying to perfect it.
-
-    In general, this is a problem about under- and oversegmentation @underAndOversegmentation @underAndOversegmentation2.
-    Oversegmentation in this case means that one of the roof surfaces is split into multiple parts.
-    This is not a mayor problem, as long as the parts are not misclassified, however, later we will need to address this problem as it may lead to multiple prompts for the same surface or would create prompts which would become invalid negative prompts for SAM.
-    For now this Fragmentation needs to be kept in mind, but will not be algorithmically addressed in the segmentation calculation.
-    Later work may try to fix this problem by dynamically merging surfaces and re-calculing the score, looking for improvements.
-
-    The worse case is undersegmentation, which means that multiple roof surfaces are merged into one.
-    This creates a wrong assumption about the general roofs part umber as well as may lead to wrong prompts for SAM, which should be avoided in any case.
-
-    Whilest having said that, for general analysis @fig:truth_compare:completeness shows the calculated recall and precision for different numbers of calculated surfaces matched to one ground truth surface.
-    It is visible that the recall, here named correctness, is overall quite high, meaning a good accuracy of classified pixel.
-    Whilest a perfect score would probably be impossible anyway, the only outlier can be seen in the blue and light brown surfaces on the lower left, where transition between house and ground is not clear.
-    An overall high accuracy even in @fig:truth_compare:completeness:d, where up to 10 surfaces are matched to one ground truth surface, is a good sign for the algorithm's performance.
-    This means that even if one of the surfaces which could be described as wrong are transformed into SAM input prompts, there should not be a mayor problem in regards to correctness.
-    However the problem is that there is no simple way of filtering out such surfaces, as they are not wrong in the sense of being misclassified, but rather in the sense of being split too much.
-    One way of fixing this may be actual improvement on the algorithm, however, for now this problem will be ignored.
-    There will of course be an effort in fixing this problem when actually doing the prompting, for example by dynamically choosing input prompts by surfaces which are not yet represented by earlier prompts, more on this later.
-
-    To at least say it, the completeness of the surfaces is kind of as expected.
-    The biggest improvement can be seen when upping the limit from one match to two, meaning a tendency to at least split surfaces once.
-    Most smaller surfaces which are added in the higher limit runs in actuality add little to the resulting structure.
-    As they have little impact on the overall score, they are not a mayor concern.
-    This is only a problem on some instances, where small connections lead to relevant splitting, but because this is caused by low pixel images and approximations done, fixing this seams fairly unplausable without mayor time investment.
-
-    #subpar.grid(
-      columns: 2,
-      gutter: 1mm,
-      figure(image("../figures/truth_compare/completeness/1.png"), caption: [
-        Evaluation when enforcing exact 1 to 1 Matches
-      ]), <fig:truth_compare:completeness:a>,
-      figure(image("../figures/truth_compare/completeness/2.png"), caption: [
-        Matching 2 Calculated Surfaces to 1 Ground Truth
-      ]), <fig:truth_compare:completeness:b>,
-      figure(image("../figures/truth_compare/completeness/4.png"), caption: [
-        Matching 4 Calculated Surfaces to 1 Ground Truth
-      ]), <fig:truth_compare:completeness:c>,
-      figure(image("../figures/truth_compare/completeness/10.png"), caption: [
-        Matching up to 10 Calculated Surfaces to 1 Ground Truth
-      ]), <fig:truth_compare:completeness:d>,
-      caption: [
-        Graphical representation of the calculated recall and precision for different numbers of calculated surfaces matched to one ground truth surface.
-      ],
-      label: <fig:truth_compare:completeness>,
-    )
 
 
 
 
+    #heading(depth: 5, numbering: none, bookmarked: false)[Code Snippet]
     ```python
     def score(generated_surfaces, true_surfaces, max_surfaces=1):
-        # Flatten original surfaces for faster pixel lookup
-        original_surface_pixels = set()
-        for surface in generated_surfaces:
-            original_surface_pixels.update(surface)
-
         # For each Surface find out which Ground Truth it belongs to
         match_list = list()
         for surface in generated_surfaces:
@@ -205,40 +213,57 @@
         recall = tp / (tp + fn) if (tp + fn) > 0 else 0
         precision = tp / (tp + fp) if (tp + fp) > 0 else 0 
 
-        return calculate_fbeta_score(precision, recall)
+        # To be replaced by: calculate_fbeta_score(precision, recall)
+        return (recall + precision) / 2
     ```
 
+    #heading(depth: 5, numbering: none, bookmarked: false)[Results]
+    #subpar.grid(
+      columns: 2,
+      gutter: 1mm,
+      figure(image("../figures/truth_compare/completeness/1.png"), caption: [
+        Evaluation when enforcing exact 1 to 1 Matches
+      ]), <fig:truth_compare:completeness:a>,
+      figure(image("../figures/truth_compare/completeness/2.png"), caption: [
+        Matching 2 Calculated Surfaces to 1 Ground Truth
+      ]), <fig:truth_compare:completeness:b>,
+      figure(image("../figures/truth_compare/completeness/4.png"), caption: [
+        Matching 4 Calculated Surfaces to 1 Ground Truth
+      ]), <fig:truth_compare:completeness:c>,
+      figure(image("../figures/truth_compare/completeness/10.png"), caption: [
+        Matching up to 10 Calculated Surfaces to 1 Ground Truth
+      ]), <fig:truth_compare:completeness:d>,
+      caption: [
+        Graphical representation of the calculated recall and precision for different numbers of calculated surfaces matched to one ground truth surface.
+      ],
+      label: <fig:truth_compare:completeness>,
+    )
 
+    @fig:truth_compare:completeness shows the results of an experiment in which the recall and precision were calculated for different numbers of calculated surfaces matched to one ground truth surface.
+    It is evident that the recall, here defined as correctness, is notably high, indicating a commendable accuracy in the classification of pixels.
+    Although attaining a perfect score is arguably unfeasible, the sole outlier is discernible in the blue and light brown surfaces located in the lower left corner. 
+    This area exhibits ambiguity in the delineation between the house and the ground, potentially compromising the clarity of the transition.
 
+    The algorithm's good performance is indicated by its high accuracy, even in @fig:truth_compare:completeness:d, where up to 10 surfaces are matched to one ground truth surface.
+    Therefore, in the event that one of the surfaces classified as incorrect is converted into a SAM input prompt, it is expected that there will not be a significant issue with regard to the integrity of the data.
+    Nevertheless, a straightforward method for filtering out such surfaces is lacking. 
+    These surfaces are not erroneous in the sense of being misclassified; rather, they are excessively fragmented.
+    One potential solution to this issue is to implement actual improvements to the algorithm. 
+    However, for the time being, this problem will be disregarded.
+    
+    It can be posited that the surfaces' completeness is commensurate with the anticipated level of complexity.
+    The most significant enhancement is observed when increasing the limit from one match to two, indicating an unfortunate propensity to at least divide surfaces once.
+    In most cases, the addition of smaller surfaces to higher-limit runs contributes negligible elements to the overall structure.
+    The impact of these elements on the overall score is negligible; therefore, they do not warrant significant concern.
+    This issue manifests only in certain instances, wherein thin connections result in the division of relevant elements. 
+    Nevertheless, given the fundamental cause most likely being the utilization of low-pixel images and the current absence of exhaustive analysis on the performance impact of the hyperparameter, this is not of great concern.
 
-
-
-
-
-
-
-
-
-
-    === Comparing Segments via IOU
-    ```python
-    def calculate_iou(seg1, seg2):
-      set1, set2 = set(seg1), set(seg2)
-      intersection = len(set1 & set2)
-      union = len(set1 | set2)
-      return intersection / union if union > 0 else 0
-    ```
-
-    @iou1, @iou2
-
-
-
-    === Creating the final score via the Fß Score method
-
+    === Creating the final score via the Fß Score method <section:fß>
     #heading(depth: 5, numbering: none, bookmarked: false)[Formula]
     $ F_1 = ("precision" * "recall") / 2 $ <formula:f1>
     $ F_ß = ( 1 + ß² ) * ("precision" * "recall") / ((ß² * "precision") + "recall") $ <formula:fß>
 
+    #heading(depth: 5, numbering: none, bookmarked: false)[Explanation]
     A useful metric for combining the two scores of recall and precision is the F1 score, shown in @formula:f1. 
     This score is calculated by dividing the sum of the given scores by two to create an output score.
     As previously mentioned, our objective is not to achieve equal prioritization of recall, which is often referred to as "completeness," and precision, which is often referred to as "correctness."
@@ -256,6 +281,7 @@
     Notwithstanding, the decision was made to not exclude recall, using the $F_0.5$ score when calculating the final scores out of positive and negative scores.
     This introduces a bias in favor of surfaces being correct and mitigates the impact of missing surface area.
     
+    #heading(depth: 5, numbering: none, bookmarked: false)[Code Snippet]
     ```python
     def calculate_fbeta_score(precision, recall, beta=0.5):
       if precision == 0 or recall == 0:
@@ -264,6 +290,7 @@
     ```
     
     === Using the Hungarian Matching Algorithm for Scores
+    #heading(depth: 5, numbering: none, bookmarked: false)[Explanation]
     Subsequent to the completion of the task of manually creating the scores, as delineated in the preceding section, this section will briefly detail the process of reducing and overhauling the code while refactoring.
     Despite the absence of a fundamental shift in the overarching concept, certain components have undergone an adaptation process, incorporating the utilization of library functions and well-established algorithms, as well as finding and fixing errors which become appearant in comparison.
 
@@ -275,27 +302,14 @@
     The algorithm's function is to calculate the optimal matching pairs between the two sets of segments.
     Therefore, the IOU matrix is simply inverted so that the task becomes minimizing, since typically, an IOU would need to be maximized.
 
-    ```python
-    def hungarian_matching(prediction, truth):
-      cost_matrix = np.zeros((len(prediction), len(truth)))
-      for i, seg1 in enumerate(prediction):
-          for j, seg2 in enumerate(truth):
-              cost_matrix[i,j] = (1 - calculate_iou(seg1, seg2))
-      row_ind, col_ind = linear_sum_assignment(cost_matrix)
+    The Hungarian algorithm aligns with our objectives, demonstrating enhanced optimization compared to the self-implementation approach due to its status as established library code.
+    Additionally, the algorithm inherently produces surfaces that have not been mapped. 
+    These surfaces may not align with any truth segments, or may be outscored by other surfaces.
+    The availability of these surfaces facilitates effective visualization of the cases, thereby enabling subsequent evaluation.
 
-      matches = []
-      matched_truth = set()
-      for i, j in zip(row_ind, col_ind):
-          if cost_matrix[i,j] != 1:
-              matches.append((i, j))
-              matched_truth.add(j)
-
-      # Find unmatched segments
-      unmatched1 = [i for i in range(len(prediction)) if i not in row_ind]
-      unmatched2 = [j for j in range(len(truth)) if j not in matched_truth]
-
-      return matches, unmatched1, unmatched2
-    ```
+    #heading(depth: 5, numbering: none, bookmarked: false)[Comparison]
+    The scoring function remains relatively stable.
+    The calculation of precision and recall remains unchanged; however, the calculation of true positive (TP), false positive (FP), and false negative (FN) is now performed using the matches from the Hungarian algorithm directly as well as the unmatched segments.
 
     #subpar.grid(
       columns: 1,
@@ -309,46 +323,6 @@
       ],
       label: <fig:truth_compare:hungarian_error>,
     )
-
-    The Hungarian algorithm aligns with our objectives, demonstrating enhanced optimization compared to the self-implementation approach due to its status as established library code.
-    Additionally, the algorithm inherently produces surfaces that have not been mapped. 
-    These surfaces may not align with any truth segments, or may be outscored by other surfaces.
-    The availability of these surfaces facilitates effective visualization of the cases, thereby enabling subsequent evaluation.
-
-    The scoring system remains relatively stable.
-    The calculation of precision and recall remains unchanged; however, the calculation of true positive (TP), false positive (FP), and false negative (FN) is now performed using the matches from the Hungarian algorithm directly as well as the unmatched segments.
-
-    ```python
-    def score(prediction, truth, beta=0.5):
-      matches, unmatched1, unmatched2 = hungarian_matching(prediction, truth)
-
-      if not matches:
-          return 0.0
-
-      # Initialize counts
-      tp, fp, fn = 0, 0, 0
-
-      # Process matched pairs (account for partial matches via IoU)
-      for i, j in matches:
-          seg1, seg2 = prediction[i], truth[j]
-          intersection = len(set(seg1) & set(seg2))
-
-          tp += intersection
-          fp += len(seg1) - intersection  # Predicted but unmatched
-          fn += len(seg2) - intersection  # True but unmatched
-
-      # Add unmatched ground truth
-      fn += sum(len(truth[j]) for j in unmatched2)
-      # Add unmatched predictions
-      fp += sum(len(prediction[i]) for i in unmatched1)
-
-      # Calculate precision and recall
-      precision = tp / (tp + fp) if (tp + fp) > 0 else 0
-      recall = tp / (tp + fn) if (tp + fn) > 0 else 0
-
-      # Compute Fβ-score
-      return calculate_fbeta_score(precision, recall)
-    ```
 
     However, a notable distinction between the two implementations lies in the methodology employed for handling unmatched segments.
     As illustrated by the implementation in @fig:truth_compare:hungarian_error, there is a discrepancy in the calculation of scores between the approaches.
@@ -391,6 +365,64 @@
       ],
       label: <fig:truth_compare:hungarian_statistics>,
     )
+
+    #heading(depth: 5, numbering: none, bookmarked: false)[Code showcasing the Hungarian Matching Algorithm]
+    ```python
+    def hungarian_matching(prediction, truth):
+      cost_matrix = np.zeros((len(prediction), len(truth)))
+      for i, seg1 in enumerate(prediction):
+          for j, seg2 in enumerate(truth):
+              cost_matrix[i,j] = (1 - calculate_iou(seg1, seg2))
+      row_ind, col_ind = linear_sum_assignment(cost_matrix)
+
+      matches = []
+      matched_truth = set()
+      for i, j in zip(row_ind, col_ind):
+          if cost_matrix[i,j] != 1:
+              matches.append((i, j))
+              matched_truth.add(j)
+
+      # Find unmatched segments
+      unmatched1 = [i for i in range(len(prediction)) if i not in row_ind]
+      unmatched2 = [j for j in range(len(truth)) if j not in matched_truth]
+
+      return matches, unmatched1, unmatched2
+    ```
+
+    #heading(depth: 5, numbering: none, bookmarked: false)[Updated Scoring Code]
+    ```python
+    def score(prediction, truth, beta=0.5):
+      matches, unmatched1, unmatched2 = hungarian_matching(prediction, truth)
+
+      if not matches:
+          return 0.0
+
+      # Initialize counts
+      tp, fp, fn = 0, 0, 0
+
+      # Process matched pairs (account for partial matches via IoU)
+      for i, j in matches:
+          seg1, seg2 = prediction[i], truth[j]
+          intersection = len(set(seg1) & set(seg2))
+
+          tp += intersection
+          fp += len(seg1) - intersection  # Predicted but unmatched
+          fn += len(seg2) - intersection  # True but unmatched
+
+      # Add unmatched ground truth
+      fn += sum(len(truth[j]) for j in unmatched2)
+      # Add unmatched predictions
+      fp += sum(len(prediction[i]) for i in unmatched1)
+
+      # Calculate precision and recall
+      precision = tp / (tp + fp) if (tp + fp) > 0 else 0
+      recall = tp / (tp + fn) if (tp + fn) > 0 else 0
+
+      # Compute Fβ-score
+      return calculate_fbeta_score(precision, recall)
+    ```
+
+
 
     == Metrics
 
