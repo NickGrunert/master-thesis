@@ -11,6 +11,19 @@
     )
 
     = Objective Analysis of Score by Comparison with Truth Data
+    Remember, the primary objective of the segmentation calculated here is to provide sufficiently accurate points within each segment to prompt SAM.
+    In turn, this means an incomplete segment will still be reduced to a valid point inside the real structure, while an incorrect segment could lead to an invalid point outdide the real structure.
+    As this could confuse the model, it is important to ensure that the algorithm is correct, even if it is incomplete.
+    Since SAM requires only hints of sufficient quality about the potential locations of surfaces, there is no actual need for the segmentation to be perfect.
+
+    The scoring system shown in @scoring is used to evaluate the quality of the segmentation.
+    If we trust that scoring system to accurately evaluate the quality of the segmentation, it's input points will be sufficient for further analysis.
+    Running the algorithm and evaluating the performance on representative houses will give us performance metrics on the algorithm, which in turn will give us a good idea on how well the algorithm performs on the given data.
+    It must be acknowledged that of course testing the algorithm this way on only a few hand-picked houses may not serve as statistial proof.
+    Since however, it is a good tradeof between objective evaluation and only medium effort neccessary, we may assume that the algorithm will perform similarly on other houses.
+
+
+
 
     == Creating Ground Truth images
     The evaluation and validation of algorithms necessitate the creation of objective data for the purpose of comparison.
@@ -39,39 +52,19 @@
     This is because minor discrepancies in the output score calculated on the ground truth do not invalidate the algorithm.
 
 
-
+    #strong("Hier fehlt die ergebnisse und challenges mit der erstellung der ground truth")
 
 
     == Segmentation Evaluation
-
-    Remember, the primary objective of the segmentation calculated here is to provide sufficiently accurate points within each segment to prompt SAM.
-    In turn, this means an incomplete segment will still be reduced to a valid point inside the real structure, while an incorrect segment could lead to an invalid point outdide the real structure.
-    As this could confuse the model, it is important to ensure that the algorithm is correct, even if it is incomplete.
-    Since SAM requires only hints of sufficient quality about the potential locations of surfaces, there is no actual need for the segmentation to be perfect.
-
-    However, creating ground truths for the roofs is too time consuming, not feasible for the current project and in generel the very thing we are trying to avoid.
-    Therefore a different approach was chosen.
-    The scoring system shown in @scoring is used to evaluate the quality of the segmentation.
-    If we trust that scoring system to accurately evaluate the quality of the segmentation, it's input points will be sufficient for further analysis.
-    Running the algorithm and evaluating the performance on representaive houses will give us performance metrics on the algorithm, which in turn will give us a good idea on how well the algorithm performs on the given data.
-    It must be acknowledged that of course testing the algorithm this way on only a few hand-picked houses may not serve as statistial proof.
-    Since however, it is a good tradeof between objective evaluation and only medium effort neccessary, we may assume that the algorithm will perform similarly on other houses.
-
-
-
-
-
-
-
-
-
-
-
-
+    The evaluation of the segmentation is a critical step in the assessment of the performance of the algorithm.
+    Therefore, the subsequent section will provide a detailed exposition of the methodology that was employed to evaluate the segmentation.
+    Each subsection will be devoted to either a discussion of a specific component of the resulting algorithm or an analysis of an enhancement to one of these components.
+    This process will culminate in the development of a score function that will serve to evaluate the quality of the predicted segmentation in relation to the ground truth data.
 
     === Comparing Segments via IOU
     #heading(depth: 5, numbering: none, bookmarked: false)[Formula]
     $ "IoU"_"A,B" = ("A" \u{2229} "B") / ("A" #sym.union "B") $ <formula:iou>
+    $ "IoU" = "TP" / ("TP" + "FP" + "FN") $ <formula:iou2>
 
     #heading(depth: 5, numbering: none, bookmarked: false)[Explanation]
     A widely accepted approach for the comparison of two segments is the calculation of the Intersection over Union (IoU) @iou1 @iou2.
@@ -83,6 +76,9 @@
     A value of 1 indicates a perfect match, while a value of 0 indicates no overlap.
     Furthermore, it imposes a penalty on either of the two segments if their respective areas fall outside the boundaries of the other segment.
 
+    It is acknowledged that @formula:iou2 is an alternative calculation approach that does not operate via set operations but via the confusion matrix.
+    The implementation of this would, in principle, be a rational course of action, given the subsequent section's introduction of the metrics within the formula. However, this approach was not adopted.
+
     #heading(depth: 5, numbering: none, bookmarked: false)[Code Snippet]
     The following code shows a simple implementation of the IoU calculation.
     The individual segments are first redefined as sets for computational efficiency, since it allow for faster membership testing and set operations via binary operations.
@@ -93,8 +89,6 @@
       union = len(set1 | set2)
       return intersection / union if union > 0 else 0
     ```
-
-
 
     === Calculating Recall and Precision
     #heading(depth: 5, numbering: none, bookmarked: false)[Formula]
@@ -163,19 +157,16 @@
     @section:fß outlines an approach to address this issue to a certain extent by placing a greater emphasis on precision over recall. 
     In essence, it penalizes false positives to a greater extent than false negatives when calculating the score.
 
-
-
-
-
-    The easiest and probably best solution is a simple one to one mapping.
-    For each ground truth surface, we must find the best calculated surface, determined by highest Intersection over Union (IoU) value.
-    This is the best way because of various reasons.
-    For one, assuming the algorithm would be perfect, a one to one mapping would be the expected result.
-
-
-
-
     #heading(depth: 5, numbering: none, bookmarked: false)[Code Snippet]
+    The optimal solution is the implementation of a precise one-to-one mapping between segments, as this would be the anticipated outcome of a flawless algorithm.
+    Nevertheless, the subsequent code explores the potentiality of associating numerous segments with a singular ground truth segment, which is delineated by the max_surfaces parameter.
+
+    For each predicted surface, the algorithm identifies the ground truth segment with the highest IOU value.
+    Consequently, the ground truth segment is iterated in the inverse manner, collecting all their matches and taking the best matches by score.
+    The system under consideration enables the matching of multiple segments to a single ground truth segment.
+    Conversely, it does not permit any surfaces to be matched to more than one ground truth segment.
+    The calculation of true positive (TP), false positive (FP), and false negative (FN) values is contingent upon the aforementioned matching of the algorithm.
+
     ```python
     def score(generated_surfaces, true_surfaces, max_surfaces=1):
         # For each Surface find out which Ground Truth it belongs to
@@ -221,18 +212,10 @@
     #subpar.grid(
       columns: 2,
       gutter: 1mm,
-      figure(image("../figures/truth_compare/completeness/1.png"), caption: [
-        Evaluation when enforcing exact 1 to 1 Matches
-      ]), <fig:truth_compare:completeness:a>,
-      figure(image("../figures/truth_compare/completeness/2.png"), caption: [
-        Matching 2 Calculated Surfaces to 1 Ground Truth
-      ]), <fig:truth_compare:completeness:b>,
-      figure(image("../figures/truth_compare/completeness/4.png"), caption: [
-        Matching 4 Calculated Surfaces to 1 Ground Truth
-      ]), <fig:truth_compare:completeness:c>,
-      figure(image("../figures/truth_compare/completeness/10.png"), caption: [
-        Matching up to 10 Calculated Surfaces to 1 Ground Truth
-      ]), <fig:truth_compare:completeness:d>,
+      figure(image("../figures/truth_compare/completeness/1.png")), <fig:truth_compare:completeness:a>,
+      figure(image("../figures/truth_compare/completeness/2.png")), <fig:truth_compare:completeness:b>,
+      figure(image("../figures/truth_compare/completeness/4.png")), <fig:truth_compare:completeness:c>,
+      figure(image("../figures/truth_compare/completeness/10.png")), <fig:truth_compare:completeness:d>,
       caption: [
         Graphical representation of the calculated recall and precision for different numbers of calculated surfaces matched to one ground truth surface.
       ],
@@ -722,6 +705,8 @@
       ],
       label: <fig:truth_compare:correlation>,
     )
+
+    #strong("Hier fehlt endgültige ergebnisse und so")
   ]
 
   pagebreak()
