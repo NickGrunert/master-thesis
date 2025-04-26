@@ -11,29 +11,34 @@
     )
 
     = Objective Analysis of Score by Comparison with Truth Data
-    Remember, the primary objective of the segmentation calculated here is to provide sufficiently accurate points within each segment to prompt SAM.
-    In turn, this means an incomplete segment will still be reduced to a valid point inside the real structure, while an incorrect segment could lead to an invalid point outdide the real structure.
-    As this could confuse the model, it is important to ensure that the algorithm is correct, even if it is incomplete.
-    Since SAM requires only hints of sufficient quality about the potential locations of surfaces, there is no actual need for the segmentation to be perfect.
+    It is essential to recall that the primary objective of the segmentation calculated here is to provide sufficiently accurate points within each segment to prompt SAM.
+    Therefore, an incomplete segment will be reduced to a valid point within the real structure. 
+    Conversely, an incorrect segment could lead to an invalid point outside the real structure.
+    Given the potential for such discrepancies to disrupt the model's functionality, it is imperative to ascertain the integrity of the algorithm, even in the event of its partiality.
+    As SAM operates on the principle of detecting surfaces with only minimal indications of their potential locations, the necessity for precise segmentation does not arise.
 
-    The scoring system shown in @scoring is used to evaluate the quality of the segmentation.
-    If we trust that scoring system to accurately evaluate the quality of the segmentation, it's input points will be sufficient for further analysis.
-    Running the algorithm and evaluating the performance on representative houses will give us performance metrics on the algorithm, which in turn will give us a good idea on how well the algorithm performs on the given data.
-    It must be acknowledged that of course testing the algorithm this way on only a few hand-picked houses may not serve as statistial proof.
-    Since however, it is a good tradeof between objective evaluation and only medium effort neccessary, we may assume that the algorithm will perform similarly on other houses.
+    The scoring system delineated in @scoring is employed to evaluate the quality of the segmentation.
+    The assumption that the scoring system can accurately evaluate the quality of segmentation is fundamental to this study. 
+    The system's input points will be sufficient for further analysis, provided that this assumption is valid.
 
+    The evaluation and validation of algorithms require the generation of objective data for the purpose of comparison.
+    This section delineates the methodology employed to generate ground truth data and the subsequent development of a scoring system to assess the efficacy of the algorithm. 
+    The establishment of objective reference data facilitates a quantitative comparison between the algorithm's output and expected results. 
+    The metrics will provide a meaningful assessment of the algorithm's accuracy and reliability when applied to the dataset of houses.
+
+    It must be acknowledged that the efficacy of the algorithm can only be ascertained through a rigorous and extensive testing process. 
+    Conducting a limited evaluation on a small number of hand-picked houses does not provide sufficient statistical evidence to draw definitive conclusions.
+    However, given the favorable trade-off between objective evaluation and minimal time investment required, it is reasonable to infer that the algorithm will demonstrate comparable performance across other houses.
 
 
 
     == Creating Ground Truth images
-    The evaluation and validation of algorithms necessitate the creation of objective data for the purpose of comparison.
-    The ground truth data will function as the reference point against which the algorithm will be evaluated. 
-    This quantitative evaluation will allow for an assessment of the algorithm's performance, thereby substantiating its accuracy and reliability.
 
-    Consequently, 20 segmentation were created, which will serve as the basis for the evaluation in this step.
-    These metrics are derived from images which correspond to the 60th percentile of the entire image dataset.
-    This was selected as they adequately represent the data overall, being sufficiently small to be processed in a reasonable timeframe while still exhibiting sufficient complexity.
-    Additionally, this section of the data encompasses an acceptable range of roof shapes, from simple to complex, including mainly normal but also a flat roof with a design not too simple.
+    The evaluation will be based on a set of 20 ground truth images, which were derived from images corresponding to the 60th percentile of the entire image dataset sorted by roof area.
+    This selection was made on the basis that these models adequately represent the data overall. 
+    They are sufficiently small to be processed in a reasonable timeframe while still exhibiting sufficient complexity.
+    A more expansive roof composed of a greater quantity of diminutive, intricate surface segments would not generate a sufficient amount of information to justify the investment of time required to manually construct ground truths.
+    Furthermore, this particular section of the data set encompasses a diverse array of roof shapes, ranging from simple to complex designs, primarily consisting of normal roofs, in addition to a flat roof with a relatively uncomplicated design.
 
     @GroundTruth1 elaborates on the issues that emerge during the process of data generation.
     As previously discussed, the images currently under consideration are characterized by suboptimal pixel quality. 
