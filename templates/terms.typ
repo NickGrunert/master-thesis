@@ -2,23 +2,34 @@
 #let abbreviations = (
   "MAE": (
     long: "Mean Absolute Error",
-    desc: "Average of absolute differences between predicted and actual values",
-    type: "abbr",
-    used: false
+    type: "abbr"
   ),
   "MSE": (
     long: "Mean Squared Error",
-    desc: "Average of squared differences between predicted and actual values",
     type: "abbr"
   ),
   "RMSE": (
     long: "Root Mean Squared Error",
-    desc: "Square root of the average of squared differences between predicted and actual values",
     type: "abbr"
   ),
   "SAM": (
     long: "Segment Anything Model",
-    desc: "A model for image segmentation that can identify and delineate objects in images",
+    type: "abbr"
+  ),
+  "TP": (
+    long: "True Positive",
+    type: "abbr"
+  ),
+  "TN": (
+    long: "True Negative",
+    type: "abbr"
+  ),
+  "FP": (
+    long: "False Positive",
+    type: "abbr"
+  ),
+  "FN": (
+    long: "False Negative",
     type: "abbr"
   ),
 )

@@ -17,12 +17,12 @@
     Given the potential for such discrepancies to disrupt the model's functionality, it is imperative to ascertain the integrity of the algorithm, even in the event of its partiality.
     As SAM operates on the principle of detecting surfaces with only minimal indications of their potential locations, the necessity for precise segmentation does not arise.
 
-    The scoring system delineated in @scoring is employed to evaluate the quality of the segmentation.
+    The scoring system delineated in @section:scoring is employed to evaluate the quality of the segmentation.
     The assumption that the scoring system can accurately evaluate the quality of segmentation is fundamental to this study. 
     The system's input points will be sufficient for further analysis, provided that this assumption is valid.
 
-    The evaluation and validation of algorithms require the generation of objective data for the purpose of comparison.
-    This section delineates the methodology employed to generate ground truth data and the subsequent development of a scoring system to assess the efficacy of the algorithm. 
+    Evaluation and validation of algorithms requires the creation of objective data for the purpose of comparison, ground truth data.
+    This section delineates the methodology employed to generate such and the subsequent development of a scoring system to assess the efficacy of the algorithm. 
     The establishment of objective reference data facilitates a quantitative comparison between the algorithm's output and expected results. 
     The metrics will provide a meaningful assessment of the algorithm's accuracy and reliability when applied to the dataset of houses.
 
@@ -46,8 +46,8 @@
     Additionally, certain edges are challenging to discern with the naked eye, and they are often imperceptible in both the nDSM and RGB data.
     Especially in the RGB data regions with large shadows, the edges are not clearly visible.
     However, these edges become clearly visible when utilizing the derivative and coloring the image with this data.
-    This introduces an additional layer of complexity and duration to the process of generating ground truth data.
-    It must also again be noted that the RGB data and the nDSM data are not perfectly aligned. 
+    This introduces an additional layer of complexity to the process of generating the ground truth segmentations.
+    It must also again be noted that the RGB data and the nDSM data are not perfectly aligned.
     Consequently, an attempt to create a ground truth based only on the RGB data would yield a different result than the nDSM data, particularly with regard to the house outlines, where the misalignment becomes quite evident.
     Therefore the ground truth data will mainly be built solely upon the nDSM data, whereby it must be noted that this approach introduces a discrimination against later built analysis on the RGB data.
     This is deemed accceptable because of the assumption that the height information is neccessary for good evaluation anyway, and biasing it here makes sense.
@@ -77,12 +77,12 @@
     The intersection over union (IoU) metric is a quantitative measure of the overlap between two segments.
     Although the algorithm is frequently employed for bounding box comparisons @iou3, it is also capable of performing a pixel-wise set comparison on the two surfaces.
     The resulting score is calculated by dividing the area of intersection by the area of union, as demonstrated in @formula:iou.
-    This calculation provides a quantitative metric of the degree of similarity between two segments. 
+    This calculation provides a quantitative metric that measures the degree of similarity between two segments. 
     A value of 1 indicates a perfect match, while a value of 0 indicates no overlap.
     Furthermore, it imposes a penalty on either of the two segments if their respective areas fall outside the boundaries of the other segment.
 
     It is acknowledged that @formula:iou2 is an alternative calculation approach that does not operate via set operations but via the confusion matrix.
-    The implementation of this would, in principle, be a rational course of action, given the subsequent section's introduction of the metrics within the formula. However, this approach was not adopted.
+    The implementation of this would, in principle, be a rational course of action, given the subsequent section's introduction of the metrics within the formula. However, this approach was not adopted, as it would not lead to an improvement of the algorithms calculational efficiency that would rectify the work required to realize it.
 
     #heading(depth: 5, numbering: none, bookmarked: false)[Code Snippet]
     The following code shows a simple implementation of the IoU calculation.
@@ -102,7 +102,7 @@
     $ "Precision" = "TP" / ("TP" + "FP") $ <formula:precision>
 
     #heading(depth: 5, numbering: none, bookmarked: false)[Explanation]
-    @DataCompleteness delineates three fundamental components of data quality: completeness, accuracy, and consistency.
+    There is more than one way to define data quality and it's fundamental components; one of such definitions being completeness, accuracy, and consistency @DataCompleteness.
     However, our primary concern at this stage is to prioritize completeness and accuracy, given the relatively low priority accorded to consistency in the current use case.
     The degree of consistency among the data sets would be challenging to precisely delineate in this context.
     One possible description of the methodology would be capability of receiving reliable data across multiple roofs without significant deterioration in segmentation quality.
@@ -114,30 +114,30 @@
 
     As we are not evaluating data sets but rather specific comparisons between a geometry representing a calculated surface and one representing a ground truth, it is possible to break down the problem to be analyzed via statistical metrics.
     Additionally, given the existence of interconnected geographical structures devoid of intricate information systems, the problem can be streamlined for resolution through the utilization of a confusion matrix.
-    This is due to the fact that the tuple of pixel coordinates can be classified as true positives (TP), false positives (FP), and false negatives (FN) in a straightforward manner.
-    @ConfusionMatrix presents a method for calculating object classification that can be adapted to the current problem.
+    Object detection normally uses simple bounding box checks for this calculation @ConfusionMatrix.
+    In the context of this work, instead of bounding boxes, each pixel coordinate can easily be categorized as #abr("TP"), #abr("FP"), and #abr("FN") after matching predicted segments to ground truth segments.
 
-    @DataCompleteness3 explores such analysis by describing the metrics of accuracy, recall, and precision.
-    The utilization of accuracy, as demonstrated in @formula:accuracy, would not be advantageous in this instance. 
+    The three main metrics applicable for analysing in such a manner are accuracy, recall, and precision @DataCompleteness3.
+    The utilization of accuracy, as demonstrated in @formula:accuracy, would, however, not be advantageous in this instance. 
     While the calculation of the number of true negatives is possible, its practical application is limited.
     The issue with this approach is that the algorithm is not attempting to differentiate between pixels as belonging to a roof or not, but rather is focused on the classification of each individual roof segment.
-    This would, however, be a possibility when attempting to evaluate the mask utilized for the filtration of segments from all surfaces generated subsequent to edge detection.
+    Nonetheless, it would be a possibility to evaluate the mask quality, which is utilized to filter out segments after edge detection, such that only roof segments remain.
 
     In this particular instance, the completeness will be evaluated using the recall metric, which is defined as the ratio of true positives to the sum of true positives and false negatives, as shown in @formula:recall.
     This approach quantifies the proportion of correctly identified pixels in context to the entire ground truth surface, thereby estimating the completeness of the prediction.
 
-    The precision metric, as demonstrated in @formula:precision, is defined as the ratio of true positives to the sum of true positives and false positives.
+    The Calculation of the precision metric is demonstrated in @formula:precision; making use of true and false positives.
     The metric will be employed to assess the correctness of the prediction and is therefore also a measure of accuracy.
     It is the ratio of correctly identified pixels to the total number of pixels predicted as part of the surface. 
     Consequently, it can either increase or decrease, contingent on the number of pixels that are not part of the surface but are predicted as such.
-
+    In other words, it defines on how much one can trust into a positive prediction by the algorithm, stated at the beginning of this chapter, the first and most directive the algorithm has to fullfil.
 
 
 
     While this calculation may appear straightforward, a more thorough discussion is necessary to ensure its proper execution.
     The evaluation of the entire structure, encompassing the combination of all surfaces in relation to the ground truth structure, is a possibility.
-    This may demonstrate whether the identification of pixels on the roof is accurate, and if so, the number of pixels identified as roof that are not roof.
-    With regard to the task at hand, however, this proves inadequate, as it fails to address the accurate identification of individual surfaces.
+    This may demonstrate whether the identification of pixels on the roof is accurate, and if so, the number of non-roof pixel.
+    With regard to the task at hand, however, this proves inadequate, as it fails to address the need to accurately identify each individual surface.
     Consequently, the evaluation process must be conducted on a per-surface basis.
     This approach entails the calculation of recall and precision for each surface individually, followed by an aggregation of these values to obtain the algorithm's resulting score.
     The issue arises from the fact that not all surfaces will be identified with absolute precision.
@@ -145,10 +145,11 @@
     Alternatively, derivatives oriented along the axes may exhibit higher contrast values, which can be more readily misclassified as edges by the algorithm.
     This, in turn, gives rise to the issue of evaluating the recall and precision of a surface that has been divided into two surfaces.
 
-    A general problem exists regarding under- and oversegmentation @underAndOversegmentation @underAndOversegmentation2.
-    In this context, the term "oversegmentation" refers to the division of a single roof surface into multiple predicted segments.
+    A problem exists regarding the matching of segments to ground truths.
+    There are two variations of this, undersegmentation and oversegmentation @underAndOversegmentation @underAndOversegmentation2.
+    The latter refers to the division of a single roof surface into multiple predicted segments.
     Regardless, this issue is not a significant concern, provided each individual component for itself is not misclassified. 
-    However, it is imperative to address this matter at a later stage, as it may result in the generation of multiple prompts for a given surface or the creation of invalid negative prompts for SAM.
+    However, it is necessary to address this matter at a later stage, as it may result in the generation of multiple prompts for a given surface or the creation of invalid negative prompts for SAM.
     This is not problematic for the generation of exclusively positive input points, as reiterating the same mask does not constitute an error.
     At this stage, it is imperative to bear in mind the issue of fragmentation. 
     However, it should be noted that this will not be addressed through the implementation of an algorithm in the calculation of segmentation.
@@ -170,7 +171,7 @@
     Consequently, the ground truth segment is iterated in the inverse manner, collecting all their matches and taking the best matches by score.
     The system under consideration enables the matching of multiple segments to a single ground truth segment.
     Conversely, it does not permit any surfaces to be matched to more than one ground truth segment.
-    The calculation of true positive (TP), false positive (FP), and false negative (FN) values is contingent upon the aforementioned matching of the algorithm.
+    The calculation of #abr("TP"), #abr("FP"), and #abr("FN") values is contingent upon the aforementioned matching of the algorithm.
 
     ```python
     def score(generated_surfaces, true_surfaces, max_surfaces=1):
@@ -239,14 +240,14 @@
     One potential solution to this issue is to implement actual improvements to the algorithm. 
     However, for the time being, this problem will be disregarded.
     
-    It can be posited that the surfaces' completeness is commensurate with the anticipated level of complexity.
+    It can be noted that the completeness of the surfaces is consistent with the expected level of complexity.
     The most significant enhancement is observed when increasing the limit from one match to two, indicating an unfortunate propensity to at least divide surfaces once.
-    In most cases, the addition of smaller surfaces to higher-limit runs contributes negligible elements to the overall structure.
+    In most cases, the addition of smaller surfaces when using high limits negligibly contributes to the overall structure.
     The impact of these elements on the overall score is negligible; therefore, they do not warrant significant concern.
     This issue manifests only in certain instances, wherein thin connections result in the division of relevant elements. 
     Nevertheless, given the fundamental cause most likely being the utilization of low-pixel images and the current absence of exhaustive analysis on the performance impact of the hyperparameter, this is not of great concern.
 
-    === Creating the final score via the Fß Score method <section:fß>
+    === Creating the final score via the $F_ß$ Score method <section:fß>
     #heading(depth: 5, numbering: none, bookmarked: false)[Formula]
     $ F_1 = ("precision" * "recall") / 2 $ <formula:f1>
     $ F_ß = ( 1 + ß² ) * ("precision" * "recall") / ((ß² * "precision") + "recall") $ <formula:fß>
@@ -256,16 +257,16 @@
     This score is calculated by dividing the sum of the given scores by two to create an output score.
     As previously mentioned, our objective is not to achieve equal prioritization of recall, which is often referred to as "completeness," and precision, which is often referred to as "correctness."
     Consequently, the formula presented in @formula:fß will be employed.
-    The Fß score is a generalization of the F1 score that incorporates a weighting coefficient, ß, into the formula @Fß. 
+    The $F_ß$ score is a generalization of the F1 score that incorporates a weighting coefficient, ß, into the formula @Fß. 
     This modification enables the dynamic prioritization of either input.
 
     Given the necessity to prioritize precision, the $F_0.5$ score will be employed, representing the $F_ß$ score when $ß = 0.5$.
-    The calculation of these values for exact matches results in a score of $F_0.5≈0.887$. This figure offers a clear illustration of the bias, as an even valuation would yield a score of approximately $F_1≈0.75$. This observation serves to underscore the impact of the bias.
+    Executed on the example segmentation from @fig:truth_compare:completeness:a the difference in resulting score is $F_0.5≈0.887$ compared to $F_1≈0.75$, which clearly illustrates that this change indeed has the expected impact of biasing towards the recall metric.
 
     While it may seem logical to exclude the completeness from this calculation altogether, it is useful for enhancing the comparability with the scoring system.
     In essence, our objective is to utilize this as a metric to assess the reliability of the scoring system. 
     Given that the algorithm employs a positive and negative scoring system, this approach is a logical one.
-    Nonetheless, it could be argued that the elimination of the negative score could similarly yield a non negative outcome, as the theoretical irrelevance of missing pixels was elucidated at the beginning of this chapter.
+    Nonetheless, it could be argued that the elimination of the negative score could similarly yield a non negative outcome, as the theoretical irrelevance of missing pixels was discussed at the beginning of this chapter.
     Notwithstanding, the decision was made to not exclude recall, using the $F_0.5$ score when calculating the final scores out of positive and negative scores.
     This introduces a bias in favor of surfaces being correct and mitigates the impact of missing surface area.
     
@@ -282,8 +283,8 @@
     Subsequent to the completion of the task of manually creating the scores, as delineated in the preceding section, this section will briefly detail the process of reducing and overhauling the code while refactoring.
     Despite the absence of a fundamental shift in the overarching concept, certain components have undergone an adaptation process, incorporating the utilization of library functions and well-established algorithms, as well as finding and fixing errors which become appearant in comparison.
 
-    Conducting online research revealed that constraining the matching of generated segments and ground truth segments to being strictly 1-to-1 is equivalent to using the Hungarian Matching Algorithm @hungarian1.
-    The necessity of maintaining a list to precisely match each surface with a single ground truth segment, with the intention of subsequently selecting the most suitable one, will been rendered obsolete.
+    Constraining the matching of generated segments and ground truth segments to being strictly 1-to-1 is essentially equivalent to using the Hungarian Matching Algorithm @hungarian1.
+    The necessity of maintaining a list to precisely match each surface with a single ground truth segment, with the intention of subsequently selecting the most suitable one, will be rendered obsolete.
     The Hungarian algorithm is a computational optimization technique that addresses the assignment problem in polynomial time. 
     It can be utilized to identify the optimal assignment of generated segments to ground truth segments by cost minimization @hungarian2.
     A two-dimensional matrix of size $n*m$ is employed, wherein $n$ denotes the number of predicted segments and $m$ signifies the number of segments in the ground truth data. This matrix contains all IOU values.
@@ -297,7 +298,7 @@
 
     #heading(depth: 5, numbering: none, bookmarked: false)[Comparison]
     The scoring function remains relatively stable.
-    The calculation of precision and recall remains unchanged; however, the calculation of true positive (TP), false positive (FP), and false negative (FN) is now performed using the matches from the Hungarian algorithm directly as well as the unmatched segments.
+    The calculation of precision and recall remains unchanged; however, the calculation of #abr("TP"), #abr("FP"), and #abr("FN") is now performed using the matches from the Hungarian algorithm directly as well as the unmatched segments.
 
     #subpar.grid(
       columns: 1,
@@ -314,17 +315,18 @@
 
     However, a notable distinction between the two implementations lies in the methodology employed for handling unmatched segments.
     As illustrated by the implementation in @fig:truth_compare:hungarian_error, there is a discrepancy in the calculation of scores between the approaches.
-    While the two approaches are similar in general, the new implementation utilizes unmatched segments to calculate false positives and false negatives, a feature not present in the older approach.
-    Initially, an unmatched predicted surface was excluded from the false positive calculation due to the negligible impact of undersegmentation on the algorithm's performance.
+    While the two approaches are similar in general, the new implementation utilizes unmatched segments to calculate #abr("FP") and #abr("FN"), a feature not present in the older approach.
+    Initially, an unmatched predicted surface was excluded from the #abr("FP") calculation due to the negligible impact of undersegmentation on the algorithm's performance.
     The algorithm would only need to address the issue of oversegmentation, as this would result in fewer prompts than the number of truth surfaces.
-    In the subsequent implementation, however, this concept was not utilized due to a reevaluation of the approach.
+    In the subsequent implementation using the Hungarian Matching Algorithm, however, this concept is no longer utilized due to reevaluation of the approach.
     The objective is to ascertain the validity of the concept in relation to the ground truth. 
-    Consequently, the penalization of erroneous surfaces is imperative to ensure the integrity of this endeavor.
+    Consequently, the penalization of erroneous surfaces through undersegmentation is required to ensure the integrity of this endeavor, since else the score of wrong segmentations could be overrestimated drastically.
 
+    // TODO say anything anywhere about this figure
     #figure(
       image("../figures/truth_compare/hungarian/hungary_compare.png"), caption: [
       New visual representation of matching the segments.
-    ]), <fig:truth_compare:hungarian_compare:a>
+    ]), <fig:truth_compare:hungarian_compare>
 
     The statistics presented in @fig:truth_compare:hungarian_statistics illustrate the disparities between the two implementations with respect to performance metrics.
     The first image displays the percentage difference between the two calculations.
@@ -414,9 +416,9 @@
 
     == Metrics
 
-    The original structure of this section was designed to prioritize the presentation of theoretical explanations prior to the combination and explanation of the results.
+    Originally, this section first presented all theoretical explanations, before combining their respective experimentation results together to create a final evaluation.
     However, this approach was deemed impractical, as each approach was thoroughly considered and evaluated before conducting a comprehensive analysis of the results.
-    Each subsequent approach was developed by incorporating the insights from the preceding approach and making attempts to enhance it based on the outcomes of the earlier approaches.
+    Each subsequent approach has been developed by incorporating the lessons learned from the results of the previous approaches and striving to improve upon them.
     Therefore, the ensuing sections are devoted to the following: an exposition of the metrics by which the algorithm was evaluated; the presentation of example results; and a direct discussion of the lessons learned.
 
     The example images employed in the ensuing sections are all drawn from the same three example houses. 
@@ -451,6 +453,7 @@
     $ R^2 = 1 - (sum_(i=1)^n (y_i - accent(y, hat)_i)^2)/(sum_(i=1)^n (y_i - accent(y, macron))^2) $ <formula:r2>
 
     #heading(depth: 5, numbering: none, bookmarked: false)[Explanation]
+    // TODO totally prolong the explanations in this section
     One approach entailed the utilization of conventional statistical metrics for the assessment of the discrepancy between two datasets.
     Specifically, the following metrics are of relevance: the #abr("MAE"), the #abr("MSE"), the #abr("RMSE"), and the R2 score.
 
@@ -498,7 +501,7 @@
     However, an examination of the data suggests an alternative conclusion, indicating a linear relationship that is simply tilted, rather than originating from the origin (0, 0), as the R2 Score implemented here assumes.
 
     In direct comparison, the @fig:truth_compare:metrics:c metric reveals a strong correlation with the ground truth data, as evidenced by it's calculated R2 score.
-    However, this observation merely indicates that the linear relationship between the scores and truth scores is more skewed towards the origin in comparison to the scenario depicted before.
+    This observation indicates that the linear relationship between the scores and truth scores is more skewed towards the origin in comparison to the scenario depicted before, but does not generally depict a better linear relationship between the data itself.
 
     @fig:truth_compare:metrics:b offers yet another perspective.
     The R2 Score remains in a negative range, although it is less pronounced than in in the first example but more significant than in the second.
@@ -541,16 +544,15 @@
     #heading(depth: 5, numbering: none, bookmarked: false)[Explanation]
     An alternative approach to measuring the correlation between two datasets is the Cosine Similarity @Cosine2.
     This approach was conceived as a means to assess the quality of the scoring in terms of direction, given its fundamental purpose being to quantify the similarity between the data point vectors.
-    The cosine similarity is calculated by taking the dot product of the two vectors and dividing it by the product of the magnitudes of both vectors. This calculation can be expressed as follows:@formula:cosine.
+    The cosine similarity is calculated by taking the dot product of the two vectors and dividing it by the product of both vectors' magnitudes, as shown in @formula:cosine.
 
     Nevertheless, said similarity is still derived from the direction of the origin (0, 0).
-    This means the algorithm still asummes a one-to-one relationship between the two datasets, a property that, as previously discussed, is not wanted.
-    A potential solution to this issue is the normalization of the data, which would result in the data falling within the full range of 0 to 1.
-    This would solve said problem.
+    This means the algorithm still asummes an identity mapping between the two datasets, a property that, as previously discussed, is not wanted.
+    A potential solution to this issue is normalization of the data, which would result in the data falling within the full range of 0 to 1.
 
-    The calculation of cosine similarity normalized is analogous to the calculation of the Pearson coefficient @Pearson4 @Pearson2 @Pearson3.
-    The Pearson coefficient is a measure of linear correlation between two datasets.
-    The correlation coefficient ranges from -1 to 1, with 1 representing a perfect positive correlation and -1 representing a perfect negative correlation.
+    The calculation of cosine similarity on normalized data is analogous to the calculation of the Pearson coefficient @Pearson4 @Pearson2 @Pearson3.
+    The Pearson coefficient is another metric of linear correlation between two datasets.
+    It ranges from -1 to 1, with 1 representing a perfect positive correlation and -1 representing a perfect negative correlation.
     The Pearson coefficient is calculated by taking the covariance of two datasets and dividing it by the product of the standard deviations of said datasets. This calculation can be performed using the @formula:pearson function.
     A Pearson coefficient of 1 during experimentation would indicate a perfect correlation between the two datasets.
     In such circumstances, the score derived from the segmentation algorithm and the ground truth data are demonstrably congruent, attributable to a reliable correlation.
@@ -568,7 +570,7 @@
     truth_scores = [0.5, 0.6, 0.7, 0.8]
 
     r, _ = pearsonr(scores, truth_scores)
-    print(f"Pearson: {r:.3f}")  # Output: Pearson r: 1.000 (perfect linear correlation)
+    print(f"Pearson: {r:.3f}")
     ```
 
     #heading(depth: 5, numbering: none, bookmarked: false)[Results]
@@ -585,9 +587,9 @@
     A direct comparison of the Pearson Coefficient with @section:metrics reveals its superiority over the previous metrics.
     The relaxation of the assumption of a rigid 1-to-1 relationship between the two datasets signifies a substantial enhancement, as it allows for greater flexibility in accepting the correlation. 
 
-    The discrepancy in the values, with some at 0.6 and others at 0.8, remains to be elucidated. 
+    The discrepancy in the values, with some at 0.6 and others at 0.8, remains to be explained. 
     However, it is evident that both values serve as at least adequate indicators for the correlation of scores.
-    It is reasonable to hypothesize that this phenomenon is attributable to the scoring system's stringent penalization of undersegmentation segmentations, which scores are completely nullified.
+    It is reasonable to hypothesize that this phenomenon is attributable to the scoring system's strong penalization of undersegmentation segmentations, which scores are completely nullified.
     In contrast, the ground truth data's IOU values exhibit only a marginal sensitivity to such inaccuracies.
 
     #subpar.grid(
@@ -614,52 +616,57 @@
     The subsequent stage of the research involved the formulation of a linear function, with the objective of calculating the correlation between the two datasets directly.
     The prerequisite for this endeavor entails the calculation of the most optimal linear relationship and the implementation of metrical comparison of the data in alignment with that relationship.
 
-    This objective was accomplished by implementing a linear regressor @LinearRegressor, which facilitated the calculation of a linear regression line between the two datasets.
-    Employing the LinearRegression function of SciPy facilitates the fitting of the data and the calculation of the R2 Score and the Mean Absolute Error (MAE) towards that linear regression line.
+    This objective was accomplished by using the LinearRegression class of the scikit-learn library @LinearRegressor, which facilitated the calculation of a linear regression line between the two datasets and enables the calculation of the R2 Score and the Mean Absolute Error (MAE) towards that linear regression line.
     This fulfills the requirement of a non-strict 1-to-1 linear relationship between the two datasets, as well as returns the metrics that indicate the performance of the algorithm.
     In addition, the R2 Score this time is effectively constrained to the range of 0 to 1 in this iteration, in contrast to previous iterations. 
     This is due to the fact that, under the most sub-optimal conditions, the algorithm would return 0, meaning the regressor essentially mimicing the mean of the data.
     This represents a marked enhancement over earlier iterations, in which the R2 Score was not constrained and could attain unconstrained negative values, leading to challenges in interpretation.
 
     As previously outlined in @section:metrics, the MAE is a reliable metric for assessing the accuracy of the algorithm, while the R2 Score is a valuable indicator of the suitability of the data for a linear model.
-    The resulting correlation score is calculated by taking a simple weighted average of the R2 score and the MAE.
-    Nevertheless, the MAE is inherently an error metric.
-    Therefore, following the normalization of the MAE to the range of 0 to 1, it is subtracted from 1, thereby inverting the task to maximize the objective.
-    This is done to align the MAE with the R2 Score, thereby ensuring that the resulting optimal score is 1.
+    The MAE is inherently an error metric that should be minimized. 
+    It is thus normalized to the range of 0 to 1. 
+    This is followed by inversion through subtraction from 1 to create a score that represents a maximization task.
+    This is performed to ensure that the calculated MAE score is aligned with the R2 Score, thereby ensuring that the resulting score is optimized to 1.
+    The resulting correlation score is derived by calculation of the weighted average between the R2 and the MAE scores.
 
     #heading(depth: 5, numbering: none, bookmarked: false)[Code Snippet]
     The resulting correlation score is then calculated by taking the weighted average of the R2 score and the MAE, as illustrated in the following code example.
-    It is evident that the MAE undergoes an inversion.
-    However, the R2 Score's constrained range is not immediately apparent.
-    Consequently, the resulting correlation score is also constrained to the range of 0 to 1, which is the desired property of the algorithm.
+    The variable mae_norm_score is defined as the inverse of the MAE, which subsequently is to be maximized.
+    The constrained range of the R2 Score is not immediately apparent.
+    Nonetheless, the resulting correlation score is effectively constrained to the range of 0 to 1, which is the desired property of the algorithm.
     To ensure simplicity, the alpha value is set to 0.5, thereby assigning equal weight to both metrics.
 
     ```python
     from sklearn.linear_model import LinearRegression
     from sklearn.metrics import mean_absolute_error
 
-    def calculate_linear_regression(scores, truth_scores, alpha=0.5):
+    def linear_regression(scores, truth_scores, alpha=0.5):
+        # Reshape to match LinearRegression model expected input
         scores_reshaped = np.array(scores).reshape(-1, 1)
         truth_scores_reshaped = np.array(truth_scores).reshape(-1, 1)
 
+        # Create and fit the model
         model = LinearRegression()
         model.fit(scores_reshaped, truth_scores_reshaped)
-        r2 = model.score(scores_reshaped, truth_scores_reshaped)
+        # Trend line for later visualization
         trend = model.predict(scores_reshaped)
+        # Calculate R2 Score
+        r2 = model.score(scores_reshaped, truth_scores_reshaped)
+        # Calculate MAE
         mae = mean_absolute_error(truth_scores_reshaped, trend)
         mae_norm = mae / (max(truth_scores) - min(truth_scores) + 1e-10)
-        mae_norm_score = 1 - mae_norm
+        mae_norm_score = 1 - mae_norm # Inverse the normalized MAE
 
-        correlation_score = (alpha * r2) + ((1 - alpha) * mae_norm_score)
-        return r2, trend, mae_norm_score, correlation_score
+        # Calculate resulting score
+        result = (alpha * r2) + ((1 - alpha) * mae_norm_score)
+        return result, r2, mae_norm_score, trend
 
     # Example Usage:
     scores = [0.5, 0.6, 0.7, 0.8]
     truth_scores = [0.5, 0.6, 0.7, 0.8]
 
-    r2, trend, mae_score, correlation_score = calculate_linear_regression(scores, truth_scores)
-
-    print(f"Correlation Score: {correlation_score:.3f}") # Output: Correlation Score: 1.000 (perfect correlation)
+    result, r2, mae_score, trend = linear_regression(scores, truth_scores)
+    print(f"Correlation Score: {result:.3f}")
     ```
 
     #heading(depth: 5, numbering: none, bookmarked: false)[Results]
@@ -676,11 +683,13 @@
 
     A more compelling comparison can be made by examining the example of @fig:truth_compare:correlation:b.
     In this case, the algorithm's scores consistently fall short of the desired level of satisfaction.
-    The issue lies in the fact that, while the scores do reflect a lower quality compared to the other two examples, they do not represent this as effectively as desired.
-    This phenomenon can be attributed to the fact that, even in this instance, the mean absolute error (MAE) is not particularly low. 
-    The fit itself is not poor; it is merely constructed upon substandard data.
-    This phenomenon is more evident in the R2 Score.
-    Due to the equitable weighting of the two metrics, the resulting score does not represent the low R2 Score values, and therefore not the low quality of the linear relationship assumption.
+    The issue lies in the fact that, while the correlation scores do reflect a lower quality compared to the other two examples, they do not represent this as effectively as desired.
+    The phenomenon can be explained by the equitable weighting of the two metrics. 
+    The R2 score represents the poor linear correlation well, but the MAE score does not. 
+    The MAE score measures distance from the fit, which itself is not of poor quality; but built upon substandard data.
+    Consequently, the MAE score is not a reliable metric for evaluating the linear relationship when compared to the R2 Score.
+    The resulting score's meaning is not invalidated by this observation, since a lower score is still indicative of a lower quality. 
+    However, the degree of decrease is not as pronounced as it should be.
 
     A more substantial problem that can be observed is evident in the result of this example using the Sobel derivative.
     The R2 score in this case, while still comparatively low, demonstrates indications of improvement in comparison with the other derivatives.
@@ -688,7 +697,7 @@
     It is an indicator that the data align more closely with a linear relationship.
     However, this is not a favorable outcome, as the linear relationship exhibits an evident anti-correlation with the ground truth data.
     Conversely, a higher score that does not align with the expected outcome is not consistent with the principle of faithfulness to expectation.
-    This was previously indicated by the negative Pearson correlation score documented; however, this is no longer represented within this approach.
+    In @section:pearson, this was previously indicated by a negative correlation score; however, within this approach, there is no longer any indicator for this.
 
     In view of the aforementioned issues and the inability to enhance on the Pearson coefficient, the subsequent final analysis of the algorithm's performance will be conducted employing the Pearson coefficient.
     The sole viable enhancement in this section was the more straightforward method for visually depicting the linear correlation between the two datasets.

@@ -8,12 +8,12 @@
 
 #show: body => project(details, body)
 
-#data()
+//#data()
 
-#prompting()
+//#prompting()
 
 #ndsm_analysis()
 
 #truth_compare()
 
-#sam_inclusion()
+//#sam_inclusion()
