@@ -6,7 +6,7 @@
     As a need for more reliable input promps emerged, this section will discuss the process of programming a custom pipeline to create segmentations.
     These segmentation are to be more trustworthy for prompting SAM, and therefore should result in overall better outputs.
     This will serve the purpose of truly being able to identify whether SAM is capable of solving the given problem or if even after having improved the input data given to it it still fails to satisfy requirements.
-    This means that this section essentially works on the Null-Hypothesis that correct input points can lead to more correct segmentations by SAM.
+    This means that this section works based on the hypothesis that correct input points lead to better segmentations by SAM.
     This not only includes better segmentations in terms of structural correctness, as that was not a given when using the input mask, but especially includes a more correct number of input points.
     This should in theory then solve the problem that small surfaces were not able to be predicted since there was not prompt given for them.
 

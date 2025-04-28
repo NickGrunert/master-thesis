@@ -57,7 +57,7 @@
     This is because minor discrepancies in the output score calculated on the ground truth do not invalidate the algorithm.
 
 
-    #strong("Hier fehlt die ergebnisse und challenges mit der erstellung der ground truth")
+    // TODO Hier fehlt die ergebnisse und challenges mit der erstellung der ground truth
 
 
     == Segmentation Evaluation
@@ -322,11 +322,16 @@
     The objective is to ascertain the validity of the concept in relation to the ground truth. 
     Consequently, the penalization of erroneous surfaces through undersegmentation is required to ensure the integrity of this endeavor, since else the score of wrong segmentations could be overrestimated drastically.
 
-    // TODO say anything anywhere about this figure
+    As demonstrated by @fig:truth_compare:hungarian_compare, a new visualization method has been developed for the purpose of illustrating the handling of segments.
+    The absence of matches for two ground truth segments is readily apparent.
+    It has moreover been determined that the unmatched segments are attributable to the fact that the algorithm created one large segment, which can ultimately be matched with a single one of the three real segments that compose it, the largest one by pixel length.
+    Analysis reveals that the experiment's failure can be attributed to an inadequate adjustment of the canny values. 
+    These values were not sufficiently adjusted to create an edge between the segments.
+
     #figure(
       image("../figures/truth_compare/hungarian/hungary_compare.png"), caption: [
       New visual representation of matching the segments.
-    ]), <fig:truth_compare:hungarian_compare>
+    ]) <fig:truth_compare:hungarian_compare>
 
     The statistics presented in @fig:truth_compare:hungarian_statistics illustrate the disparities between the two implementations with respect to performance metrics.
     The first image displays the percentage difference between the two calculations.
@@ -419,7 +424,8 @@
     Originally, this section first presented all theoretical explanations, before combining their respective experimentation results together to create a final evaluation.
     However, this approach was deemed impractical, as each approach was thoroughly considered and evaluated before conducting a comprehensive analysis of the results.
     Each subsequent approach has been developed by incorporating the lessons learned from the results of the previous approaches and striving to improve upon them.
-    Therefore, the ensuing sections are devoted to the following: an exposition of the metrics by which the algorithm was evaluated; the presentation of example results; and a direct discussion of the lessons learned.
+    Consequently, the ensuing sections are dedicated to the following: the presentation of formulae for calculating the metric; an exposition of the rationale behind why it is used; the presentation of example results; and a discussion of the lessons learned.
+    It is hypothesized that the data is indeed correlated with each other, and that the relationship between them is of linear kind.
 
     The example images employed in the ensuing sections are all drawn from the same three example houses. 
     This ensures that the outcome of @fig:truth_compare:metrics:a is equivalent to that of @fig:truth_compare:pearson:a and @fig:truth_compare:correlation:a, with the sole difference being the consideration of disparate metrics. 
@@ -429,13 +435,13 @@
     #subpar.grid(
       columns: 3,
       gutter: 2mm,
-      figure(image("../figures/truth_compare/metrics/A.png"), caption: [
+      figure(image("../data/6/10/image.png"), caption: [
         Example A.
       ]), <fig:truth_compare:examples:a>,
-      figure(image("../figures/truth_compare/metrics/B.png"), caption: [
+      figure(image("../data/6/18/image.png"), caption: [
         Example B.
       ]), <fig:truth_compare:examples:b>,
-      figure(image("../figures/truth_compare/metrics/C.png"), caption: [
+      figure(image("../data/6/16/image.png"), caption: [
         Example C.
       ]), <fig:truth_compare:examples:c>,
       caption: [
@@ -443,6 +449,17 @@
       ],
       label: <fig:truth_compare:examples>,
     )
+
+    A limitation common to all subsections, particularly the first, is that they are based on an insufficient number of data points.
+    The precise number of data points required for conducting an accurate statistical analysis of the correlation is dependent upon the anticipated magnitude of the correlation @correlation1.
+    It is expected that the system will stabilize at approximately 250 data points @correlation2.
+    However, the initial categorization of results was divided based on the methodology employed for creating the derivative, resulting in a total of only 70 data points for each category.
+    A comprehensive evaluation of the data indicates that while the outcomes for houses are not directly comparable to those of other houses, they are consistent within their own respective dataset.
+    Consequently, all figures displaying run results are initially separated into the four derivative methods, subsequently displaying the combined data points in the final line. 
+    The incorporation of a greater number of data points, amounting to 280, is assumed to provide a more comprehensive representation of the quality of the algorithm to be measured.
+    It is imperative to acknowledge that all data points mapping to the origin are excluded from the calculation, as they are considered outliers. 
+    These outliers are attributed to executions where the algorithm's inability to accurately identify the house base area resulted in no predicted segments being generated.
+    Their inclusion would only hurt the further analysis.
 
     === MAE, MSE, RMSE and R2 Score <section:metrics>
 
@@ -461,7 +478,9 @@
     The R2 score is a measure of the extent to which the data aligns with a linear model, also referred to as the coefficient of determination.
     This range extends from $(-infinity, 1]$, with 1 representing a perfect fit and negative values denoting a lack of fit for the data within the linear model.
 
-    The #abr("MAE") is calculated by taking the absolute difference between the two datasets and averaging it (see @formula:mae). The #abr("MSE") is calculated by taking the squared difference between the two datasets and averaging it (see @formula:mse). The #abr("RMSE") is calculated by taking the square root of the MSE (see @formula:rmse).
+    The #abr("MAE") is calculated by taking the absolute difference between the two datasets and averaging it (see @formula:mae). 
+    The #abr("MSE") is calculated by taking the squared difference between the two datasets and averaging it (see @formula:mse). 
+    The #abr("RMSE") is calculated by taking the square root of the MSE (see @formula:rmse).
     The R2 is calculated by taking the variance of the two datasets and dividing it by the variance of the first dataset, as demonstrated in @formula:r2.
 
     #heading(depth: 5, numbering: none, bookmarked: false)[Code Snippet]
@@ -520,17 +539,17 @@
     #subpar.grid(
       columns: 4,
       gutter: 2mm,
-      figure(image("../figures/truth_compare/metrics/metrics1.png"), caption: [
+      figure(image("../data/6/10/v1/correlation/metrics.png"), caption: [
         Example A.
       ]), <fig:truth_compare:metrics:a>,
-      figure(image("../figures/truth_compare/metrics/metrics2.png"), caption: [
+      figure(image("../data/6/18/v1/correlation/metrics.png"), caption: [
         Example B.
       ]), <fig:truth_compare:metrics:b>,
-      figure(image("../figures/truth_compare/metrics/metrics3.png"), caption: [
+      figure(image("../data/6/16/v1/correlation/metrics.png"), caption: [
         Example C.
       ]), <fig:truth_compare:metrics:c>,
       caption: [
-        Three examples of using the MAE, MSE, RMSE and R2 Score to compare the algorithm's scores to the ground truth data.
+        Example results for using MAE, MSE, RMSE and R2 Score.
       ],
       label: <fig:truth_compare:metrics>,
     )
@@ -595,17 +614,17 @@
     #subpar.grid(
       columns: 4,
       gutter: 2mm,
-      figure(image("../figures/truth_compare/metrics/pearson1.png"), caption: [
+      figure(image("../data/6/10/v1/correlation/pearson.png"), caption: [
         Example A.
       ]), <fig:truth_compare:pearson:a>,
-      figure(image("../figures/truth_compare/metrics/pearson2.png"), caption: [
+      figure(image("../data/6/18/v1/correlation/pearson.png"), caption: [
         Example B.
       ]), <fig:truth_compare:pearson:b>,
-      figure(image("../figures/truth_compare/metrics/pearson3.png"), caption: [
+      figure(image("../data/6/16/v1/correlation/pearson.png"), caption: [
         Example C.
       ]), <fig:truth_compare:pearson:c>,
       caption: [
-        The three examples of the Pearson Coefficient applied to the segmentations from the algorithm compared to the ground truth data.
+        Example results for Pearson Coefficient.
       ],
       label: <fig:truth_compare:pearson>,
     )
@@ -699,29 +718,150 @@
     Conversely, a higher score that does not align with the expected outcome is not consistent with the principle of faithfulness to expectation.
     In @section:pearson, this was previously indicated by a negative correlation score; however, within this approach, there is no longer any indicator for this.
 
-    In view of the aforementioned issues and the inability to enhance on the Pearson coefficient, the subsequent final analysis of the algorithm's performance will be conducted employing the Pearson coefficient.
-    The sole viable enhancement in this section was the more straightforward method for visually depicting the linear correlation between the two datasets.
+    In light of the aforementioned issues and the inability to enhance the Pearson coefficient, this endeavor is not considered a success and will not be further pursued.
+    The sole viable enhancement in this section was the more straightforward method to visually depict the linear correlation between the two datasets.
 
     #subpar.grid(
       columns: 4,
       gutter: 2mm,
-      figure(image("../figures/truth_compare/metrics/correlation1.png"), caption: [
+      figure(image("../data/6/10/v1/correlation/regression.png"), caption: [
         Example A.
       ]), <fig:truth_compare:correlation:a>,
-      figure(image("../figures/truth_compare/metrics/correlation2.png"), caption: [
+      figure(image("../data/6/18/v1/correlation/regression.png"), caption: [
         Example B.
       ]), <fig:truth_compare:correlation:b>,
-      figure(image("../figures/truth_compare/metrics/correlation3.png"), caption: [
+      figure(image("../data/6/16/v1/correlation/regression.png"), caption: [
         Example C.
       ]), <fig:truth_compare:correlation:c>,
       caption: [
-        Correlation Scores for the three examples using the linear regressor and plotting the generated line in red.
+        Example results for using the LinearRegressor.
       ],
       label: <fig:truth_compare:correlation>,
     )
 
-    #strong("Hier fehlt endgültige ergebnisse und so")
-  ]
+    === Spearman Coefficient <section:spearman>
 
-  pagebreak()
+    #heading(depth: 5, numbering: none, bookmarked: false)[Formula]
+    $ "Spearman" r_s = 1 - (6 * sum(d_i^2)) / (n * (n^2 - 1)) $ <formula:spearman>
+    With $d_i$ signifying the difference in ranks between the two datasets and $n$ being the number of data points and $n$ the number of data points.
+    For instance, the sets $[1, 2, 3]$ and $[3, 2, 1]$ would result in $d_i = [2, 0, -2]$ and $n = 3$.
+
+    #heading(depth: 5, numbering: none, bookmarked: false)[Explanation]
+    The strict requirement of a linear relationship can be relaxed to a monotone relationship between the two datasets. 
+    In such instances, the Spearman coefficient can be employed to measure the coefficient of relation @spearman1.
+    The Spearman coefficient is a non-parametric measure of rank correlation. 
+    It assesses how well the relationship between two variables can be described by a monotonic function.
+    This approach is analogous to the Pearson coefficient, as discussed in @section:pearson, with the key distinction being that it does not utilize the raw values directly. 
+    Instead, it employs the rank order of the values, as demonstrated in @formula:spearman.
+    The range and interpretation of the resulting score function similarly to the Pearson correlation coefficient @spearman2.
+
+    #heading(depth: 5, numbering: none, bookmarked: false)[Code Snippet]
+    The implementation of the Spearman coefficient, like to the Pearson coefficient, also utilizes the Scipy library implementation @spearman3.
+
+    ```python
+    from scipy.stats import spearmanr
+
+    scores = [0.5, 0.6, 0.7, 0.8]
+    truth_scores = [0.5, 0.6, 0.7, 0.8]
+
+    r, _ = spearmanr(scores, truth_scores)
+    print(f"Spearman: {r:.3f}")
+    ```
+
+    #heading(depth: 5, numbering: none, bookmarked: false)[Results]
+    The findings of this experiment are illustrated in @fig:truth_compare:spearman and appear to be promising.
+    As demonstrated by the Spearman coefficient, @fig:truth_compare:spearman:a and @fig:truth_compare:spearman:c exhibit a high or very high positive correlation with the ground truth data.
+    The results of @fig:truth_compare:spearman:b are not as favorable, rather indicating no or a very weak correlation.
+
+    A comparative analysis of the data reveals that it is generally comparable to the results obtained from the Pearson coefficient. However, a closer inspection of the data reveals no significant differences between the two methods, at least based on the examples that have been presented.
+    Consequently, the final evaluation will be conducted using both the Spearman and the Pearson coefficient, as they are both valid metrics for measuring the correlation between two datasets and may therefore both bring valuable insights.
+
+    #subpar.grid(
+      columns: 3,
+      gutter: 2mm,
+      figure(image("../data/6/10/v1/correlation/spearman.png"), caption: [
+        Example A.
+      ]), <fig:truth_compare:spearman:a>,
+      figure(image("../data/6/18/v1/correlation/spearman.png"), caption: [
+        Example B.
+      ]), <fig:truth_compare:spearman:b>,
+      figure(image("../data/6/16/v1/correlation/spearman.png"), caption: [
+        Example C.
+      ]), <fig:truth_compare:spearman:c>,
+      caption: [
+        Example results for Spearman Correlation.
+      ],
+      label: <fig:truth_compare:spearman>,
+    )
+
+    === Final Analysis
+    As previously stated, this section will employ the Pearson and Spearman coefficients to analyze the provided data.
+    The scope of this initiative will expand beyond the initial three examples provided by @fig:truth_compare:examples, encompassing all twenty examples that include ground truth segmentations.
+    While neither coefficient necessitates normalization in theory, for enhanced comparability between different entries, they are nevertheless normalized.
+    This also renders the data more visually comprehensible and facilitates the consolidation of the datasets into a single entity, as otherwise, the consolidation of the rankings would be unfeasible.
+    This means that the absolute values of each individual dataset are lost, which will lead to complications in the subsequent analyses.
+    Contrary to the preceding sections, the present section does not entail the evaluation of the method of metric calculation. 
+    Rather, the emphasis has shifted to the examination of the actual results and the entry data that gave rise outlier.
+
+    #heading(depth: 5, numbering: none, bookmarked: false)[Individual Entries]
+
+    #figure(
+      image("../figures/truth_compare/final_results/all_data.png"), 
+      caption: [All 20 Calculated Point Clouds normalized to $[0, 1]$. For each the calculated Pearson and Spearman Coefficients are shown.],
+    )<fig:truth_compare:final>
+
+    As demonstrated by @fig:truth_compare:final, the aggregate data for all derivatives, subsequent to being normalized, is confined within the full spectrum of $[0, 1]$.
+    The majority of the results obtained lend substantial support to the assumption of good correlation.
+    As previously mentioned, each cell encompasses the aggregate of 280 data points, thereby meeting the requisite minimum of 250 points to ensure the attainment of stable results.
+    The following observations can be made in this context:
+
+    Firstly, three data sets did not successfully normalize the data due to the presence of one or more outliers, which resulted in the distortion of the data's maximum and minimum values.
+    The correlation scores of these data sets are satisfactory, irrespective of the metrics employed, as they are not dependent on the normalization process.
+    However, this approach may present certain challenges when attempting to evaluate all datasets collectively. 
+    Specifically, the inclusion of these datasets can result in a reduction of the overall score, as they contribute "worse" points to the graph within the overarching context.
+
+    // TODO explain
+    Two datasets show almost no correlation.
+
+    One dataset exhibits a comparatively low Spearman coefficient value, yet concurrently demonstrates a high Pearson coefficient value.
+    This phenomenon can be considered a special case, arising from the presence of outliers along the Identity axis. 
+    The majority of the data points are concentrated in the top-right quadrant, in close proximity to each other, thereby creating a distinctive pattern.
+    Consequently, they exhibit a satisfactory linear correlation, as evidenced by the Pearson outputs and substantiated by visual confirmation.
+    However, due to the proximity of most points, the rank of the points becomes distorted.
+    This issue is not of significant concern, as we consider values of comparable magnitude to be interchangeable. 
+    However, it should be noted that the Spearman coefficient does not take magnitudes into account and consequently yields a low score, which is not alarming.
+    This study demonstrates the efficacy of employing both metrics for confirmation, as both metrics yield unexpected results when applied to specific cases, taking into account the particular data quality. 
+    This finding suggests that relying on a single metric may not always be sufficient.
+
+    It is further noted that one dataset exhibited a spearman score indicative of negative correlation, while a pearson score indicated no correlation.
+    An examination of the original data reveals that all values are highly proximate to each other prior to normalization.
+    It has been observed that minor alterations in the data seem to result in a decline in the score, while exhibiting minimal impact on the truth score.
+    Therefore, given the observation that all points are originally close to each other, it can be concluded that the spearman coefficient is essentially invalidated for the purpose of accurately analyzing the data as before.
+
+    #heading(depth: 5, numbering: none, bookmarked: false)[Combination of All Entries]
+
+    #figure(
+      image("../figures/truth_compare/final_results/combined_all_data.png"), 
+      caption: [All normalized data points merged into one graph and analyzed together.],
+    )<fig:truth_compare:final_all>
+
+    Given that all individual sets have undergone normalization, @fig:truth_compare:final_all shows them after they have been combined into a single, comprehensive dataset for the calculation of metrics.
+    Due to the fact that the scatter plot currently displays $20 * 270 = 5400$ data points, its visual appeal has been diminished in comparison to previous iterations.
+    The majority of points are situated along the Identity Axis.
+    It is evident that there are specific points in the top-left and bottom-right corners of the graph that correspond to the sections of the graph that are considered unfavorable.
+    The upper left corner of the matrix displays points that exhibited low algorithm scores but demonstrated satisfactory values when compared with ground truths. This observation is not problematic.
+    In general, all points with a score lower than the truth score are of no concern, since this could be due to already acknowledged restrictions like harsher punishment for miss-classifications.
+
+    A matter of concern arises in instances where the score significantly exceeds the truth score.
+    While minor discrepancies may be disregarded, instances where a minimal truth score is accompanied by an elevated algorithm score in the bottom-right corner pose significant challenges.
+    It is fortunate that the specified area is not densely populated. While some points are in close proximity to it, they are not excessively proximate. It is hoped that the number of points is sufficiently limited to ensure that the algorithm remains valid.
+    The population of this corner is predominantly attributable to the previously delineated unfortunate normalization of individual data sets due to outliers.
+
+    Given that this is normalized data, discrepancies between scores and truth scores that are initially smaller appear to be more problematic than in most cases.
+    The issue could only be resolved by ensuring that all original data sets contained a wider range of data points for comparison. However, the algorithm currently outputs a limited number of segmentations of low quality, making it difficult to achieve this objective. Changing the algorithm to do so would be an unsensical endeavor.
+    
+    The Pearson and Spearman scores demonstrate a high degree of correlation between the data, with values of $0.6006$ and $0.5832$, respectively.
+    The findings indicate that the hypothesis is valid in general, as the scoring system appears to accurately reflect or represent the true score in relation to a ground truth. Consequently, the utilization of this system on unseen data results in scores that can be relied upon for subsequent analysis.
+    Consequently, further iteration on the subject of better normaliation or outlier removal is rendered unnecessary, as reiterating the testing with such fixes would constitute a futile expenditure of additional time resources, since the already satisfactory score would only rise.
+  ]
 }

@@ -147,5 +147,7 @@
   set heading(numbering: "A")
   counter(heading).update(0)
   include("../modules/appendix.typ")
+
+  // Bibliography.
   bibliography("../references.bib")
 }
