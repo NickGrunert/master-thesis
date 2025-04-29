@@ -34,7 +34,7 @@
 
     == Creating Ground Truth images
 
-    The evaluation will be based on a set of 20 ground truth images, which were derived from images corresponding to the 60th percentile of the entire image dataset sorted by roof area.
+    The evaluation will be based on a set of twenty ground truth images, which were derived from images corresponding to the 60th percentile of the entire image dataset sorted by roof area.
     This selection was made on the basis that these models adequately represent the data overall. 
     They are sufficiently small to be processed in a reasonable timeframe while still exhibiting sufficient complexity.
     A more expansive roof composed of a greater quantity of diminutive, intricate surface segments would not generate a sufficient amount of information to justify the investment of time required to manually construct ground truths.
@@ -43,18 +43,18 @@
     @GroundTruth1 elaborates on the issues that emerge during the process of data generation.
     As previously discussed, the images currently under consideration are characterized by suboptimal pixel quality. 
     This deficiency manifests particularly in thin roof regions, where the delineation of the edge is rendered indistinct.
-    Additionally, certain edges are challenging to discern with the naked eye, and they are often imperceptible in both the nDSM and RGB data.
+    Additionally, certain edges are challenging to discern with the naked eye, and they are often imperceptible in both the #abr("nDSM") and RGB data.
     Especially in the RGB data regions with large shadows, the edges are not clearly visible.
     However, these edges become clearly visible when utilizing the derivative and coloring the image with this data.
     This introduces an additional layer of complexity to the process of generating the ground truth segmentations.
-    It must also again be noted that the RGB data and the nDSM data are not perfectly aligned.
-    Consequently, an attempt to create a ground truth based only on the RGB data would yield a different result than the nDSM data, particularly with regard to the house outlines, where the misalignment becomes quite evident.
-    The ground truth data will therefore mainly be built solely upon the nDSM data, whereby it must be noted that this approach introduces a discrimination against later analysis happening on the RGB data.
+    It must also again be noted that the RGB data and the #abr("nDSM") data are not perfectly aligned.
+    Consequently, an attempt to create a ground truth based only on the RGB data would yield a different result than the #abr("nDSM") data, particularly with regard to the house outlines, where the misalignment becomes quite evident.
+    The ground truth data will therefore mainly be built solely upon the #abr("nDSM") data, whereby it must be noted that this approach introduces a discrimination against later analysis happening on the RGB data.
     This is deemed accceptable because of the assumption that the height information is neccessary for good evaluation anyway, and biasing it here makes sense.
 
     As illustrated by @fig:truth_compare:truth_example, four of the twenty images are displayed, along with their respective derivative images and the ground truth segmentations.
     It is evident that certain challenges have emerged in relation to this matter.
-    Due to the insufficient contrast present in the nDSM images and data, precise identification of the subject was not possible by hand. 
+    Due to the insufficient contrast present in the #abr("nDSM") images and data, precise identification of the subject was not possible by hand. 
     Consequently, the derivative images were saved in advance to ensure the accuracy of subsequent analysis.
     This facilitates a more precise understanding of the roof segments' geometry than would be possible with other data sources.
 
@@ -836,7 +836,7 @@
 
     #figure(
       image("../figures/truth_compare/final_results/all_data.png"), 
-      caption: [All 20 Calculated Point Clouds normalized to $[0, 1]$. For each the calculated Pearson and Spearman Coefficients are shown.],
+      caption: [All twenty Calculated Point Clouds normalized to $[0, 1]$. For each the calculated Pearson and Spearman Coefficients are shown.],
     )<fig:truth_compare:final>
 
     As demonstrated by @fig:truth_compare:final, the aggregate data for all derivatives, subsequent to being normalized, is confined within the full spectrum of $[0, 1]$.
@@ -862,10 +862,10 @@
     This study demonstrates the efficacy of employing both metrics for confirmation, as both metrics yield unexpected results when applied to specific cases, taking into account the particular data quality. 
     This finding suggests that relying on a single metric may not always be sufficient.
 
-    It is further noted that one dataset exhibited a spearman score indicative of negative correlation, while a pearson score indicated no correlation.
+    It is further noted that one dataset exhibited a Spearman score indicative of negative correlation, while it's Pearson score indicated no correlation.
     An examination of the original data reveals that all values are highly proximate to each other prior to normalization.
     It has been observed that minor alterations in the data seem to result in a decline in the score, while exhibiting minimal impact on the truth score.
-    Therefore, given the observation that all points are originally close to each other, it can be concluded that the spearman coefficient is essentially invalidated for the purpose of accurately analyzing the data as before.
+    Therefore, given the observation that all points are originally close to each other, it can be concluded that the Spearman coefficient is essentially invalidated for the purpose of accurately analyzing the data as before.
 
     #heading(depth: 5, numbering: none, bookmarked: false)[Combination of All Entries]
 

@@ -32,6 +32,10 @@
     long: "False Negative",
     type: "abbr"
   ),
+  "nDSM": (
+    long: "normalized Digital Surface Model",
+    type: "abbr"
+  ),
 )
 
 #let _used_abbreviations_ = state("used_abbreviations", ())
