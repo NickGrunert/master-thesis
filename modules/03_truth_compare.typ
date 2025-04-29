@@ -49,15 +49,44 @@
     This introduces an additional layer of complexity to the process of generating the ground truth segmentations.
     It must also again be noted that the RGB data and the nDSM data are not perfectly aligned.
     Consequently, an attempt to create a ground truth based only on the RGB data would yield a different result than the nDSM data, particularly with regard to the house outlines, where the misalignment becomes quite evident.
-    Therefore the ground truth data will mainly be built solely upon the nDSM data, whereby it must be noted that this approach introduces a discrimination against later built analysis on the RGB data.
+    The ground truth data will therefore mainly be built solely upon the nDSM data, whereby it must be noted that this approach introduces a discrimination against later analysis happening on the RGB data.
     This is deemed accceptable because of the assumption that the height information is neccessary for good evaluation anyway, and biasing it here makes sense.
+
+    As illustrated by @fig:truth_compare:truth_example, four of the twenty images are displayed, along with their respective derivative images and the ground truth segmentations.
+    It is evident that certain challenges have emerged in relation to this matter.
+    Due to the insufficient contrast present in the nDSM images and data, precise identification of the subject was not possible by hand. 
+    Consequently, the derivative images were saved in advance to ensure the accuracy of subsequent analysis.
+    This facilitates a more precise understanding of the roof segments' geometry than would be possible with other data sources.
+
+    However, it should be noted that the process of deriving these values may not always result in the creation of smooth segments, as is illustrated in the final example.
+    However, it is even more pronounced in other instances not shown here.
+    It is important to note that all derivatives for the images were calculated using Sobel because they were programmed in a different notebook, where the optimally calculated hyperparameters were not available.
+    Nevertheless, this is an accepted risk, given Sobel's consistent ability to produce results that are at least satisfactory.
+
+    #subpar.grid(
+      columns: (1fr, 1fr, 1fr),
+      gutter: 1mm,
+      figure(image("../data/6/1/image.png", height: 15.5%)),
+      figure(image("../data/6/1/helper/derivative.png", height: 15.5%)),
+      figure(image("../data/6/1/truth.png", height: 15.5%)),
+      figure(image("../data/6/5/image.png", height: 23%)),
+      figure(image("../data/6/5/helper/derivative.png", height: 23%)),
+      figure(image("../data/6/5/truth.png", height: 23%)),
+      figure(image("../data/6/13/image.png", height: 27%)),
+      figure(image("../data/6/13/helper/derivative.png", height: 27%)),
+      figure(image("../data/6/13/truth.png", height: 27%)),
+      figure(image("../data/6/19/image.png", height: 18.5%)),
+      figure(image("../data/6/19/helper/derivative.png", height: 18.5%)),
+      figure(image("../data/6/19/truth.png", height: 18.5%)),
+      caption: [
+        Four Images, the Derivative Images and their Ground Truth Segmentations.
+      ],
+      label: <fig:truth_compare:truth_example>,
+    )
 
     Nonetheless, it is proposed that a sufficiently accurate ground truth is enough to create a general idea of whether the algorithm is performing in a satisfactory manner.
     Provided that the general structure and number of segments are accurate, the ground truth can be considered sufficiently reliable. 
-    This is because minor discrepancies in the output score calculated on the ground truth do not invalidate the algorithm.
-
-
-    // TODO Hier fehlt die ergebnisse und challenges mit der erstellung der ground truth
+    Minor discrepancies in the outputted truth score do not invalidate the algorithm.
 
 
     == Segmentation Evaluation
@@ -361,7 +390,7 @@
       label: <fig:truth_compare:hungarian_statistics>,
     )
 
-    #heading(depth: 5, numbering: none, bookmarked: false)[Code showcasing the Hungarian Matching Algorithm]
+    #heading(depth: 5, numbering: none, bookmarked: false)[Hungarian Matching Algorithm Code]
     ```python
     def hungarian_matching(prediction, truth):
       cost_matrix = np.zeros((len(prediction), len(truth)))
@@ -438,10 +467,10 @@
       figure(image("../data/6/10/image.png"), caption: [
         Example A.
       ]), <fig:truth_compare:examples:a>,
-      figure(image("../data/6/18/image.png"), caption: [
+      figure(image("../data/6/18/image.png", height: 17.5%), caption: [
         Example B.
       ]), <fig:truth_compare:examples:b>,
-      figure(image("../data/6/16/image.png"), caption: [
+      figure(image("../data/6/16/image.png", height: 17.5%), caption: [
         Example C.
       ]), <fig:truth_compare:examples:c>,
       caption: [
