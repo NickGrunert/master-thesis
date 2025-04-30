@@ -2,6 +2,13 @@
 
 #let ndsm_analysis() = {
   text(lang:"en")[
+    #show raw.where(block: true): block.with(
+      fill: luma(240),
+      inset: 10pt,
+      radius: 4pt,
+      width: 100%
+    )
+
     = Identification of Roof Structures through Analysis of nDSM Data
     As a need for more reliable input promps emerged, this section will discuss the process of programming a custom pipeline to create segmentations.
     These segmentation are to be more trustworthy for prompting SAM, and therefore should result in overall better outputs.
@@ -20,8 +27,12 @@
       Therefore, the algorithm will be forced to handle such errors and ensure they do not invalidate it's output.
       Invalidation hereby means that such occurences do not lead to mayor miscategorizations of segments.
 
+
+
+
+
     @section:edge_detection will create derivations and use the Canny Algorithms for edge detection.
-    An actually existing edge between segments can highly change in how obvious it is in the data's numbers.
+    An edge between segments can highly change in how obvious it is in the data.
     Henceforth, the algorithm will need to adjust on a case to case basis using parameters, which will be discussed for each sub-section individually.
     In turn, this leads to the need of creating a scoring algorithm in @section:scoring.
     This system will be able to analyze the result of a run and re-run it with adjusted parameters, or rather will be used to create an analysis on how the parameters actually effect the result and which ranges of them make sense.
@@ -29,6 +40,77 @@
 
 
     == Edge Detection using the Canny Algorithm <section:edge_detection>
+
+    === Calculating the Derivative
+    
+    @ScharrOperator
+
+    === Applying Logarithmic Scaling
+
+    Using the Logarithm on the original, but normalized, nDSM Image data will help to enhance the contrast of the image. This will not only make the image more visually appealing but also easier to interpret. 
+    @fig:algorithm:log shows the difference when applying the Logarithm directly after calculating the derivative.
+    It is observable that the image which contains logarithmic normalization has less extreme maxima and minima, which makes it easier to interpret the image, due to the smaller values being more prominent, leading to a more balanced image in intensity.
+    In the Image not using logarithmic scaling, most colours become very pale whilest only the extreme values on for example the edges of the house become intensively coloured, leading to the fact, that the image becomes hard to interpret by human eyes when trying to evaluate or validate the calculated data.
+    The results of both are of quite different quality, which is due to the parameter of 'clipped percentage’ and input parameter for the Canny Edge Detection algorithm. 
+    It appears that they could be changed in such a way that both images are much more similar in quality, but this is not researched in depth until after @section:scoring, when better experimentation is possible due to the scoring system.
+    For now, further experiments will continue to use the logarithmic normalization, as it is a simple and effective way to enhance the contrast of the image, which in turn results in a wider or better scope for parameter tuning.
+
+    #figure(
+      image("../figures/apply_log/Result.png", width: 100%),
+      caption: [
+        Comparison between using the Logarithm on the original nDSM Image data and the original nDSM Image data without prior adjustments.
+      ],
+    ) <fig:algorithm:log>
+
+    === Clipping extreme Values
+
+    === Gaussian Blurring
+
+    #heading(depth: 5, numbering: none, bookmarked: false)[Explanation]
+    A crucial step in the pipeline is applying Gaussian Blur @GaussianOperator to reduce noise through smoothing.
+    This step is neccessary, as the derivative data is very noisy accross segments.
+    Blurring the data leads to much improvement in the quality of the detected edges, as less noise inside a coherent surface is strong enough to be detected as an edge which in turn leads to the algorithm being less likely to split surfaces into multiple surfaces.
+    However, it can be noted that due to the small size of the image this blurring leads to a loss of detail, meaning problems in the detection of thin roof parts.
+    In earlier iterations of the algorithm, the blurring was done after shifting the data between 0 and 255, which the following edge detection algorithm uses.
+    This, however small it was, lead to a minor loss of quality due to integer rounding so it was changed to be done before the shifting.
+
+    #heading(depth: 5, numbering: none, bookmarked: false)[Code]
+    ```python
+    class BlurringMethod(Enum):
+        NONE = 0
+        SMALL = 1
+        MEDIUM = 2
+
+    def edge_detection(...):
+      # ... other steps
+
+      ####### STEP 4 : GAUSSIAN BLURRING
+      match apply_blur:
+        case BlurringMethod.NONE:
+          blurred = clipped
+        case BlurringMethod.SMALL:
+          blurred = cv2.GaussianBlur(clipped, (3, 3), 0)
+        case BlurringMethod.MEDIUM:
+          blurred = cv2.GaussianBlur(clipped, (5, 5), 0)
+        case _: # Catch-all for unmatched cases
+          raise ValueError("Unexpected blurring type")
+
+      # ... other steps
+    ```
+
+    === Canny Edge Detection
+
+    === Results
+
+
+
+
+
+
+
+
+
+
     @fig:edp:pipeline shows the full pipeline used for the edge detection.
     For now, the pipeline is kept simple, as the main goal is to create a basis for further experiments.
     The derivatives are distinguished between x and y directions, as using the combined values in the form of magnitude creates error.
@@ -45,7 +127,7 @@
     The pipeline starts with the calculation of the derivative of the nDSM data using the Sobel operator @SobelOperator.
     Interestingely, visualizing the absolute values inside the bars plots shows the roof segments quite clearly, as the graph is a layering of the individual segments graphs.
     While the clipping which follows in the next step was introduced to improve the contrast in the values, we also apply logarithmic scaling to the output values of the derivative.
-    Further discussed in @log, this step is helpful in enhancing the contrast of the image, which in turn makes it easier to interpret.
+    //Further discussed in @section:log, this step is helpful in enhancing the contrast of the image, which in turn makes it easier to interpret.
 
     The next step is clipping the extreme values of the derivative data.
     This step may not be neccessary, but it adds nice and wanted improvements to the algorithm.
@@ -56,7 +138,7 @@
     - Using the clipped values gives a base for guessing the layout of the house.
       This is theoretically not neccessary, as the input data regarding the house's layout is given and of acceptable quality, but it may be useful for further experiments, as the algorithm may be able to detect missing areas of the house, which are not covered by the input data.
     However, this step creates a hyperparameter, which may need to be adjusted for each house, as the perfect percentage of clipped values may vary between houses.
-    Using a value too high may lead to atrifacts inside the roof segments or even clipping entire surfaces together, using a value too low may lead to the algorithm not being able to detect house layout, meaning all surfaces will be filtered out, see @surface_growth.
+    Using a value too high may lead to atrifacts inside the roof segments or even clipping entire surfaces together, using a value too low may lead to the algorithm not being able to detect house layout, meaning all surfaces will be filtered out, see @section:surface_growth.
 
     Disregarding the visual step back, @fig:clipping shows the difference between using and not using the clipping step.
     After clipping the data, the hills stemming from the roof segments are clearly visible.
@@ -77,18 +159,17 @@
       label: <fig:clipping>,
     )
 
-    A crucial step in the pipeline is applying Gaussian Blur @GaussianOperator to reduce noise through smoothing.
-    This step is neccessary, as the derivative data is very noisy accross segments.
-    Blurring the data leads to much improvement in the quality of the detected edges, as less noise inside a coherent surface is strong enough to be detected as an edge which in turn leads to the algorithm being less likely to split surfaces into multiple surfaces.
-    However, it can be noted that due to the small size of the image this blurring leads to a loss of detail, meaning problems in the detection of thin roof parts.
-    In earlier iterations of the algorithm, the blurring was done after shifting the data between 0 and 255, which the following edge detection algorithm uses.
-    This, however small it was, lead to a minor loss of quality due to integer rounding so it was changed to be done before the shifting.
-
     The final step in the pipeline is the application of the Canny Edge Detection algorithm @CannyOperator.
     For now, due to short experiments showing the most promising results without further need for parameter tuning, the algorithm is used with lower and higher threshold being based on the 10th and 90th percentile of the blurred data, because this way of dynamic calculation leads to the best results on different houses, which simply put may not be satisfyingly segmentable with a fixed threshold.
-    These found edges in x and y direction are then combined to create the final edge detection image, which is then used in the surface generation following in @surface_growth.
+    These found edges in x and y direction are then combined to create the final edge detection image, which is then used in the surface generation following in @section:surface_growth.
 
-    == Surface Growth <surface_growth>
+
+
+
+
+
+
+    == Surface Growth <section:surface_growth>
 
     Using the edges calculated in the edge detection pipeline, the algorithm is able to generate surfaces.
     This is done by simply letting all non-edge pixel #quote("grow") into all directions until only edge pixel are left and thereby all disjunct pixel structures represent a surface.
@@ -159,6 +240,10 @@
 
     Additionaly the example house shown in the image shows that the algorithm without dynamic determination of parameters is not sufficient to solve the problem, because the house's small squared flat roof in the middle got merged with two outer roofs, which is plain wrong and should be detected and fixed.
     Respectively, the next section is about exactly that, the scoring system, which is neccessary to evaluate the quality of the generated surfaces.
+
+
+
+
 
     == Scoring System for Evaluation <section:scoring>
 
@@ -346,40 +431,5 @@
       ],
       label: <fig:scores:founderror>,
     )
-
-
-
-
-
-
-
-    == Experiments
-
-    === Logarithm <log>
-
-    Using the Logarithm on the original, but normalized, nDSM Image data will help to enhance the contrast of the image. This will not only make the image more visually appealing but also easier to interpret. 
-    @fig:edp:log shows the difference when applying the Logarithm directly after calculating the derivative.
-    It is observable that the image which contains logarithmic normalization has less extreme maxima and minima, which makes it easier to interpret the image, due to the smaller values being more prominent, leading to a more balanced image in intensity.
-    In the Image not using logarithmic scaling, most colours become very pale whilest only the extreme values on for example the edges of the house become intensively coloured, leading to the fact, that the image becomes hard to interpret by human eyes when trying to evaluate or validate the calculated data.
-    The results of both are of quite different quality, which is due to the parameter of 'clipped percentage’ and input parameter for the Canny Edge Detection algorithm. 
-    It appears that they could be changed in such a way that both images are much more similar in quality, but this is not researched in depth until after @section:scoring, when better experimentation is possible due to the scoring system.
-    For now, further experiments will continue to use the logarithmic normalization, as it is a simple and effective way to enhance the contrast of the image, which in turn results in a wider or better scope for parameter tuning.
-
-    #figure(
-      image("../figures/apply_log/Result.png", width: 100%),
-      caption: [
-        Comparison between using the Logarithm on the original nDSM Image data and the original nDSM Image data without prior adjustments.
-      ],
-    ) <fig:edp:log>
-
-    === Edge Detection
-
-    @ScharrOperator
-
-    === Blurring
-
-    @GaussianOperator
   ]
-
-  pagebreak()
 }

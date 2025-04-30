@@ -823,7 +823,8 @@
       label: <fig:truth_compare:spearman>,
     )
 
-    === Final Analysis
+    == Final Analysis
+    
     As previously stated, this section will employ the Pearson and Spearman coefficients to analyze the provided data.
     The scope of this initiative will expand beyond the initial three examples provided by @fig:truth_compare:examples, encompassing all twenty examples that include ground truth segmentations.
     While neither coefficient necessitates normalization in theory, for enhanced comparability between different entries, they are nevertheless normalized.

@@ -6,23 +6,34 @@
       fill: luma(240),
       inset: 10pt,
       radius: 4pt,
+      width: 100%
     )
 
-
-
     = SAM
-    This is text
 
+    == Explanation
 
-    == Input Prompting Strategies
+    == Input Prompting
 
     === Random Strategy
 
     === Center Strategy
-    Code is moved to @code:center
+    //Code is moved to @code:center
 
     === Combined Strategy
-  ]
 
-  pagebreak()
+
+
+    == Images
+
+    === RGB Image
+
+    === nDSM Image
+
+    === Custom Derivative Image
+
+    === Color Channel Swaps
+
+    == Results
+  ]
 }

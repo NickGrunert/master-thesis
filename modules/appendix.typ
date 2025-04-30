@@ -2,15 +2,18 @@
 
 -- Supplementary Material --
 
-= Supplementary Material Source Code
 
+
+
+= Supplementary Material Source Code
 #show raw.where(block: true): block.with(
   fill: luma(240),
   inset: 10pt,
   radius: 4pt,
+  width: 100%
 )
 
-== Random Point Strategy <code:random>
+#heading(depth: 5, numbering: none, bookmarked: false)[Strategy Base Class]
 ```python
 class Strategy:
   def __init__(self, n=None, m=None):
@@ -53,7 +56,7 @@ class Strategy:
     return True
 ```
 
-== Random Point Strategy <code:random>
+#heading(depth: 5, numbering: none, bookmarked: false)[Random Point Strategy]
 ```python
 class Random(Strategy):
   def __init__(self, n=1):
@@ -82,8 +85,7 @@ class Random(Strategy):
     return points
 ```
 
-== Center Point Strategy <code:center>
-
+#heading(depth: 5, numbering: none, bookmarked: false)[Center Point Strategy]
 ```python
 class Center(Strategy):
   def __init__(self, n=1):
@@ -172,7 +174,7 @@ class Center(Strategy):
     return points
 ```
 
-== Combined Strategy <code:combined>
+#heading(depth: 5, numbering: none, bookmarked: false)[Combined Strategy]
 ```python
 class Combined(Strategy):
   def __init__(self, n=3, m=10):
