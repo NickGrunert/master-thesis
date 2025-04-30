@@ -43,9 +43,72 @@
 
     === Calculating the Derivative
     
-    @ScharrOperator
+    #heading(depth: 5, numbering: none, bookmarked: false)[Theory]
+    //TODO
+    @ScharrOperator @SobelOperator
+
+    #heading(depth: 5, numbering: none, bookmarked: false)[Implementation]
+    While all of the following implementations do not distinguish between the x and y directions, in this single section it is necessary due to implementation details where they need to be handled separately.
+
+    ```python
+    class DerivativeMethod(Enum):
+      SOBEL = 0
+      SLIDING = 1
+      GRADIENT = 2
+      SCHARR = 3
+
+    def edge_detection(...):
+      # Initial normalization
+      n = cv2.normalize(entry['ndsm'], None, 0, 255, cv2.NORM_MINMAX)
+
+      ####### STEP 1 : DERIVATIVE
+      match derivative:
+        case DerivativeMethod.SOBEL:
+          x = cv2.Sobel(n, cv2.CV_64F, 0, 1, ksize=3)
+          y = cv2.Sobel(n, cv2.CV_64F, 1, 0, ksize=3)
+        case DerivativeMethod.SLIDING:
+          kernel = np.array([1, 0 , -1])
+          y = np.apply_along_axis(
+            lambda row: np.convolve(row, kernel, mode='same'), axis=1, arr=n)
+          x = np.apply_along_axis(
+            lambda col: np.convolve(col, kernel, mode='same'), axis=0, arr=n)
+        case DerivativeMethod.GRADIENT:
+          x, y = np.gradient(n)
+        case DerivativeMethod.SCHARR:
+          x = cv2.Sobel(n, cv2.CV_64F, 0, 1, ksize=-1)
+          y = cv2.Sobel(n, cv2.CV_64F, 1, 0, ksize=-1)
+        case _: # Catch-all for unmatched cases
+          raise ValueError(f"Unexpected derivative type: {derivative}")
+
+      # ... other steps
+    ```
 
     === Applying Logarithmic Scaling
+
+    #heading(depth: 5, numbering: none, bookmarked: false)[Theory]
+    // TODO
+
+    #heading(depth: 5, numbering: none, bookmarked: false)[Implementation]
+    ```python
+    def edge_detection(...):
+      # ... other steps
+
+      ####### STEP 2 : LOGARITHMIC SCALING
+      # Store the sign of the original derivatives
+      sign = np.sign(derivative)
+
+      # Apply log1p to the absolute values
+      log = np.log1p(np.abs(derivative))
+
+      # Normalize the logarithmic values
+      derivative = cv2.normalize(log, None, 0, 255, cv2.NORM_MINMAX)
+
+      # Reapply the original sign
+      derivative = derivative * sign
+
+      # ... other steps
+    ```
+
 
     Using the Logarithm on the original, but normalized, nDSM Image data will help to enhance the contrast of the image. This will not only make the image more visually appealing but also easier to interpret. 
     @fig:algorithm:log shows the difference when applying the Logarithm directly after calculating the derivative.
@@ -55,26 +118,47 @@
     It appears that they could be changed in such a way that both images are much more similar in quality, but this is not researched in depth until after @section:scoring, when better experimentation is possible due to the scoring system.
     For now, further experiments will continue to use the logarithmic normalization, as it is a simple and effective way to enhance the contrast of the image, which in turn results in a wider or better scope for parameter tuning.
 
-    #figure(
-      image("../figures/apply_log/Result.png", width: 100%),
-      caption: [
-        Comparison between using the Logarithm on the original nDSM Image data and the original nDSM Image data without prior adjustments.
-      ],
-    ) <fig:algorithm:log>
 
     === Clipping extreme Values
 
+    #heading(depth: 5, numbering: none, bookmarked: false)[Theory]
+    // TODO
+
+    #heading(depth: 5, numbering: none, bookmarked: false)[Implementation]
+    ```python
+    def edge_detection(...):
+      # ... other steps
+
+      ####### STEP 3 : CLIPPING
+      lower_bound = np.percentile(derivative, 0 + percent)
+      upper_bound = np.percentile(derivative, 100 - percent)
+      clipped = np.clip(derivative, lower_bound, upper_bound)
+
+      # Save clipped values
+      mask = (derivative != clipped)
+      clipped_values[name] = mask
+
+      # ... other steps
+    ```
+
     === Gaussian Blurring
 
-    #heading(depth: 5, numbering: none, bookmarked: false)[Explanation]
-    A crucial step in the pipeline is applying Gaussian Blur @GaussianOperator to reduce noise through smoothing.
-    This step is neccessary, as the derivative data is very noisy accross segments.
-    Blurring the data leads to much improvement in the quality of the detected edges, as less noise inside a coherent surface is strong enough to be detected as an edge which in turn leads to the algorithm being less likely to split surfaces into multiple surfaces.
-    However, it can be noted that due to the small size of the image this blurring leads to a loss of detail, meaning problems in the detection of thin roof parts.
-    In earlier iterations of the algorithm, the blurring was done after shifting the data between 0 and 255, which the following edge detection algorithm uses.
-    This, however small it was, lead to a minor loss of quality due to integer rounding so it was changed to be done before the shifting.
+    #heading(depth: 5, numbering: none, bookmarked: false)[Theory]
+    Overall, the derivative is very noisy due to inconsistencies in the input height information.
+    To address this issue, the algorithm will use Gaussian smoothing for noise reduction.
+    A 2-dimensional kernel approximating a Gaussian is used to apply a convolution to the image.
+    This blurs the entire image @Gauss1.
 
-    #heading(depth: 5, numbering: none, bookmarked: false)[Code]
+    Using the OpenCV Gaussian blur implementation @Gauss2 introduces several new possible parameters, the kernel size and sigma values.
+    The sigma values define the standard deviation of the Gaussian function, which in turn determines the amount of blur applied to the image.
+    However, the influence of these parameters will not be explored extensively, and only 3x3 and 5x5 kernels will be tested, as well as whether noise reduction has the desired positive influence at all.
+    The sigma values are not explicitly set, so the algorithm automatically calculates them to be $≈0.8$ and $≈1.1$ for 3x3 and 5x5 kernels respectively.
+
+    The position in the overall edge detection pipeline just before Canny Edge Detection is applied and after the derivatives have been computed and clipped was determined after some minor experimentation that proved less successful than placing it here.
+
+    Note that due to the small size of the image, this blurring leads to a loss of detail, which will mean problems in detecting thin roof parts.
+
+    #heading(depth: 5, numbering: none, bookmarked: false)[Implementation]
     ```python
     class BlurringMethod(Enum):
         NONE = 0
@@ -83,6 +167,8 @@
 
     def edge_detection(...):
       # ... other steps
+
+      clipped = cv2.normalize(clipped, None, -255, 255, cv2.NORM_MINMAX)
 
       ####### STEP 4 : GAUSSIAN BLURRING
       match apply_blur:
@@ -100,6 +186,7 @@
 
     === Canny Edge Detection
 
+    #heading(depth: 5, numbering: none, bookmarked: false)[Theory]
     The concluding step of this section involves the implementation of the Canny Edge Detection algorithm @Canny1.
     The employment of the Canny algorithm enables the flexible adaptation of the system to the unique characteristics and requirements of each individual house.
     The underlying rationale for this phenomenon stems from the implementation of a complex calculation method that utilizes two parameters, lower and upper thresholding, to filter out edges based on gradient magnitude @Canny2.
@@ -120,13 +207,34 @@
     It is important to acknowledge that this approach will essentially replicate the utilization of absolute values directly, as the data undergoes normalization to fall within the range of 0 to 255 prior to the application of the Canny algorithm.
 
 
+    #heading(depth: 5, numbering: none, bookmarked: false)[Implementation]
+    ```python
+    def edge_detection(...):
+      # ... other steps
+
+      ####### STEP 5 : EDGE DETECTION
+      normalized = cv2.normalize(
+          blurred, None, 0, 255, cv2.NORM_MINMAX, cv2.CV_8U
+      )
+
+      lower_threshold = int(np.percentile(normalized, lower))
+      upper_threshold = int(np.percentile(normalized, upper))
+      edges = cv2.Canny(normalized, lower_threshold, upper_threshold)
+
+      # ... other steps
+    ```
+    
 
 
 
 
 
-
-
+    #figure(
+      image("../figures/apply_log/Result.png", width: 100%),
+      caption: [
+        Comparison between using the Logarithm on the original nDSM Image data and the original nDSM Image data without prior adjustments.
+      ],
+    ) <fig:algorithm:log>
 
 
 
@@ -144,7 +252,7 @@
     ) <fig:edp:pipeline>
 
     For better comparisons accross multiple roofs as well as better generalization, between each step the data gets normalized.
-    The pipeline starts with the calculation of the derivative of the nDSM data using the Sobel operator @SobelOperator.
+    The pipeline starts with the calculation of the derivative of the nDSM data using the Sobel operator .
     Interestingely, visualizing the absolute values inside the bars plots shows the roof segments quite clearly, as the graph is a layering of the individual segments graphs.
     While the clipping which follows in the next step was introduced to improve the contrast in the values, we also apply logarithmic scaling to the output values of the derivative.
     //Further discussed in @section:log, this step is helpful in enhancing the contrast of the image, which in turn makes it easier to interpret.
@@ -400,7 +508,7 @@
       S_"neg" &= (sum_(i=0)^n abs(i)) / N \
       S &= S_"pos" * p + S_"neg" * (1 - p) $ <formula:score>
 
-    In @fig:scores:squareornot the difference between using the square of the surface size and not using it is shown.
+    In @fig:scores:squareornot the difference between using the square of Safethe surface size and not using it is shown.
     Looking at the positive score, it becomes clear that it does indeed have the intended effect, as in @fig:scores:squareornot:a the bigger surface is rewarded more than the smaller one, while in @fig:scores:squareornot:b the smaller surface is rewarded more than the bigger one which in turn leads to the clearly worse segmentation on the right having the same positive score, even though the noise edges inside surfaces are clearly visible and divide big surfaces into multiple smaller ones.
     On the other hand this example also shows the working effect of the negative score, as the more an image is to the right the lower the resulting score, due to the fact that the right images have a lot of area falsely filtered out.
     Also the absolute values of positive scores are not comparible between the two approaches, since the squared scores have a higher variety of values, since there denominator becomes bigger.
