@@ -1,6 +1,145 @@
+#import "@preview/subpar:0.2.0"
+
 = Supplementary Material Images
 
--- Supplementary Material --
+#subpar.grid(
+  columns: 5,
+  gutter: 4mm,
+  figure(image("../data/6/0/v1/correlation/metrics.png", height: 45%)),
+  figure(image("../data/6/1/v1/correlation/metrics.png", height: 45%)),
+  figure(image("../data/6/2/v1/correlation/metrics.png", height: 45%)),
+  figure(image("../data/6/3/v1/correlation/metrics.png", height: 45%)),
+  figure(image("../data/6/4/v1/correlation/metrics.png", height: 45%)),
+  figure(image("../data/6/5/v1/correlation/metrics.png", height: 45%)),
+  figure(image("../data/6/6/v1/correlation/metrics.png", height: 45%)),
+  figure(image("../data/6/7/v1/correlation/metrics.png", height: 45%)),
+  figure(image("../data/6/8/v1/correlation/metrics.png", height: 45%)),
+  figure(image("../data/6/9/v1/correlation/metrics.png", height: 45%)),
+  outlined: false,
+)
+#subpar.grid(
+  columns: 5,
+  gutter: 4mm,
+  figure(image("../data/6/10/v1/correlation/metrics.png", height: 45%)),
+  figure(image("../data/6/11/v1/correlation/metrics.png", height: 45%)),
+  figure(image("../data/6/12/v1/correlation/metrics.png", height: 45%)),
+  figure(image("../data/6/13/v1/correlation/metrics.png", height: 45%)),
+  figure(image("../data/6/14/v1/correlation/metrics.png", height: 45%)),
+  figure(image("../data/6/15/v1/correlation/metrics.png", height: 45%)),
+  figure(image("../data/6/16/v1/correlation/metrics.png", height: 45%)),
+  figure(image("../data/6/17/v1/correlation/metrics.png", height: 45%)),
+  figure(image("../data/6/18/v1/correlation/metrics.png", height: 45%)),
+  figure(image("../data/6/19/v1/correlation/metrics.png", height: 45%)),
+  numbering: (..nums) => [#counter(figure.where(outlined: true)).display((..num_figs)=>num_figs.pos().at(0))],
+  caption: [
+    All results for MAE, MSE, RMSE and R2.
+  ],
+)
+
+
+#subpar.grid(
+  columns: 5,
+  gutter: 4mm,
+  figure(image("../data/6/0/v1/correlation/pearson.png", height: 45%)),
+  figure(image("../data/6/1/v1/correlation/pearson.png", height: 45%)),
+  figure(image("../data/6/2/v1/correlation/pearson.png", height: 45%)),
+  figure(image("../data/6/3/v1/correlation/pearson.png", height: 45%)),
+  figure(image("../data/6/4/v1/correlation/pearson.png", height: 45%)),
+  figure(image("../data/6/5/v1/correlation/pearson.png", height: 45%)),
+  figure(image("../data/6/6/v1/correlation/pearson.png", height: 45%)),
+  figure(image("../data/6/7/v1/correlation/pearson.png", height: 45%)),
+  figure(image("../data/6/8/v1/correlation/pearson.png", height: 45%)),
+  figure(image("../data/6/9/v1/correlation/pearson.png", height: 45%)),
+  outlined: false,
+)
+#subpar.grid(
+  columns: 5,
+  gutter: 4mm,
+  figure(image("../data/6/10/v1/correlation/pearson.png", height: 45%)),
+  figure(image("../data/6/11/v1/correlation/pearson.png", height: 45%)),
+  figure(image("../data/6/12/v1/correlation/pearson.png", height: 45%)),
+  figure(image("../data/6/13/v1/correlation/pearson.png", height: 45%)),
+  figure(image("../data/6/14/v1/correlation/pearson.png", height: 45%)),
+  figure(image("../data/6/15/v1/correlation/pearson.png", height: 45%)),
+  figure(image("../data/6/16/v1/correlation/pearson.png", height: 45%)),
+  figure(image("../data/6/17/v1/correlation/pearson.png", height: 45%)),
+  figure(image("../data/6/18/v1/correlation/pearson.png", height: 45%)),
+  figure(image("../data/6/19/v1/correlation/pearson.png", height: 45%)),
+  numbering: (..nums) => [#counter(figure.where(outlined: true)).display((..num_figs)=>num_figs.pos().at(0))],
+  caption: [
+    All results for Pearson Metric.
+  ],
+)
+
+
+#subpar.grid(
+  columns: 5,
+  gutter: 4mm,
+  figure(image("../data/6/0/v1/correlation/regression.png", height: 45%)),
+  figure(image("../data/6/1/v1/correlation/regression.png", height: 45%)),
+  figure(image("../data/6/2/v1/correlation/regression.png", height: 45%)),
+  figure(image("../data/6/3/v1/correlation/regression.png", height: 45%)),
+  figure(image("../data/6/4/v1/correlation/regression.png", height: 45%)),
+  figure(image("../data/6/5/v1/correlation/regression.png", height: 45%)),
+  figure(image("../data/6/6/v1/correlation/regression.png", height: 45%)),
+  figure(image("../data/6/7/v1/correlation/regression.png", height: 45%)),
+  figure(image("../data/6/8/v1/correlation/regression.png", height: 45%)),
+  figure(image("../data/6/9/v1/correlation/regression.png", height: 45%)),
+  outlined: false,
+)
+#subpar.grid(
+  columns: 5,
+  gutter: 4mm,
+  figure(image("../data/6/10/v1/correlation/regression.png", height: 45%)),
+  figure(image("../data/6/11/v1/correlation/regression.png", height: 45%)),
+  figure(image("../data/6/12/v1/correlation/regression.png", height: 45%)),
+  figure(image("../data/6/13/v1/correlation/regression.png", height: 45%)),
+  figure(image("../data/6/14/v1/correlation/regression.png", height: 45%)),
+  figure(image("../data/6/15/v1/correlation/regression.png", height: 45%)),
+  figure(image("../data/6/16/v1/correlation/regression.png", height: 45%)),
+  figure(image("../data/6/17/v1/correlation/regression.png", height: 45%)),
+  figure(image("../data/6/18/v1/correlation/regression.png", height: 45%)),
+  figure(image("../data/6/19/v1/correlation/regression.png", height: 45%)),
+  numbering: (..nums) => [#counter(figure.where(outlined: true)).display((..num_figs)=>num_figs.pos().at(0))],
+  caption: [
+    All results for Linear Regression.
+  ],
+)
+
+#subpar.grid(
+  columns: 5,
+  gutter: 4mm,
+  figure(image("../data/6/0/v1/correlation/spearman.png", height: 45%)),
+  figure(image("../data/6/1/v1/correlation/spearman.png", height: 45%)),
+  figure(image("../data/6/2/v1/correlation/spearman.png", height: 45%)),
+  figure(image("../data/6/3/v1/correlation/spearman.png", height: 45%)),
+  figure(image("../data/6/4/v1/correlation/spearman.png", height: 45%)),
+  figure(image("../data/6/5/v1/correlation/spearman.png", height: 45%)),
+  figure(image("../data/6/6/v1/correlation/spearman.png", height: 45%)),
+  figure(image("../data/6/7/v1/correlation/spearman.png", height: 45%)),
+  figure(image("../data/6/8/v1/correlation/spearman.png", height: 45%)),
+  figure(image("../data/6/9/v1/correlation/spearman.png", height: 45%)),
+  outlined: false,
+)
+#subpar.grid(
+  columns: 5,
+  gutter: 4mm,
+  figure(image("../data/6/10/v1/correlation/spearman.png", height: 45%)),
+  figure(image("../data/6/11/v1/correlation/spearman.png", height: 45%)),
+  figure(image("../data/6/12/v1/correlation/spearman.png", height: 45%)),
+  figure(image("../data/6/13/v1/correlation/spearman.png", height: 45%)),
+  figure(image("../data/6/14/v1/correlation/spearman.png", height: 45%)),
+  figure(image("../data/6/15/v1/correlation/spearman.png", height: 45%)),
+  figure(image("../data/6/16/v1/correlation/spearman.png", height: 45%)),
+  figure(image("../data/6/17/v1/correlation/spearman.png", height: 45%)),
+  figure(image("../data/6/18/v1/correlation/spearman.png", height: 45%)),
+  figure(image("../data/6/19/v1/correlation/spearman.png", height: 45%)),
+  numbering: (..nums) => [#counter(figure.where(outlined: true)).display((..num_figs)=>num_figs.pos().at(0))],
+  caption: [
+    All results for the Spearman Metric.
+  ],
+)
+
 
 
 

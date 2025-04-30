@@ -100,7 +100,27 @@
 
     === Canny Edge Detection
 
-    === Results
+    The concluding step of this section involves the implementation of the Canny Edge Detection algorithm @Canny1.
+    The employment of the Canny algorithm enables the flexible adaptation of the system to the unique characteristics and requirements of each individual house.
+    The underlying rationale for this phenomenon stems from the implementation of a complex calculation method that utilizes two parameters, lower and upper thresholding, to filter out edges based on gradient magnitude @Canny2.
+
+    It should be noted that alternative edge-detection algorithms could have been considered.
+    Algorithms of a simpler nature are based on the gradient value between the x and y directions of the image.
+    Nonetheless, such filters—for instance, the Sobel filter—are often found to be inadequate, particularly in noisy environments @Sobel2.
+    A substantial number of comparisons between Sobel and Canny detection have been documented.
+    The Sobel filter's most notable strength is its simplicity, which is advantageous in applications where rapid execution is paramount @Sobel1.
+    However, the temporal efficiency of the process is not a primary concern; instead, the emphasis is placed on the quality of the results obtained.
+    Canny's superior performance is attributable to its capacity for enhanced parameter tuning, a feature that is particularly advantageous in achieving more precise edge detection @Sobel3. 
+    This is a notable benefit, given that this work does involve the use of low-resolution images.
+
+    The determination of the optimal values for the lower and upper threshold will necessitate a process of experimentation and will vary between houses.
+    There have been suggestions of dynamically calculating the threshold values based on the gradient's median value @Canny3. 
+    However, this was not implemented due to initial tests not yielding promising results.
+    Conversely, the algorithm will utilize dynamic percentage thresholds.
+    It is important to acknowledge that this approach will essentially replicate the utilization of absolute values directly, as the data undergoes normalization to fall within the range of 0 to 255 prior to the application of the Canny algorithm.
+
+
+
 
 
 
@@ -159,9 +179,6 @@
       label: <fig:clipping>,
     )
 
-    The final step in the pipeline is the application of the Canny Edge Detection algorithm @CannyOperator.
-    For now, due to short experiments showing the most promising results without further need for parameter tuning, the algorithm is used with lower and higher threshold being based on the 10th and 90th percentile of the blurred data, because this way of dynamic calculation leads to the best results on different houses, which simply put may not be satisfyingly segmentable with a fixed threshold.
-    These found edges in x and y direction are then combined to create the final edge detection image, which is then used in the surface generation following in @section:surface_growth.
 
 
 

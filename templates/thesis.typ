@@ -64,7 +64,7 @@
   set par(leading: 1em)
 
   outline(
-    depth: 3,
+    depth: 2,
     indent: 2em
   )
 
@@ -130,7 +130,7 @@
         {[Abbildungsverzeichnis]} 
       else 
         {[List of Figures]},
-    target: figure//.where(kind: image),
+    target: figure.where(outlined: true),
   )
 
   // List of tables.

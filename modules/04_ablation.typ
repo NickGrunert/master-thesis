@@ -12,6 +12,12 @@
 
     == Impact of Hyperparameter Values
 
+    === Clipping Values
+
+    === Blurring Method
+
+    === Canny Values
+
     == Using SAM for Base Area Detection <section:replace_clipping_by_sam>
   ]
 }

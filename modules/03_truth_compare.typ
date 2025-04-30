@@ -454,7 +454,7 @@
     However, this approach was deemed impractical, as each approach was thoroughly considered and evaluated before conducting a comprehensive analysis of the results.
     Each subsequent approach has been developed by incorporating the lessons learned from the results of the previous approaches and striving to improve upon them.
     Consequently, the ensuing sections are dedicated to the following: the presentation of formulae for calculating the metric; an exposition of the rationale behind why it is used; the presentation of example results; and a discussion of the lessons learned.
-    It is hypothesized that the data is indeed correlated with each other, and that the relationship between them is of linear kind.
+    It is hypothesized that the data is indeed correlated with each other, and that the relationship between them is linear.
 
     The example images employed in the ensuing sections are all drawn from the same three example houses. 
     This ensures that the outcome of @fig:truth_compare:metrics:a is equivalent to that of @fig:truth_compare:pearson:a and @fig:truth_compare:correlation:a, with the sole difference being the consideration of disparate metrics. 
@@ -481,11 +481,18 @@
 
     A limitation common to all subsections, particularly the first, is that they are based on an insufficient number of data points.
     The precise number of data points required for conducting an accurate statistical analysis of the correlation is dependent upon the anticipated magnitude of the correlation @correlation1.
-    It is expected that the system will stabilize at approximately 250 data points @correlation2.
-    However, the initial categorization of results was divided based on the methodology employed for creating the derivative, resulting in a total of only 70 data points for each category.
+    Initially, the outcomes were split according to the methodology employed in calculating the derivative. 
+    This classification system did not encompass data points pertaining to the variation in filter sizes utilized in the Gaussian Blurring process.
+    The consequence of this phenomenon was an insufficient number of data points, which, due to excessive clustering, yielded good results, but failed to yield substantial correlation.
+    Consequently, the experiment variables were expanded to include the following:
+    The clipping values were subjected to testing within the range of zero to ten percent.
+    In the context of the Gaussian Blurring process, three distinct kernel sizes were employed, and a total of seven configurations were examined for the lower and upper threshold of the Canny algorithm.
+    This resulted in a total of 210 data points for each of Sobel, Sliding, Gradient and Scharr, which falls slightly below the optimal requirement of at least 250 data points.
+    Nevertheless, this led to a more extensive distribution of data points, thus yielding improved outcomes with respect to the correlation.
+
     A comprehensive evaluation of the data indicates that while the outcomes for houses are not directly comparable to those of other houses, they are consistent within their own respective dataset.
-    Consequently, all figures displaying run results are initially separated into the four derivative methods, subsequently displaying the combined data points in the final line. 
-    The incorporation of a greater number of data points, amounting to 280, is assumed to provide a more comprehensive representation of the quality of the algorithm to be measured.
+    Consequently, all figures display the initially separated results as well as the combined data points in the final line.
+    The incorporation of a greater number of data points, amounting to 840, is assumed to provide a more comprehensive representation of the quality of the algorithm to be measured.
     It is imperative to acknowledge that all data points mapping to the origin are excluded from the calculation, as they are considered outliers. 
     These outliers are attributed to executions where the algorithm's inability to accurately identify the house base area resulted in no predicted segments being generated.
     Their inclusion would only hurt the further analysis.
@@ -772,7 +779,7 @@
 
     #heading(depth: 5, numbering: none, bookmarked: false)[Formula]
     $ "Spearman" r_s = 1 - (6 * sum(d_i^2)) / (n * (n^2 - 1)) $ <formula:spearman>
-    With $d_i$ signifying the difference in ranks between the two datasets and $n$ being the number of data points and $n$ the number of data points.
+    With $d_i$ signifying the difference in ranks between the two datasets and $n$ being the number of data points.
     For instance, the sets $[1, 2, 3]$ and $[3, 2, 1]$ would result in $d_i = [2, 0, -2]$ and $n = 3$.
 
     #heading(depth: 5, numbering: none, bookmarked: false)[Explanation]
@@ -834,49 +841,45 @@
     Rather, the emphasis has shifted to the examination of the actual results and the entry data that gave rise outlier.
 
     #heading(depth: 5, numbering: none, bookmarked: false)[Individual Entries]
-
-    #figure(
-      image("../figures/truth_compare/final_results/all_data.png"), 
-      caption: [All twenty Calculated Point Clouds normalized to $[0, 1]$. For each the calculated Pearson and Spearman Coefficients are shown.],
-    )<fig:truth_compare:final>
-
     As demonstrated by @fig:truth_compare:final, the aggregate data for all derivatives, subsequent to being normalized, is confined within the full spectrum of $[0, 1]$.
-    The majority of the results obtained lend substantial support to the assumption of good correlation.
-    As previously mentioned, each cell encompasses the aggregate of 280 data points, thereby meeting the requisite minimum of 250 points to ensure the attainment of stable results.
-    The following observations can be made in this context:
+    The majority of the results obtained lend substantial support to the assumption of up to very high correlation.
+    As previously mentioned, each cell encompasses the aggregate of 840 data points, thereby meeting the requisite minimum of 250 points to ensure the attainment of stable results.
+    The following observations can be made:
 
-    Firstly, three data sets did not successfully normalize the data due to the presence of one or more outliers, which resulted in the distortion of the data's maximum and minimum values.
+    Firstly, three data sets did not optimally normalize the data due to the presence of one or more outliers, which resulted in the distortion of the data's maximum and minimum values.
     The correlation scores of these data sets are satisfactory, irrespective of the metrics employed, as they are not dependent on the normalization process.
     However, this approach may present certain challenges when attempting to evaluate all datasets collectively. 
     Specifically, the inclusion of these datasets can result in a reduction of the overall score, as they contribute "worse" points to the graph within the overarching context.
+    The relevance of the MAE in this particular instance could be a subject of debate, as it functions as an indicator of the quality of the data subsequent to normalization, since this effectively addresses the issues encountered in @section:metrics.
 
-    // TODO explain
-    Two datasets show almost no correlation.
+    #figure(
+      image("../figures/truth_compare/final_results/all_data.png"), 
+      caption: [All twenty normalized Point Clouds showing Pearson and Spearman Coefficients.],
+    )<fig:truth_compare:final>
 
-    One dataset exhibits a comparatively low Spearman coefficient value, yet concurrently demonstrates a high Pearson coefficient value.
-    This phenomenon can be considered a special case, arising from the presence of outliers along the Identity axis. 
+    Two datasets demonstrate only a relatively minor correlation, while one exhibits no correlation.
+    Nevertheless, this can be traced back to the effects of normalization, which distorts the perception of the data visually. 
+    Initially, all data points were closely grouped, which led to this observation.
+    Despite the inability to identify a more precise solution to this problem, an examination of the segmentations themselves suggests that they are not of bad quality.
+
+    Two datasets exhibits a comparatively low Spearman coefficient value, yet concurrently demonstrating a high Pearson coefficient value.
     The majority of the data points are concentrated in the top-right quadrant, in close proximity to each other, thereby creating a distinctive pattern.
     Consequently, they exhibit a satisfactory linear correlation, as evidenced by the Pearson outputs and substantiated by visual confirmation.
     However, due to the proximity of most points, the rank of the points becomes distorted.
     This issue is not of significant concern, as we consider values of comparable magnitude to be interchangeable. 
     However, it should be noted that the Spearman coefficient does not take magnitudes into account and consequently yields a low score, which is not alarming.
     This study demonstrates the efficacy of employing both metrics for confirmation, as both metrics yield unexpected results when applied to specific cases, taking into account the particular data quality. 
-    This finding suggests that relying on a single metric may not always be sufficient.
-
-    It is further noted that one dataset exhibited a Spearman score indicative of negative correlation, while it's Pearson score indicated no correlation.
-    An examination of the original data reveals that all values are highly proximate to each other prior to normalization.
-    It has been observed that minor alterations in the data seem to result in a decline in the score, while exhibiting minimal impact on the truth score.
-    Therefore, given the observation that all points are originally close to each other, it can be concluded that the Spearman coefficient is essentially invalidated for the purpose of accurately analyzing the data as before.
+    This finding suggests that relying on a single metric may not always be sufficient, or maybe even that the Pearson coefficient alone could be sufficient.
 
     #heading(depth: 5, numbering: none, bookmarked: false)[Combination of All Entries]
 
     #figure(
       image("../figures/truth_compare/final_results/combined_all_data.png"), 
-      caption: [All normalized data points merged into one graph and analyzed together.],
+      caption: [Graph of all normalized data points merged.],
     )<fig:truth_compare:final_all>
 
     Given that all individual sets have undergone normalization, @fig:truth_compare:final_all shows them after they have been combined into a single, comprehensive dataset for the calculation of metrics.
-    Due to the fact that the scatter plot currently displays $20 * 270 = 5400$ data points, its visual appeal has been diminished in comparison to previous iterations.
+    Due to the fact that the scatter plot currently displays $20 * 840 = 16800$ data points, its visual appeal has been diminished in comparison to previous iterations.
     The majority of points are situated along the Identity Axis.
     It is evident that there are specific points in the top-left and bottom-right corners of the graph that correspond to the sections of the graph that are considered unfavorable.
     The upper left corner of the matrix displays points that exhibited low algorithm scores but demonstrated satisfactory values when compared with ground truths. This observation is not problematic.
@@ -890,8 +893,10 @@
     Given that this is normalized data, discrepancies between scores and truth scores that are initially smaller appear to be more problematic than in most cases.
     The issue could only be resolved by ensuring that all original data sets contained a wider range of data points for comparison. However, the algorithm currently outputs a limited number of segmentations of low quality, making it difficult to achieve this objective. Changing the algorithm to do so would be an unsensical endeavor.
     
-    The Pearson and Spearman scores demonstrate a high degree of correlation between the data, with values of $0.6006$ and $0.5832$, respectively.
-    The findings indicate that the hypothesis is valid in general, as the scoring system appears to accurately reflect or represent the true score in relation to a ground truth. Consequently, the utilization of this system on unseen data results in scores that can be relied upon for subsequent analysis.
-    Consequently, further iteration on the subject of better normaliation or outlier removal is rendered unnecessary, as reiterating the testing with such fixes would constitute a futile expenditure of additional time resources, since the already satisfactory score would only rise.
+    The Pearson and Spearman scores demonstrate a high degree of correlation between the data, with values of $0.695$ and $0.666$, respectively.
+    The findings indicate that the hypothesis is valid in general, as the scoring system appears to accurately reflect or represent the true score in relation to a ground truth.
+    The utilization of this system on unseen data results in scores that can be relied upon for subsequent analysis.
+    Hence, further refinement of normalization techniques or the removal of outliers is deemed unnecessary. 
+    Repeated testing with these modifications would merely constitute a futile expenditure of additional time resources, as the already satisfactory score would only rise.
   ]
 }

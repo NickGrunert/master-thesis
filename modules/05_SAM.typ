@@ -21,7 +21,7 @@
     Furthermore, an experiment will be conducted in which a variety of methods are utilized for the purpose of invoking the model.
     This encompasses various configurations and quantities of input suggestion points for SAM, as well as the subsequent utilization of negative suggestions, which are incorporated for each surface from diverse surfaces in an attempt to enhance the model's performance.
 
-    == Analysis of provided Segmentation
+    == Analysis and Filtering of provided Segmentations
 
     == Experiment Results
   ]
