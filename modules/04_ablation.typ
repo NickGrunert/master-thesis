@@ -47,12 +47,12 @@
     #subpar.grid(
       columns: 2,
       gutter: 1mm,
-      box(figure(image("../data/6/17/v1/heatmap_none.png")), clip: true, inset: (bottom: -1.9in, top: -3.8in, right: -9.5in)),
-      box(figure(image("../data/6/17/v1/heatmap_none.png")), clip: true, inset: (bottom: -2.7in, top: -4.8in, left: -4.9in, right: -8.5in)),
-      box(figure(image("../data/6/17/v1/heatmap.png")), clip: true, inset: (bottom: -1.9in, top: -3.8in, right: -9.5in)),
-      box(figure(image("../data/6/17/v1/heatmap.png")), clip: true, inset: (bottom: -2.3in, top: -4.4in, left: -11.5in)),
-      box(figure(image("../data/6/17/v1/heatmap_medium.png")), clip: true, inset: (bottom: -1.9in, top: -3.8in, right: -9.5in)),
-      box(figure(image("../data/6/17/v1/heatmap_medium.png")), clip: true, inset: (bottom: -2.3in, top: -4.4in, left: -11.5in)),
+      box(figure(image("../data/6/17/v1/heatmap_none.png")), clip: true, width: 110%, inset: (bottom: -2.1in, top: -4.15in, right: -10.45in)),
+      box(figure(image("../data/6/17/v1/heatmap_none.png")), clip: true, width: 80%, inset: (bottom: -2.7in, top: -4.75in, left: -4.9in, right: -8.5in)),
+      box(figure(image("../data/6/17/v1/heatmap.png")), clip: true, width: 110%, inset: (bottom: -2.1in, top: -4.15in, right: -10.45in)),
+      box(figure(image("../data/6/17/v1/heatmap.png")), clip: true, width: 80%, inset: (bottom: -2.7in, top: -4.75in, left: -4.9in, right: -8.5in)),
+      box(figure(image("../data/6/17/v1/heatmap_medium.png")), clip: true, width: 110%, inset: (bottom: -2.1in, top: -4.15in, right: -10.45in)),
+      box(figure(image("../data/6/17/v1/heatmap_medium.png")), clip: true, width: 80%, inset: (bottom: -2.7in, top: -4.75in, left: -4.9in, right: -8.5in)),
       caption: [
         Extract from the Heatmaps on the only house where not blurring is optimal.
       ],
@@ -61,27 +61,21 @@
 
     The general effect of blurring is very positive.
     @fig:ablation:blurring_example shows an extracted heatmap that shows the effect of applying different blurring methods.
-    It can be seen that blurring has the desired effect of reducing noise.
-
-    Regardless, the results also show the problem that blurring reduces the effectiveness of the algorithms in detecting thin roof parts, as can be seen on the left, where the light green area at the edge of the house is no longer detected after blurring.
-    However, blurring also adversly has a positive effect on the recognition of thin roof parts, as shown by the yellow area on the right, which is split when not blurred.
+    Theoretically, blurring the image would lead to a loss of information and thus reduce the effectiveness of the algorithms in detecting thin roof parts.
+    However, blurring seems to have the opposite effect on thin roof detection, as can be seen by the green area on the left, which is missing a part when not blurred.
     This is due to the fact that noise on thin parts is more likely to be detected as an edge, which in turn splits the surface.
-    The surface in question is still split, because the lower right part is only connected by two small edges, which are hardly recognizable in the height data.
-    This problem cannot be solved here.
-
-    The blur method is therefore a compromise, where it seems more favorable to apply blur.
-    Not detecting the thin parts is not a problem, since they are not relevant to the overall goal.
-    Splitting the surface is considered more problematic, since using input points from both sides of the split seems to be a good effort if possible.
+    The surface in question is still split because the lower right part is only connected by two small edges that are barely visible in the height data.
+    This problem cannot be solved here further.
 
     #subpar.grid(
       columns: 2,
       gutter: 1mm,
-      box(figure(image("../data/6/1/v1/heatmap_none.png")), clip: true, inset: (bottom: -5.65in, right: -9.5in)),
-      box(figure(image("../data/6/1/v1/heatmap_none.png")), clip: true, inset: (bottom: -6.8in, left: -11.5in)),
-      box(figure(image("../data/6/1/v1/heatmap.png")), clip: true, inset: (bottom: -5.65in, right: -9.5in)),
-      box(figure(image("../data/6/1/v1/heatmap.png")), clip: true, inset: (bottom: -6.8in, left: -11.5in)),
-      box(figure(image("../data/6/1/v1/heatmap_medium.png")), clip: true, inset: (bottom: -5.65in, right: -9.5in)),
-      box(figure(image("../data/6/1/v1/heatmap_medium.png")), clip: true, inset: (bottom: -6.8in, left: -11.5in)),
+      box(figure(image("../data/6/1/v1/heatmap_none.png")), clip: true, width: 110%, inset: (bottom: -2.1in, top: -4.15in, right: -10.45in)),
+      box(figure(image("../data/6/1/v1/heatmap_none.png")), clip: true, width: 80%, inset: (bottom: -2.7in, top: -4.75in, left: -4.9in, right: -8.5in)),
+      box(figure(image("../data/6/1/v1/heatmap.png")), clip: true, width: 110%, inset: (bottom: -2.1in, top: -4.15in, right: -10.45in)),
+      box(figure(image("../data/6/1/v1/heatmap.png")), clip: true, width: 80%, inset: (bottom: -2.7in, top: -4.75in, left: -4.9in, right: -8.5in)),
+      box(figure(image("../data/6/1/v1/heatmap_medium.png")), clip: true, width: 110%, inset: (bottom: -2.1in, top: -4.15in, right: -10.45in)),
+      box(figure(image("../data/6/1/v1/heatmap_medium.png")), clip: true, width: 80%, inset: (bottom: -2.7in, top: -4.75in, left: -4.9in, right: -8.5in)),
       caption: [
         Example Impact of using different blurring methods.
       ],
@@ -99,17 +93,21 @@
 
 
 
-
-
-
-
-
-
     ==== Derivative Method
+    The use of each derivative method is evaluated in the same way as the blur method.
+    Therefore, @fig:ablation:derivative shows for each method how often it was used to achieve the best result.
+    While the results are not quite as clear as for the blur method, it is quite obvious that using the gradient method is the best choice.
+    The Custom Sliding Window method actually performs quite well as well.
+    One would expect it to perform at least somewhat similarly, remembering that it is a simplification of the novel approach that calculates the gradient.
+    Surprisingly, the Sobel and Scharr methods perform quite poorly.
+    Again, since they are quite similar approaches, similar performance was to be expected.
+
     #figure(
       image("../figures/ablation/derivative.png"), 
       caption: [Analysis of Best results for different derivative methods],
     ) <fig:ablation:derivative>
+
+    // TODO
 
     ==== Clipping Values
     
