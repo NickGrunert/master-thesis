@@ -25,13 +25,13 @@
 
 
 
-
+    /*
     @section:edge_detection will create derivations and use the Canny Algorithms for edge detection.
     An edge between segments can highly change in how obvious it is in the data.
     Henceforth, the algorithm will need to adjust on a case to case basis using parameters, which will be discussed for each sub-section individually.
     In turn, this leads to the need of creating a scoring algorithm in @section:scoring.
     This system will be able to analyze the result of a run and re-run it with adjusted parameters, or rather will be used to create an analysis on how the parameters actually effect the result and which ranges of them make sense.
-
+    */
 
 
     === Edge Detection using the Canny Algorithm <section:edge_detection>
@@ -105,6 +105,7 @@
     ```
 
 
+    /*
     Using the Logarithm on the original, but normalized, nDSM Image data will help to enhance the contrast of the image. This will not only make the image more visually appealing but also easier to interpret. 
     @fig:algorithm:log shows the difference when applying the Logarithm directly after calculating the derivative.
     It is observable that the image which contains logarithmic normalization has less extreme maxima and minima, which makes it easier to interpret the image, due to the smaller values being more prominent, leading to a more balanced image in intensity.
@@ -112,7 +113,7 @@
     The results of both are of quite different quality, which is due to the parameter of 'clipped percentage’ and input parameter for the Canny Edge Detection algorithm. 
     It appears that they could be changed in such a way that both images are much more similar in quality, but this is not researched in depth until after @section:scoring, when better experimentation is possible due to the scoring system.
     For now, further experiments will continue to use the logarithmic normalization, as it is a simple and effective way to enhance the contrast of the image, which in turn results in a wider or better scope for parameter tuning.
-
+    */
 
     ==== Clipping extreme Values
 
@@ -224,15 +225,13 @@
 
 
 
+    /*
     #figure(
       image("../figures/apply_log/Result.png", width: 100%),
       caption: [
         Comparison between using the Logarithm on the original nDSM Image data and the original nDSM Image data without prior adjustments.
       ],
     ) <fig:algorithm:log>
-
-
-
 
     @fig:edp:pipeline shows the full pipeline used for the edge detection.
     For now, the pipeline is kept simple, as the main goal is to create a basis for further experiments.
@@ -282,7 +281,7 @@
       label: <fig:clipping>,
     )
 
-
+    */
 
 
 
