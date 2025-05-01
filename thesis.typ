@@ -1,6 +1,7 @@
 #import "templates/thesis.typ": project
 #import "metadata.typ": details
 #import "modules/00_intro.typ": intro
+#import "modules/00_data.typ": data
 #import "modules/02_algorithm.typ": ndsm_analysis
 #import "modules/01_using_sam.typ": sam
 #import "modules/03_truth_compare.typ": truth_compare
@@ -14,6 +15,7 @@
 
 // 0
 #intro()
+#data()
 
 // 1
 #sam()

@@ -1,6 +1,5 @@
 #let intro() = {
   text(lang:"en")[
-
     = Introduction
 
 
@@ -10,7 +9,6 @@
 
     == Definitions
 
-    == Input Data Analysis
 
 
     Wang et al @ruralBuildingRoofTypes roof types are listed into 5 categories: gabled, flat, hipped, complex and mono-pitched. about 91,6% of their training set's roofs where almost evenly split between gabled and flat roofs

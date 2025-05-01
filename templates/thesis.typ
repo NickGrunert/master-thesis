@@ -64,7 +64,7 @@
   set par(leading: 1em)
 
   outline(
-    depth: 2,
+    depth: 3,
     indent: 2em
   )
 
@@ -113,6 +113,13 @@
         #align(center, counter(page).display("1"))
       ]}
     })
+  )
+
+  show raw.where(block: true): block.with(
+    fill: luma(240),
+    inset: 10pt,
+    radius: 4pt,
+    width: 100%
   )
 
   set page(numbering: "1")

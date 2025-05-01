@@ -2,14 +2,9 @@
 
 #let ndsm_analysis() = {
   text(lang:"en")[
-    #show raw.where(block: true): block.with(
-      fill: luma(240),
-      inset: 10pt,
-      radius: 4pt,
-      width: 100%
-    )
+    = Creation of reliable Input Prompts
 
-    = Identification of Roof Structures through Analysis of nDSM Data
+    == Identification of Roof Structures through Analysis of nDSM Data
     As a need for more reliable input promps emerged, this section will discuss the process of programming a custom pipeline to create segmentations.
     These segmentation are to be more trustworthy for prompting SAM, and therefore should result in overall better outputs.
     This will serve the purpose of truly being able to identify whether SAM is capable of solving the given problem or if even after having improved the input data given to it it still fails to satisfy requirements.
@@ -39,9 +34,9 @@
 
 
 
-    == Edge Detection using the Canny Algorithm <section:edge_detection>
+    === Edge Detection using the Canny Algorithm <section:edge_detection>
 
-    === Calculating the Derivative
+    ==== Calculating the Derivative
     
     #heading(depth: 5, numbering: none, bookmarked: false)[Theory]
     //TODO
@@ -83,7 +78,7 @@
       # ... other steps
     ```
 
-    === Applying Logarithmic Scaling
+    ==== Applying Logarithmic Scaling
 
     #heading(depth: 5, numbering: none, bookmarked: false)[Theory]
     // TODO
@@ -119,7 +114,7 @@
     For now, further experiments will continue to use the logarithmic normalization, as it is a simple and effective way to enhance the contrast of the image, which in turn results in a wider or better scope for parameter tuning.
 
 
-    === Clipping extreme Values
+    ==== Clipping extreme Values
 
     #heading(depth: 5, numbering: none, bookmarked: false)[Theory]
     // TODO
@@ -141,7 +136,7 @@
       # ... other steps
     ```
 
-    === Gaussian Blurring
+    ==== Gaussian Blurring
 
     #heading(depth: 5, numbering: none, bookmarked: false)[Theory]
     Overall, the derivative is very noisy due to inconsistencies in the input height information.
@@ -184,7 +179,7 @@
       # ... other steps
     ```
 
-    === Canny Edge Detection
+    ==== Canny Edge Detection
 
     #heading(depth: 5, numbering: none, bookmarked: false)[Theory]
     The concluding step of this section involves the implementation of the Canny Edge Detection algorithm @Canny1.
@@ -294,7 +289,7 @@
 
 
 
-    == Surface Growth <section:surface_growth>
+    === Surface Growth <section:surface_growth>
 
     Using the edges calculated in the edge detection pipeline, the algorithm is able to generate surfaces.
     This is done by simply letting all non-edge pixel #quote("grow") into all directions until only edge pixel are left and thereby all disjunct pixel structures represent a surface.
@@ -370,7 +365,7 @@
 
 
 
-    == Scoring System for Evaluation <section:scoring>
+    === Scoring System for Evaluation <section:scoring>
 
     While for the earlier tests the quality of most surfaces was sufficiently evaluatbable by human eyes, a greater need for objective criterion arose.
     This function should be able to evaluate the quality of the surfaces based on the following criteria:
@@ -388,7 +383,7 @@
     While most algorithms do not use the magnitude for calculation, for example the edge detection pipeline using x and y directions distinctly, this is a still a good way for simple visualization of the data.
     While two magnitudes of defintely disjunct roof tiles can be the same, which can be confusing to look at, it is still preferebly to random colouring of surfaces, as random colouring across multiple images in a series of experiments creates unnecessary hardship when evaluating the data.
 
-    === Experimental Usage of DBSCAN
+    ==== Experimental Usage of DBSCAN
 
     // TODO: DBSCAN source and why it theoretically could have been used
     Using spatial information by for example using labeling through DBSCAN failed in almost every case due to the data inconsistency inside even perfect surfaces.
@@ -415,7 +410,7 @@
       label: <fig:dbscan>,
     )
 
-    === Plateau Algorithm
+    ==== Plateau Algorithm
 
     For this purpose a custom algorithm was developed which evaluates the quality of a surface.
     It does this by analyzing each surfaces derivative values, in each direction meaning x, y and their combination.

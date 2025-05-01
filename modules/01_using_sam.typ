@@ -2,37 +2,20 @@
 
 #let sam() = {
   text(lang:"en")[
-    #show raw.where(block: true): block.with(
-      fill: luma(240),
-      inset: 10pt,
-      radius: 4pt,
-      width: 100%
-    )
-
-    = SAM
-
-    == Explanation
+    = Segment Anything Model (SAM)
 
     == Input Prompting
 
-    === Random Strategy
-
-    === Center Strategy
-    //Code is moved to @code:center
-
-    === Combined Strategy
-
-
+    #heading(depth: 5, numbering: none, bookmarked: false)[Random Strategy]
+    #heading(depth: 5, numbering: none, bookmarked: false)[Center Strategy]
+    #heading(depth: 5, numbering: none, bookmarked: false)[Combined Strategy]
 
     == Images
 
-    === RGB Image
-
-    === nDSM Image
-
-    === Custom Derivative Image
-
-    === Color Channel Swaps
+    #heading(depth: 5, numbering: none, bookmarked: false)[RGB Image]
+    #heading(depth: 5, numbering: none, bookmarked: false)[nDSM Image]
+    #heading(depth: 5, numbering: none, bookmarked: false)[Custom Derivative Image]
+    #heading(depth: 5, numbering: none, bookmarked: false)[Color Channel Swaps]
 
     == Results
   ]

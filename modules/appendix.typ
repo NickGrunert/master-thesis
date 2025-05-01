@@ -145,13 +145,6 @@
 
 
 = Supplementary Material Source Code
-#show raw.where(block: true): block.with(
-  fill: luma(240),
-  inset: 10pt,
-  radius: 4pt,
-  width: 100%
-)
-
 #heading(depth: 5, numbering: none, bookmarked: false)[Strategy Base Class]
 ```python
 class Strategy:

@@ -2,14 +2,6 @@
 
 #let sam_inclusion() = {
   text(lang:"en")[
-    #show raw.where(block: true): block.with(
-      fill: luma(240),
-      inset: 10pt,
-      radius: 4pt,
-    )
-
-
-
     = Including SAM into the algorithm
     In this section, the Segment Anything Model (SAM) will be implemented on the provided dataset.
     Specifically, the process will be analogous to previous iterations, wherein it will be executed on the portion of the dataset that contains ground truth data.

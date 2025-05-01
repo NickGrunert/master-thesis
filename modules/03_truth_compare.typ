@@ -3,14 +3,7 @@
 
 #let truth_compare() = {
   text(lang:"en")[
-    #show raw.where(block: true): block.with(
-      fill: luma(240),
-      inset: 10pt,
-      radius: 4pt,
-      width: 100%
-    )
-
-    = Objective Analysis of Score by Comparison with Truth Data
+    == Objective Analysis of Score by Comparison with Truth Data
     It is essential to recall that the primary objective of the segmentation calculated here is to provide sufficiently accurate points within each segment to prompt SAM.
     Therefore, an incomplete segment will be reduced to a valid point within the real structure. 
     Conversely, an incorrect segment could lead to an invalid point outside the real structure.
@@ -32,7 +25,7 @@
 
 
 
-    == Creating Ground Truth images
+    === Creating Ground Truth images
 
     The evaluation will be based on a set of twenty ground truth images, which were derived from images corresponding to the 60th percentile of the entire image dataset sorted by roof area.
     This selection was made on the basis that these models adequately represent the data overall. 
@@ -89,13 +82,13 @@
     Minor discrepancies in the outputted truth score do not invalidate the algorithm.
 
 
-    == Segmentation Evaluation
+    === Segmentation Evaluation
     The evaluation of the segmentation is a critical step in the assessment of the performance of the algorithm.
     Therefore, the subsequent section will provide a detailed exposition of the methodology that was employed to evaluate the segmentation.
     Each subsection will be devoted to either a discussion of a specific component of the resulting algorithm or an analysis of an enhancement to one of these components.
     This process will culminate in the development of a score function that will serve to evaluate the quality of the predicted segmentation in relation to the ground truth data.
 
-    === Comparing Segments via IOU
+    ==== Comparing Segments via IOU
     #heading(depth: 5, numbering: none, bookmarked: false)[Formula]
     $ "IoU"_"A,B" = ("A" \u{2229} "B") / ("A" #sym.union "B") $ <formula:iou>
     $ "IoU" = "TP" / ("TP" + "FP" + "FN") $ <formula:iou2>
@@ -124,7 +117,7 @@
       return intersection / union if union > 0 else 0
     ```
 
-    === Calculating Recall and Precision
+    ==== Calculating Recall and Precision
     #heading(depth: 5, numbering: none, bookmarked: false)[Formula]
     $ "Accuracy" = ("TP" + "TN") / ("TP" + "TN" + "FP" + "FN") $ <formula:accuracy>
     $ "Recall" = "TP" / ("TP" + "FN") $ <formula:recall>
@@ -276,7 +269,7 @@
     This issue manifests only in certain instances, wherein thin connections result in the division of relevant elements. 
     Nevertheless, given the fundamental cause most likely being the utilization of low-pixel images and the current absence of exhaustive analysis on the performance impact of the hyperparameter, this is not of great concern.
 
-    === Creating the final score via the $F_ß$ Score method <section:fß>
+    ==== Creating the final score via the $F_ß$ Score method <section:fß>
     #heading(depth: 5, numbering: none, bookmarked: false)[Formula]
     $ F_1 = ("precision" * "recall") / 2 $ <formula:f1>
     $ F_ß = ( 1 + ß² ) * ("precision" * "recall") / ((ß² * "precision") + "recall") $ <formula:fß>
@@ -307,7 +300,7 @@
       return (1 + beta**2) * (precision * recall) / (beta**2 * precision + recall)
     ```
     
-    === Using the Hungarian Matching Algorithm for Scores
+    ==== Using the Hungarian Matching Algorithm for Scores
     #heading(depth: 5, numbering: none, bookmarked: false)[Explanation]
     Subsequent to the completion of the task of manually creating the scores, as delineated in the preceding section, this section will briefly detail the process of reducing and overhauling the code while refactoring.
     Despite the absence of a fundamental shift in the overarching concept, certain components have undergone an adaptation process, incorporating the utilization of library functions and well-established algorithms, as well as finding and fixing errors which become appearant in comparison.
@@ -448,7 +441,7 @@
 
 
 
-    == Metrics
+    === Metrics
 
     Originally, this section first presented all theoretical explanations, before combining their respective experimentation results together to create a final evaluation.
     However, this approach was deemed impractical, as each approach was thoroughly considered and evaluated before conducting a comprehensive analysis of the results.
@@ -497,7 +490,7 @@
     These outliers are attributed to executions where the algorithm's inability to accurately identify the house base area resulted in no predicted segments being generated.
     Their inclusion would only hurt the further analysis.
 
-    === MAE, MSE, RMSE and R2 Score <section:metrics>
+    ==== MAE, MSE, RMSE and R2 Score <section:metrics>
 
     #heading(depth: 5, numbering: none, bookmarked: false)[Formula]
     $ "MAE" = (1/n) * sum_(i=1)^n |y_i - accent(y, hat)_i| $ <formula:mae>
@@ -590,7 +583,7 @@
       label: <fig:truth_compare:metrics>,
     )
 
-    === Pearson Coefficient <section:pearson>
+    ==== Pearson Coefficient <section:pearson>
 
     #heading(depth: 5, numbering: none, bookmarked: false)[Formula]
     $ "cosine similiarty" = (arrow(x) dot arrow(y)) / (||arrow(x)|| dot ||arrow(y)||) $ <formula:cosine>
@@ -665,7 +658,7 @@
       label: <fig:truth_compare:pearson>,
     )
 
-    === Combination of Metrics by using a Linear Regressor
+    ==== Combination of Metrics by using a Linear Regressor
 
     #heading(depth: 5, numbering: none, bookmarked: false)[Explanation]
     The subsequent stage of the research involved the formulation of a linear function, with the objective of calculating the correlation between the two datasets directly.
@@ -775,7 +768,7 @@
       label: <fig:truth_compare:correlation>,
     )
 
-    === Spearman Coefficient <section:spearman>
+    ==== Spearman Coefficient <section:spearman>
 
     #heading(depth: 5, numbering: none, bookmarked: false)[Formula]
     $ "Spearman" r_s = 1 - (6 * sum(d_i^2)) / (n * (n^2 - 1)) $ <formula:spearman>
@@ -830,7 +823,7 @@
       label: <fig:truth_compare:spearman>,
     )
 
-    == Final Analysis
+    === Final Analysis
     
     As previously stated, this section will employ the Pearson and Spearman coefficients to analyze the provided data.
     The scope of this initiative will expand beyond the initial three examples provided by @fig:truth_compare:examples, encompassing all twenty examples that include ground truth segmentations.
