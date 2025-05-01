@@ -48,7 +48,7 @@
       columns: 2,
       gutter: 1mm,
       box(figure(image("../data/6/17/v1/heatmap_none.png")), clip: true, inset: (bottom: -1.9in, top: -3.8in, right: -9.5in)),
-      box(figure(image("../data/6/17/v1/heatmap_none.png")), clip: true, inset: (bottom: -2.3in, top: -4.4in, left: -11.5in)),
+      box(figure(image("../data/6/17/v1/heatmap_none.png")), clip: true, inset: (bottom: -2.7in, top: -4.8in, left: -4.9in, right: -8.5in)),
       box(figure(image("../data/6/17/v1/heatmap.png")), clip: true, inset: (bottom: -1.9in, top: -3.8in, right: -9.5in)),
       box(figure(image("../data/6/17/v1/heatmap.png")), clip: true, inset: (bottom: -2.3in, top: -4.4in, left: -11.5in)),
       box(figure(image("../data/6/17/v1/heatmap_medium.png")), clip: true, inset: (bottom: -1.9in, top: -3.8in, right: -9.5in)),
