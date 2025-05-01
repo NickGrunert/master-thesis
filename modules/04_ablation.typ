@@ -45,11 +45,14 @@
     The best truth scores are $0.751, $0.737, and $0.740$, which by far do not represent this trend of decreasing quality.
 
     #subpar.grid(
-      columns: 1,
+      columns: 2,
       gutter: 1mm,
-      box(figure(image("../data/6/17/v1/heatmap_none.png")), clip: true, inset: (bottom: -2.1in, top: -3.8in, right: -6.5in)),
-      box(figure(image("../data/6/17/v1/heatmap.png")), clip: true, inset: (bottom: -2.1in, top: -3.8in, right: -6.5in)),
-      box(figure(image("../data/6/17/v1/heatmap_medium.png")), clip: true, inset: (bottom: -2.1in, top: -3.8in, right: -6.5in)),
+      box(figure(image("../data/6/17/v1/heatmap_none.png")), clip: true, inset: (bottom: -1.9in, top: -3.8in, right: -9.5in)),
+      box(figure(image("../data/6/17/v1/heatmap_none.png")), clip: true, inset: (bottom: -2.3in, top: -4.4in, left: -11.5in)),
+      box(figure(image("../data/6/17/v1/heatmap.png")), clip: true, inset: (bottom: -1.9in, top: -3.8in, right: -9.5in)),
+      box(figure(image("../data/6/17/v1/heatmap.png")), clip: true, inset: (bottom: -2.3in, top: -4.4in, left: -11.5in)),
+      box(figure(image("../data/6/17/v1/heatmap_medium.png")), clip: true, inset: (bottom: -1.9in, top: -3.8in, right: -9.5in)),
+      box(figure(image("../data/6/17/v1/heatmap_medium.png")), clip: true, inset: (bottom: -2.3in, top: -4.4in, left: -11.5in)),
       caption: [
         Extract from the Heatmaps on the only house where not blurring is optimal.
       ],
@@ -71,11 +74,14 @@
     Splitting the surface is considered more problematic, since using input points from both sides of the split seems to be a good effort if possible.
 
     #subpar.grid(
-      columns: 1,
+      columns: 2,
       gutter: 1mm,
-      box(figure(image("../data/6/1/v1/heatmap_none.png")), clip: true, inset: (bottom: -5.9in, right: -6.5in)),
-      box(figure(image("../data/6/1/v1/heatmap.png")), clip: true, inset: (bottom: -5.9in, right: -6.5in)),
-      box(figure(image("../data/6/1/v1/heatmap_medium.png")), clip: true, inset: (bottom: -5.9in, right: -6.5in)),
+      box(figure(image("../data/6/1/v1/heatmap_none.png")), clip: true, inset: (bottom: -5.65in, right: -9.5in)),
+      box(figure(image("../data/6/1/v1/heatmap_none.png")), clip: true, inset: (bottom: -6.8in, left: -11.5in)),
+      box(figure(image("../data/6/1/v1/heatmap.png")), clip: true, inset: (bottom: -5.65in, right: -9.5in)),
+      box(figure(image("../data/6/1/v1/heatmap.png")), clip: true, inset: (bottom: -6.8in, left: -11.5in)),
+      box(figure(image("../data/6/1/v1/heatmap_medium.png")), clip: true, inset: (bottom: -5.65in, right: -9.5in)),
+      box(figure(image("../data/6/1/v1/heatmap_medium.png")), clip: true, inset: (bottom: -6.8in, left: -11.5in)),
       caption: [
         Example Impact of using different blurring methods.
       ],
@@ -90,6 +96,8 @@
       image("../figures/ablation/blurring_example.png"), 
       caption: [Impact of Blurring on an example row and column.],
     ) <fig:ablation:blurring_statistic>
+
+
 
 
 
