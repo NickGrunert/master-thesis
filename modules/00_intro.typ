@@ -25,24 +25,61 @@
     This makes model generalization difficult @intro7. 
     Roof segmentation presents a series of unique challenges, including the handling of complex geometries, the obstruction by overlapping trees and shadows, and the accurate delineation of specific internal rooflines such as ridges, hips, and valleys @intro8.
 
-    #heading(depth: 5, numbering: none, bookmarked: false)[Multi-modal Data Fusion for Enhanced Segmentation]
-To mitigate the limitations of using single data sources, fusing spectral information from imagery with geometric information from elevation data (LiDAR, DSM, nDSM) has become increasingly common @intro7. Elevation data, particularly the normalized DSM (nDSM) which represents height above ground @intro9, provides strong cues for distinguishing buildings from ground features and understanding their 3D structure. Common fusion strategies in DL involve using the nDSM or LiDAR-derived features as additional input channels alongside RGB or multispectral bands @intro10. This allows networks to learn jointly from spectral and geometric information, often leading to improved segmentation accuracy, especially for buildings. Other approaches use elevation data in post-processing steps, for example, using Conditional Random Fields (CRFs) incorporating nDSM values to refine segmentation boundaries generated from image-based models. While fusion improves results, it often requires accurately co-registered multi-modal datasets, which can also be challenging to acquire and label.
+    #heading(depth: 5, numbering: none, bookmarked: false)[Enhanced Segmentation through Multi-modal Data Fusion]
+    The utilization of multiple data sources has become a prevalent approach to address the constraints imposed by a single data source. 
+    Integration of information obtained from standard images with geometric information derived from elevation data has emerged as a common practice @intro7. 
+    Elevation data, particularly the normalized digital surface model (nDSM), which represents height above ground, provides strong cues for distinguishing buildings from ground features and understanding their structure @intro9.
+    Common fusion strategies in deep learning (DL) involve the incorporation of the nDSM or LiDAR-derived features as additional input channels alongside RGB or multispectral bands @intro10.
+    This enables networks to acquire knowledge collectively from spectral and geometric information, frequently resulting in enhanced segmentation accuracy, particularly for architectural structures such as buildings.
+    Other approaches utilize elevation data in post-processing steps. One such approach employs Conditional Random Fields (CRFs) @intro_bonus1 @intro_bonus2 to refine segmentation boundaries generated from image-based models.
+    While fusion generally improves results, it requires accurately co-registered multimodal datasets, which can also be challenging to acquire and label.
 
     #heading(depth: 5, numbering: none, bookmarked: false)[Foundational Models: The Segment Anything Model (SAM)]
-Recent advancements in AI have led to the development of large "foundational models" trained on massive datasets, exhibiting remarkable generalization capabilities [11]. The Segment Anything Model (SAM) from Meta AI is a prominent example in computer vision [10]. Trained on over a billion masks, SAM is designed as a promptable segmentation system. Given a prompt (e.g., points, bounding boxes, masks), SAM can segment virtually any object in an image, even those unseen during training, demonstrating impressive zero-shot performance. Its architecture typically involves a heavy image encoder (ViT), a lightweight prompt encoder, and a fast mask decoder.
+    Recent advancements in artificial intelligence (AI) have resulted in the development of large "foundational models" that are trained on massive datasets. 
+    These models are designed to generalize, and they have been shown to exhibit remarkable generalization capabilities @intro11. 
+    A prominent example is the Segment Anything Model (SAM) from Meta AI @intro10. 
+    SAM has been trained on a dataset comprising over one billion masks and has been developed as a promptable segmentation system.
+    Given a prompt such as input points or bounding boxes, SAM can segment any object in an image, even those unseen during training, demonstrating impressive zero-shot performance. 
+    It's architecture involves three components: a lightweight prompt encoder, a heavy image encoder (ViT), and a fast mask decoder @intro_bonus3.
+
+
+
+
 
     #heading(depth: 5, numbering: none, bookmarked: false)[SAM in Remote Sensing: Adaptations and Challenges]
-The potential of SAM's zero-shot capabilities for data-scarce domains like remote sensing has spurred significant interest. However, direct application often yields suboptimal results. Challenges include SAM's sensitivity to the lower spatial resolutions common in satellite imagery, differences in object characteristics compared to natural images 36, and its inherent dependency on prompts.36 Generating manual prompts is impractical for large-scale analysis.36 Furthermore, SAM performs class-agnostic segmentation, identifying object masks without assigning semantic labels.384
-Consequently, research has focused on adapting SAM for remote sensing tasks. Several strategies aim to automate or improve prompting:
-Adapters and Fine-tuning: Models like RSAM-Seg [12] introduce lightweight adapter modules within SAM, fine-tuned on remote sensing data. RSAM-Seg uses image-derived features like high-frequency components (HFCs) from FFT to automatically generate prompts, eliminating manual intervention and improving performance on tasks like building detection. PSP-SAM [13] employs progressive self-prompting, generating internal visual prompts and external mask prompts based on features learned from optical imagery for salient object detection.
-Integration with Other Models: SAM's outputs (masks) have been used as constraints for subsequent multi-scale segmentation algorithms 41 or fused with semantic pseudo-labels from other models within unsupervised domain adaptation frameworks like SAM-EDA [14]. Some propose using conventional CNNs as prompt generators for SAM.
-Novel Prompting Strategies: Researchers have explored text prompts combined with one-shot learning  or using segmentation outputs from other models as input prompts.These adaptations highlight that leveraging SAM effectively in remote sensing often requires modifications to handle its limitations, particularly the need for automated, domain-relevant prompting. Notably, many automated prompting strategies rely on features derived from the image itself [15].
+    The potential of SAM's zero-shot capabilities for data-scarce domains, such as remote sensing, has generated considerable interest.
+    Nonetheless, its implementation has frequently yielded suboptimal outcomes.
+    The challenges associated with this process include the following:
+    -	SAM's sensitivity to the lower spatial resolutions common in satellite imagery
+    -	differences in object characteristics compared to natural images
+    -	its inherent dependency on prompts
+    The manual generation of prompts is an impractical approach for large-scale analysis.
+    Additionally, SAM performs class-agnostic segmentation, which involves the identification of object masks without the assignment of semantic labels.
+    Consequently, research has focused on adapting SAM for remote sensing tasks with several strategies that aim to automate or improve the prompting process:
+    
+    Adapters and Fine-tuning: 
+    RSAM-Seg @intro12 is an exemplar of a model that incorporates lightweight adapter modules within SAM, meticulously calibrated using remote sensing data.
+    RSAM-Seg employs image-derived features, including high-frequency components (HFCs) derived from the fast Fourier transform (FFT), to autonomously generate prompts. 
+    This process eliminates the need for manual intervention and enhances performance in tasks such as building detection.
+    PSP-SAM @intro13 employs progressive self-prompting, generating internal visual prompts and external mask prompts based on features learned from optical imagery for salient object detection.
+    
+    Integration with Other Models: The utilization of SAM's output masks has been demonstrated in the context of multi-scale segmentation algorithms. 
+    These masks have been employed as constraints, or integrated with semantic pseudo-labels derived from alternative models within the framework of unsupervised domain adaptation, a strategy exemplified by SAM-EDA @intro14. 
+    Conventional CNNs have also been proposed as a means of prompt generation for SAM.
+
+    // TODO ich versteh hier nix von
+    Novel Prompting Strategies: Researchers have explored the use of text prompts in conjunction with one-shot learning or employing segmentation outputs from other models as input prompts.
+    The aforementioned adaptations underscore the necessity of effective modification in the context of leveraging SAM in remote sensing, particularly with regard to addressing its inherent limitations, such as the requirement for automated, domain-relevant prompting.
+    It is important to note that a considerable number of automated prompting strategies are contingent upon features derived from the image itself @intro15.
 
     #heading(depth: 5, numbering: none, bookmarked: false)[Integrating Elevation Data with Foundational Models]
-While the value of elevation data (nDSM/LiDAR) is well-established for traditional CV and standard DL segmentation models, its integration specifically with foundational models like SAM is an emerging area. Some approaches exist:
-Elevation Data for Refinement: The STEGO [18]framework uses features from a self-supervised model (DINO) for initial segmentation and then refines the results using a CRF that incorporates nDSM information in a post-processing step.
+    While the value of elevation data is well-established for traditional CV and standard DL segmentation models, its integration specifically with foundational models like SAM is still an emerging area.
+    The following are examples of such approaches:
 
-SAM for 3D Point Clouds: SAMNet++ [16] adapts SAM for 3D LiDAR point clouds (SAM LiDAR) by segmenting a 2D rasterized, colorized representation based on color/texture, followed by refinement with PointNet++ [17]. Here, SAM's initial segmentation relies on color in the 2D projection, not directly on 3D geometry.
+    Elevation Data for Refinement: The STEGO @intro18 framework utilizes features from a self-supervised model (DINO) for initial segmentation and subsequently refines the results using a CRF that incorporates nDSM information in a post-processing step.
+
+    SAM for 3D Point Clouds: SAMNet++ @intro16 adapts SAM for 3D LiDAR point clouds (SAM LiDAR) by segmenting a 2D rasterized, colorized representation based on color as well as texture information, followed by refinement via PointNet++ @intro17.
+    In this case, SAM's initial segmentation relies on color in the 2D projection rather than on 3D geometry directly.
 
 
 
