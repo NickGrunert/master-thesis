@@ -13,9 +13,19 @@
     Furthermore, an experiment will be conducted in which a variety of methods are utilized for the purpose of invoking the model.
     This encompasses various configurations and quantities of input suggestion points for SAM, as well as the subsequent utilization of negative suggestions, which are incorporated for each surface from diverse surfaces in an attempt to enhance the model's performance.
 
-    == Analysis and Filtering of provided Segmentations
+    == Filtering of generated Segmentations
 
-    
+    #subpar.grid(
+      columns: 1,
+      gutter: 0mm,
+      box(figure(image("../data/6/5/sam/surface_dilution.png")), clip: true, width: 100%, inset: (bottom: -0.2in, top: -0.2in, right: -0.7in, left: -1.0in)),
+      box(figure(image("../data/6/18/sam/surface_dilution.png")), clip: true, width: 100%, inset: (bottom: -0.6in, top: -0.6in, right: -0.7in, left: -1.0in)),
+      box(figure(image("../data/6/8/sam/surface_dilution.png")), clip: true, width: 100%, inset: (bottom: -0.2in, top: -0.2in, right: -0.7in, left: -1.0in)),
+      caption: [
+        Impact of Filtering or Dilution on the Generated Segmentations.
+      ],
+      label: <fig:sam:dilution>,
+    )
 
     == Experiment Results
 

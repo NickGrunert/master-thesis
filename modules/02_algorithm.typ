@@ -288,6 +288,12 @@
 
 
 
+
+
+
+
+
+
     === Surface Growth <section:surface_growth>
 
     Using the edges calculated in the edge detection pipeline, the algorithm is able to generate surfaces.
@@ -359,6 +365,13 @@
 
     Additionaly the example house shown in the image shows that the algorithm without dynamic determination of parameters is not sufficient to solve the problem, because the house's small squared flat roof in the middle got merged with two outer roofs, which is plain wrong and should be detected and fixed.
     Respectively, the next section is about exactly that, the scoring system, which is neccessary to evaluate the quality of the generated surfaces.
+
+
+
+
+
+
+
 
 
 
