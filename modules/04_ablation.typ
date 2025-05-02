@@ -19,9 +19,7 @@
       caption: [Bar plot over Execution Times],
     ) <fig:ablation:time>
 
-    === Impact of Hyperparameter Values
-
-    ==== Blurring Method
+    === Blurring Method
     As mentioned, the blurring method is used to smooth the image and reduce noise.
     The choice of blurring method has a significant impact on the quality of the resulting segmentations.
     Therefore, this subsection compares and analyzes the performance of different blurring methods.
@@ -34,7 +32,9 @@
 
     #figure(
       image("../figures/ablation/blurring.png"), 
-      caption: [Analysis of Best results for different blurring methods],
+      caption: [
+        Statistics over Blurring Methods from Best Results.
+      ],
     ) <fig:ablation:blurring>
 
     The results of the only house where blurring is not optimal are shown in @fig:ablation:blurring_none.
@@ -88,12 +88,14 @@
 
     #figure(
       image("../figures/ablation/blurring_example.png"), 
-      caption: [Impact of Blurring on an example row and column.],
+      caption: [
+        Impact of Blurring on an example row and column.
+      ],
     ) <fig:ablation:blurring_statistic>
 
 
 
-    ==== Derivative Method
+    === Derivative Method
     The use of each derivative method is evaluated in the same way as the blur method.
     Therefore, @fig:ablation:derivative shows for each method how often it was used to achieve the best result.
     While the results are not quite as clear as for the blur method, it is quite obvious that using the gradient method is the best choice.
@@ -104,15 +106,57 @@
 
     #figure(
       image("../figures/ablation/derivative.png"), 
-      caption: [Analysis of Best results for different derivative methods],
+      caption: [
+        Statistics over Derivative Methods from Best Results.
+      ],
     ) <fig:ablation:derivative>
 
     // TODO
 
-    ==== Clipping Values
-    
-    ==== Canny Values
-
     === Using SAM for Base Area Detection <section:replace_clipping_by_sam>
+
+    #subpar.grid(
+      columns: 1,
+      gutter: 1mm,
+      figure(image("../data/6/1/sam/sam_mask.png")),
+      figure(image("../data/6/17/sam/sam_mask.png")),
+      figure(image("../data/6/18/sam/sam_mask.png")),
+      caption: [
+        Base Area Detection using SAM.
+      ],
+      label: <fig:ablation:base_area>,
+    )
+
+    === Clipping Values
+    #subpar.grid(
+      columns: 2,
+      gutter: 1mm,
+      figure(image("../data/6/clipping_percentage_counts.png"), caption: [
+        Before Base Area Detection Change.
+      ]), <fig:ablation:clipping:a>,
+      figure(image("../data/6/v2/clipping_percentage_counts.png"), caption: [
+        After Base Area Detection Change.
+      ]), <fig:ablation:clipping:b>,
+      caption: [
+        Statistics over Clipping Percentages from Best Results.
+      ],
+      label: <fig:ablation:clipping>,
+    )
+
+    === Canny Values
+    #subpar.grid(
+      columns: 2,
+      gutter: 1mm,
+      figure(image("../data/6/canny_value_counts.png"), caption: [
+        Before Base Area Detection Change.
+      ]), <fig:ablation:canny:a>,
+      figure(image("../data/6/v2/canny_value_counts.png"), caption: [
+        After Base Area Detection Change.
+      ]), <fig:ablation:canny:b>,
+      caption: [
+        Statistics over Canny Values from Best Results.
+      ],
+      label: <fig:ablation:canny>,
+    )
   ]
 }

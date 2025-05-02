@@ -13,7 +13,7 @@
     == Definitions
 
 
-
+    /*
     Wang et al @ruralBuildingRoofTypes roof types are listed into 5 categories: gabled, flat, hipped, complex and mono-pitched. about 91,6% of their training set's roofs where almost evenly split between gabled and flat roofs
 
 
@@ -36,6 +36,8 @@
     @smallData1 stresses the importance of a high quality dataset, as a small high quality dataset can outperform a large low quality dataset
 
     @smallData2 says how good quality / filtering of data can increase the performance in contrast to using an unfiltered large dataset
+
+    */
 
     #stack(
       image("../figures/prompts/example_entry_1.png", width: 100%),

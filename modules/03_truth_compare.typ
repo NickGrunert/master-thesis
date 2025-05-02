@@ -72,7 +72,7 @@
       figure(image("../data/6/19/helper/derivative.png", height: 18.5%)),
       figure(image("../data/6/19/truth.png", height: 18.5%)),
       caption: [
-        Four Images, the Derivative Images and their Ground Truth Segmentations.
+        Images with their respective Derivative Image and Ground Truth.
       ],
       label: <fig:truth_compare:truth_example>,
     )

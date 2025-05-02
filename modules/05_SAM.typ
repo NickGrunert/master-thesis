@@ -15,6 +15,51 @@
 
     == Analysis and Filtering of provided Segmentations
 
+    
+
     == Experiment Results
+
+    #subpar.grid(
+      columns: 2,
+      gutter: 1mm,
+      figure(image("../data/6/1/sam/best/mask.png"), caption: [
+        Using Mask.
+      ]), <fig:sam:results:a>,
+      figure(image("../data/6/1/sam/best/generated.png"), caption: [
+        Using all Generated.
+      ]), <fig:sam:results:b>,
+      figure(image("../data/6/1/sam/best/filtered.png"), caption: [
+        Using Filtered.
+      ]), <fig:sam:results:c>,
+      figure(image("../data/6/1/sam/best/dilated.png"), caption: [
+        Using Dilated.
+      ]), <fig:sam:results:d>,
+      caption: [
+        Results of SAM executed on the nDSM image.
+      ],
+      label: <fig:sam:results>,
+    )
+
+    #subpar.grid(
+      columns: 2,
+      gutter: 1mm,
+      figure(image("../data/6/15/sam/best/mask.png"), caption: [
+        Using Mask.
+      ]), <fig:sam:results2:a>,
+      figure(image("../data/6/15/sam/best/generated.png"), caption: [
+        Using all Generated.
+      ]), <fig:sam:results2:b>,
+      figure(image("../data/6/15/sam/best/filtered.png"), caption: [
+        Using Filtered.
+      ]), <fig:sam:results2:c>,
+      figure(image("../data/6/15/sam/best/dilated.png"), caption: [
+        Using Dilated.
+      ]), <fig:sam:results2:d>,
+      caption: [
+        Results of SAM executed on the nDSM image.
+      ],
+      label: <fig:sam:results2>,
+    )
+
   ]
 }
