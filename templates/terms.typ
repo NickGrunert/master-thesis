@@ -54,6 +54,12 @@
   "GPU": (
     long: "Graphics Processing Unit",
   ),
+  "IoU": (
+    long: "Intersection over Union",
+  ),
+  "HMA": (
+    long: "Hungarian Matching Algorithm",
+  )
 )
 
 #let _used_abbreviations_ = state("used_abbreviations", ())

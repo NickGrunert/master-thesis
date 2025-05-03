@@ -4,11 +4,11 @@
 #let truth_compare() = {
   text(lang:"en")[
     == Objective Analysis of Score by Comparison with Truth Data
-    It is essential to recall that the primary objective of the segmentation calculated here is to provide sufficiently accurate points within each segment to prompt SAM.
+    It is essential to recall that the primary objective of the segmentation calculated here is to provide sufficiently accurate points within each segment to prompt #abr("SAM").
     Therefore, an incomplete segment will be reduced to a valid point within the real structure. 
     Conversely, an incorrect segment could lead to an invalid point outside the real structure.
     Given the potential for such discrepancies to disrupt the model's functionality, it is imperative to ascertain the integrity of the algorithm, even in the event of its partiality.
-    As SAM operates on the principle of detecting surfaces with only minimal indications of their potential locations, the necessity for precise segmentation does not arise.
+    As #abr("SAM") operates on the principle of detecting surfaces with only minimal indications of their potential locations, the necessity for precise segmentation does not arise.
 
     The scoring system delineated in @section:scoring is employed to evaluate the quality of the segmentation.
     The assumption that the scoring system can accurately evaluate the quality of segmentation is fundamental to this study. 
@@ -88,15 +88,15 @@
     Each subsection will be devoted to either a discussion of a specific component of the resulting algorithm or an analysis of an enhancement to one of these components.
     This process will culminate in the development of a score function that will serve to evaluate the quality of the predicted segmentation in relation to the ground truth data.
 
-    ==== Comparing Segments via IOU
+    ==== Comparing Segments via #abr("IoU")
     #heading(depth: 5, numbering: none, bookmarked: false)[Formula]
     $ "IoU"_"A,B" = ("A" \u{2229} "B") / ("A" #sym.union "B") $ <formula:iou>
     $ "IoU" = "TP" / ("TP" + "FP" + "FN") $ <formula:iou2>
 
     #heading(depth: 5, numbering: none, bookmarked: false)[Explanation]
-    A widely accepted approach for the comparison of two segments is the calculation of the Intersection over Union (IoU) @iou1 @iou2.
+    A widely accepted approach for the comparison of two segments is the calculation of the #abr("IoU") @iou1 @iou2.
     It is generally recognized as being computationally efficient and has become a staple component in the realm of computer vision workflows.
-    The intersection over union (IoU) metric is a quantitative measure of the overlap between two segments.
+    The #abr("IoU") metric is a quantitative measure of the overlap between two segments.
     Although the algorithm is frequently employed for bounding box comparisons @iou3, it is also capable of performing a pixel-wise set comparison on the two surfaces.
     The resulting score is calculated by dividing the area of intersection by the area of union, as demonstrated in @formula:iou.
     This calculation provides a quantitative metric that measures the degree of similarity between two segments. 
@@ -107,7 +107,7 @@
     The implementation of this would, in principle, be a rational course of action, given the subsequent section's introduction of the metrics within the formula. However, this approach was not adopted, as it would not lead to an improvement of the algorithms calculational efficiency that would rectify the work required to realize it.
 
     #heading(depth: 5, numbering: none, bookmarked: false)[Code Snippet]
-    The following code shows a simple implementation of the IoU calculation.
+    The following code shows a simple implementation of the #abr("IoU") calculation.
     The individual segments are first redefined as sets for computational efficiency, since it allow for faster membership testing and set operations via binary operations.
     ```python
     def calculate_iou(seg1, seg2):
@@ -171,25 +171,25 @@
     There are two variations of this, undersegmentation and oversegmentation @underAndOversegmentation @underAndOversegmentation2.
     The latter refers to the division of a single roof surface into multiple predicted segments.
     Regardless, this issue is not a significant concern, provided each individual component for itself is not misclassified. 
-    However, it is necessary to address this matter at a later stage, as it may result in the generation of multiple prompts for a given surface or the creation of invalid negative prompts for SAM.
+    However, it is necessary to address this matter at a later stage, as it may result in the generation of multiple prompts for a given surface or the creation of invalid negative prompts for #abr("SAM").
     This is not problematic for the generation of exclusively positive input points, as reiterating the same mask does not constitute an error.
     At this stage, it is imperative to bear in mind the issue of fragmentation. 
     However, it should be noted that this will not be addressed through the implementation of an algorithm in the calculation of segmentation.
     Subsequent work may attempt to rectify this issue by dynamically merging surfaces and recalculating the score to identify areas for enhancement.
 
     A more significant concern pertains to the issue of undersegmentation, which occurs when multiple roof surfaces are combined into a single prediction.
-    This erroneous assumption can result in inaccurate estimations of the number of roof components, which, in turn, may prompt erroneous input prompts for SAM. 
+    This erroneous assumption can result in inaccurate estimations of the number of roof components, which, in turn, may prompt erroneous input prompts for #abr("SAM"). 
     It is imperative to refrain from such input prompts under any circumstances.
     The prior scoring algorithm, which employs the plateau algorithm, imposes a significant penalty on this issue, incentivizing the algorithm to avoid it.
-    This scoring system is not designed to perform the aforementioned function, as doing so would introduce significant complexity, since, for example, the IOU does not directly account for false positives.
+    This scoring system is not designed to perform the aforementioned function, as doing so would introduce significant complexity, since, for example, the #abr("IoU") does not directly account for #abr("FP").
     @section:fß outlines an approach to address this issue to a certain extent by placing a greater emphasis on precision over recall. 
-    In essence, it penalizes false positives to a greater extent than false negatives when calculating the score.
+    In essence, it penalizes #abr("FP") to a greater extent than #abr("FN") when calculating the score.
 
     #heading(depth: 5, numbering: none, bookmarked: false)[Code Snippet]
     The optimal solution is the implementation of a precise one-to-one mapping between segments, as this would be the anticipated outcome of a flawless algorithm.
     Nevertheless, the subsequent code explores the potentiality of associating numerous segments with a singular ground truth segment, which is delineated by the max_surfaces parameter.
 
-    For each predicted surface, the algorithm identifies the ground truth segment with the highest IOU value.
+    For each predicted surface, the algorithm identifies the ground truth segment with the highest #abr("IoU") value.
     Consequently, the ground truth segment is iterated in the inverse manner, collecting all their matches and taking the best matches by score.
     The system under consideration enables the matching of multiple segments to a single ground truth segment.
     Conversely, it does not permit any surfaces to be matched to more than one ground truth segment.
@@ -245,7 +245,7 @@
       figure(image("../figures/truth_compare/completeness/4.png")), <fig:truth_compare:completeness:c>,
       figure(image("../figures/truth_compare/completeness/10.png")), <fig:truth_compare:completeness:d>,
       caption: [
-        Graphical representation of the calculated recall and precision for different numbers of calculated surfaces matched to one ground truth surface.
+        Calculated recall and precision for different numbers of calculated surfaces matched to one ground truth surface.
       ],
       label: <fig:truth_compare:completeness>,
     )
@@ -256,7 +256,7 @@
     This area exhibits ambiguity in the delineation between the house and the ground, potentially compromising the clarity of the transition.
 
     The algorithm's good performance is indicated by its high accuracy, even in @fig:truth_compare:completeness:d, where up to 10 surfaces are matched to one ground truth surface.
-    Therefore, in the event that one of the surfaces classified as incorrect is converted into a SAM input prompt, it is expected that there will not be a significant issue with regard to the integrity of the data.
+    Therefore, in the event that one of the surfaces classified as incorrect is converted into a #abr("SAM") input prompt, it is expected that there will not be a significant issue with regard to the integrity of the data.
     Nevertheless, a straightforward method for filtering out such surfaces is lacking. 
     These surfaces are not erroneous in the sense of being misclassified; rather, they are excessively fragmented.
     One potential solution to this issue is to implement actual improvements to the algorithm. 
@@ -305,22 +305,22 @@
     Subsequent to the completion of the task of manually creating the scores, as delineated in the preceding section, this section will briefly detail the process of reducing and overhauling the code while refactoring.
     Despite the absence of a fundamental shift in the overarching concept, certain components have undergone an adaptation process, incorporating the utilization of library functions and well-established algorithms, as well as finding and fixing errors which become appearant in comparison.
 
-    Constraining the matching of generated segments and ground truth segments to being strictly 1-to-1 is essentially equivalent to using the Hungarian Matching Algorithm @hungarian1.
+    Constraining the matching of generated segments and ground truth segments to being strictly 1-to-1 is essentially equivalent to using the #abr("HMA"), also called the Kuhn-Munkres algorithm @hungarian1.
     The necessity of maintaining a list to precisely match each surface with a single ground truth segment, with the intention of subsequently selecting the most suitable one, will be rendered obsolete.
-    The Hungarian algorithm is a computational optimization technique that addresses the assignment problem in polynomial time. 
+    The #abr("HMA") is a computational optimization technique that addresses the assignment problem in polynomial time. 
     It can be utilized to identify the optimal assignment of generated segments to ground truth segments by cost minimization @hungarian2.
-    A two-dimensional matrix of size $n*m$ is employed, wherein $n$ denotes the number of predicted segments and $m$ signifies the number of segments in the ground truth data. This matrix contains all IOU values.
+    A two-dimensional matrix of size $n*m$ is employed, wherein $n$ denotes the number of predicted segments and $m$ signifies the number of segments in the ground truth data. This matrix contains all #abr("IoU") values.
     The algorithm's function is to calculate the optimal matching pairs between the two sets of segments.
-    Therefore, the IOU matrix is simply inverted so that the task becomes minimizing, since typically, an IOU would need to be maximized.
+    Therefore, the #abr("IoU") matrix is simply inverted so that the task becomes minimizing, since typically, an #abr("IoU") would need to be maximized.
 
-    The Hungarian algorithm aligns with our objectives, demonstrating enhanced optimization compared to the self-implementation approach due to its status as established library code.
+    The #abr("HMA") aligns with our objectives, demonstrating enhanced optimization compared to the self-implementation approach due to its status as established library code.
     Additionally, the algorithm inherently produces surfaces that have not been mapped. 
     These surfaces may not align with any truth segments, or may be outscored by other surfaces.
     The availability of these surfaces facilitates effective visualization of the cases, thereby enabling subsequent evaluation.
 
     #heading(depth: 5, numbering: none, bookmarked: false)[Comparison]
     The scoring function remains relatively stable.
-    The calculation of precision and recall remains unchanged; however, the calculation of #abr("TP"), #abr("FP"), and #abr("FN") is now performed using the matches from the Hungarian algorithm directly as well as the unmatched segments.
+    The calculation of precision and recall remains unchanged; however, the calculation of #abr("TP"), #abr("FP"), and #abr("FN") is now performed using the matches from the #abr("HMA") directly as well as the unmatched segments.
 
     #subpar.grid(
       columns: 1,
@@ -340,7 +340,7 @@
     While the two approaches are similar in general, the new implementation utilizes unmatched segments to calculate #abr("FP") and #abr("FN"), a feature not present in the older approach.
     Initially, an unmatched predicted surface was excluded from the #abr("FP") calculation due to the negligible impact of undersegmentation on the algorithm's performance.
     The algorithm would only need to address the issue of oversegmentation, as this would result in fewer prompts than the number of truth surfaces.
-    In the subsequent implementation using the Hungarian Matching Algorithm, however, this concept is no longer utilized due to reevaluation of the approach.
+    In the subsequent implementation using the #abr("HMA"), however, this concept is no longer utilized due to reevaluation of the approach.
     The objective is to ascertain the validity of the concept in relation to the ground truth. 
     Consequently, the penalization of erroneous surfaces through undersegmentation is required to ensure the integrity of this endeavor, since else the score of wrong segmentations could be overrestimated drastically.
 
@@ -378,7 +378,7 @@
         Relative Time Saved by using the new Implementation.
       ]), <fig:truth_compare:hungarian_statistics:b>,
       caption: [
-        Statistical comparison between using the original scoring variant and using the Hungarian Matching.
+        Comparison between the original algorithm and the #abr("HMA") for scoring.
       ],
       label: <fig:truth_compare:hungarian_statistics>,
     )
@@ -499,18 +499,17 @@
     $ R^2 = 1 - (sum_(i=1)^n (y_i - accent(y, hat)_i)^2)/(sum_(i=1)^n (y_i - accent(y, macron))^2) $ <formula:r2>
 
     #heading(depth: 5, numbering: none, bookmarked: false)[Explanation]
-    // TODO totally prolong the explanations in this section
     One approach entailed the utilization of conventional statistical metrics for the assessment of the discrepancy between two datasets.
     Specifically, the following metrics are of relevance: the #abr("MAE"), the #abr("MSE"), the #abr("RMSE"), and the R2 score.
+    
+    The #abr("MAE") and #abr("MSE") are calculated by taking the absolute or squared difference respectively between the two datasets and averaging it, as demonstrated in @formula:mae and @formula:mse. 
+    The #abr("RMSE") is calculated by simply taking the square root of the #abr("MSE"), shown in @formula:rmse.
+    More complex, the R2 score is calculated by taking the variance of the two datasets and dividing it by the variance of the first dataset, as demonstrated in @formula:r2.
 
-    The #abr("MAE"), #abr("MSE"), and the #abr("RMSE") are all error metrics. These metrics directly measure the differences between the values of two datasets, under the assumption that the two datasets are directly correlated 1-to-1.
+    The #abr("MAE"), #abr("MSE"), and the #abr("RMSE") are all error metrics. 
+    These metrics directly measure the differences between the values of two datasets, under the assumption that the two datasets are directly correlated 1-to-1.
     The R2 score is a measure of the extent to which the data aligns with a linear model, also referred to as the coefficient of determination.
     This range extends from $(-infinity, 1]$, with 1 representing a perfect fit and negative values denoting a lack of fit for the data within the linear model.
-
-    The #abr("MAE") is calculated by taking the absolute difference between the two datasets and averaging it (see @formula:mae). 
-    The #abr("MSE") is calculated by taking the squared difference between the two datasets and averaging it (see @formula:mse). 
-    The #abr("RMSE") is calculated by taking the square root of the MSE (see @formula:rmse).
-    The R2 is calculated by taking the variance of the two datasets and dividing it by the variance of the first dataset, as demonstrated in @formula:r2.
 
     #heading(depth: 5, numbering: none, bookmarked: false)[Code Snippet]
     The code segment that follows illustrates the Python implementation by leveraging SciPy library functions, thereby eliminating the necessity for manual formula implementation.
@@ -536,7 +535,7 @@
     The following conclusions were derived from the experiments employing these metrics.
 
     The results from the MAE and RMSE are highly congruent in this instance.
-    This phenomenon can be attributed to the inherent limitations of the data, which is constrained within the range of 0 to 1. Consequently, the utilization of the mean absolute error (MAE) as a standalone metric is sufficient for data analysis in this context, as the impact of the root mean square error (RMSE) on outliers is deemed negligible.
+    This phenomenon can be attributed to the inherent limitations of the data, which is constrained within the range of 0 to 1. Consequently, the utilization of the #abr("MAE") as a standalone metric is sufficient for data analysis in this context, as the impact of the #abr("RMSE") on outliers is deemed negligible.
 
     The R2 score's open range of $(-infinity, 1]$ complicates analysis.
     Interpreting the R2 Score poses a significant challenge, as it necessitates the creation of a valid interpretation of the relationship between the score's magnitude and the performance of the algorithm, a task that may not be feasible.
@@ -578,7 +577,7 @@
         Example C.
       ]), <fig:truth_compare:metrics:c>,
       caption: [
-        Example results for using MAE, MSE, RMSE and R2 Score.
+        Example results for using #abr("MAE"), #abr("MSE"), #abr("RMSE") and R2 Score.
       ],
       label: <fig:truth_compare:metrics>,
     )
@@ -638,7 +637,7 @@
     The discrepancy in the values, with some at 0.6 and others at 0.8, remains to be explained. 
     However, it is evident that both values serve as at least adequate indicators for the correlation of scores.
     It is reasonable to hypothesize that this phenomenon is attributable to the scoring system's strong penalization of undersegmentation segmentations, which scores are completely nullified.
-    In contrast, the ground truth data's IOU values exhibit only a marginal sensitivity to such inaccuracies.
+    In contrast, the ground truth data's #abr("IoU") values exhibit only a marginal sensitivity to such inaccuracies.
 
     #subpar.grid(
       columns: 4,
@@ -664,22 +663,22 @@
     The subsequent stage of the research involved the formulation of a linear function, with the objective of calculating the correlation between the two datasets directly.
     The prerequisite for this endeavor entails the calculation of the most optimal linear relationship and the implementation of metrical comparison of the data in alignment with that relationship.
 
-    This objective was accomplished by using the LinearRegression class of the scikit-learn library @LinearRegressor, which facilitated the calculation of a linear regression line between the two datasets and enables the calculation of the R2 Score and the Mean Absolute Error (MAE) towards that linear regression line.
+    This objective was accomplished by using the LinearRegression class of the scikit-learn library @LinearRegressor, which facilitated the calculation of a linear regression line between the two datasets and enables the calculation of the R2 Score and the #abr("MAE") towards that linear regression line.
     This fulfills the requirement of a non-strict 1-to-1 linear relationship between the two datasets, as well as returns the metrics that indicate the performance of the algorithm.
     In addition, the R2 Score this time is effectively constrained to the range of 0 to 1 in this iteration, in contrast to previous iterations. 
     This is due to the fact that, under the most sub-optimal conditions, the algorithm would return 0, meaning the regressor essentially mimicing the mean of the data.
     This represents a marked enhancement over earlier iterations, in which the R2 Score was not constrained and could attain unconstrained negative values, leading to challenges in interpretation.
 
-    As previously outlined in @section:metrics, the MAE is a reliable metric for assessing the accuracy of the algorithm, while the R2 Score is a valuable indicator of the suitability of the data for a linear model.
-    The MAE is inherently an error metric that should be minimized. 
+    As previously outlined in @section:metrics, the #abr("MAE") is a reliable metric for assessing the accuracy of the algorithm, while the R2 Score is a valuable indicator of the suitability of the data for a linear model.
+    The #abr("MAE") is inherently an error metric that should be minimized. 
     It is thus normalized to the range of 0 to 1. 
     This is followed by inversion through subtraction from 1 to create a score that represents a maximization task.
-    This is performed to ensure that the calculated MAE score is aligned with the R2 Score, thereby ensuring that the resulting score is optimized to 1.
-    The resulting correlation score is derived by calculation of the weighted average between the R2 and the MAE scores.
+    This is performed to ensure that the calculated #abr("MAE") score is aligned with the R2 Score, thereby ensuring that the resulting score is optimized to 1.
+    The resulting correlation score is derived by calculation of the weighted average between the R2 and the #abr("MAE") scores.
 
     #heading(depth: 5, numbering: none, bookmarked: false)[Code Snippet]
-    The resulting correlation score is then calculated by taking the weighted average of the R2 score and the MAE, as illustrated in the following code example.
-    The variable mae_norm_score is defined as the inverse of the MAE, which subsequently is to be maximized.
+    The resulting correlation score is then calculated by taking the weighted average of the R2 score and the #abr("MAE"), as illustrated in the following code example.
+    The variable mae_norm_score is defined as the inverse of the #abr("MAE"), which subsequently is to be maximized.
     The constrained range of the R2 Score is not immediately apparent.
     Nonetheless, the resulting correlation score is effectively constrained to the range of 0 to 1, which is the desired property of the algorithm.
     To ensure simplicity, the alpha value is set to 0.5, thereby assigning equal weight to both metrics.
@@ -725,7 +724,7 @@
     This further substantiates the reliability of the Pearson coefficient values as a reliable metric for assessing the performance of the algorithm.
 
     The results indicate minimal absolute errors in relation to their respective linear fits.
-    An examination of @fig:truth_compare:correlation:a and @fig:truth_compare:correlation:c reveals the algorithm's capacity to generate satisfactory outcomes, as evidenced by the normalized MAE and the R2 Score.
+    An examination of @fig:truth_compare:correlation:a and @fig:truth_compare:correlation:c reveals the algorithm's capacity to generate satisfactory outcomes, as evidenced by the normalized #abr("MAE") and the R2 Score.
     However, it is evident that the fits are not perfect, or rather, do not align with expectations. 
     This deviation can be attributed to the presence of clear outliers in the scatter plot.
 
@@ -733,8 +732,8 @@
     In this case, the algorithm's scores consistently fall short of the desired level of satisfaction.
     The issue lies in the fact that, while the correlation scores do reflect a lower quality compared to the other two examples, they do not represent this as effectively as desired.
     The phenomenon can be explained by the equitable weighting of the two metrics. 
-    The R2 score represents the poor linear correlation well, but the MAE score does not. 
-    The MAE score measures distance from the fit, which itself is not of poor quality; but built upon substandard data.
+    The R2 score represents the poor linear correlation well, but the #abr("MAE") score does not. 
+    The #abr("MAE") score measures distance from the fit, which itself is not of poor quality; but built upon substandard data.
     Consequently, the MAE score is not a reliable metric for evaluating the linear relationship when compared to the R2 Score.
     The resulting score's meaning is not invalidated by this observation, since a lower score is still indicative of a lower quality. 
     However, the degree of decrease is not as pronounced as it should be.
