@@ -3,8 +3,6 @@
 #let ndsm_analysis() = {
   text(lang:"en")[
     = Creation of reliable Input Prompts
-
-    == Identification of Roof Structures through Analysis of nDSM Data
     As a need for more reliable input promps emerged, this section will discuss the process of programming a custom pipeline to create segmentations.
     These segmentation are to be more trustworthy for prompting SAM, and therefore should result in overall better outputs.
     This will serve the purpose of truly being able to identify whether SAM is capable of solving the given problem or if even after having improved the input data given to it it still fails to satisfy requirements.
@@ -22,19 +20,27 @@
       Therefore, the algorithm will be forced to handle such errors and ensure they do not invalidate it's output.
       Invalidation hereby means that such occurences do not lead to mayor miscategorizations of segments.
 
+    The present chapter is composed of three sections.
+    @section:algorithm will encompass a comprehensive discussion of the algorithmic components that facilitate the generation of custom segmentation for any given house.
+    In this section, the discussion will center on the introduction of select hyperparameters that have demonstrated potential in facilitating the algorithm's adaptability to variable scenarios.
+    Therefore, the section introduces a scoring algorithm that aims to evaluate the quality of a given segmentation. This evaluation process serves to determine whether parameter adjustment is necessary.
+
+    Consequently, the @section:truth_compare will generate some ground truth examples to ascertain the system's reliability and the effectiveness of the scoring system.
+    These metrics will be employed to derive an objective score for statistical analysis and comparison.
+    
+    Lastly, @section:ablation of this chapter will then return to said parameter and perform an ablation study on the actual effect of these, intended for the purpose of achieving a better understanding and filtering out those parameter with minor effect so that they will not be considered in further calculations on unseen data.
 
 
 
-    /*
-    @section:edge_detection will create derivations and use the Canny Algorithms for edge detection.
-    An edge between segments can highly change in how obvious it is in the data.
-    Henceforth, the algorithm will need to adjust on a case to case basis using parameters, which will be discussed for each sub-section individually.
-    In turn, this leads to the need of creating a scoring algorithm in @section:scoring.
-    This system will be able to analyze the result of a run and re-run it with adjusted parameters, or rather will be used to create an analysis on how the parameters actually effect the result and which ranges of them make sense.
-    */
 
+
+
+
+    == Identification of Roof Structures through Analysis of nDSM Data <section:algorithm>
 
     === Edge Detection <section:edge_detection>
+
+
 
     ==== Calculating the Derivative
     
@@ -53,6 +59,8 @@
       SCHARR = 3
 
     def edge_detection(...):
+      derivative = params.derivative
+
       # Initial normalization
       n = cv2.normalize(entry['ndsm'], None, 0, 255, cv2.NORM_MINMAX)
 
@@ -118,11 +126,21 @@
     ==== Clipping extreme Values
 
     #heading(depth: 5, numbering: none, bookmarked: false)[Theory]
-    // TODO
+    A visual analysis of the individual steps during the initial setup of this pipeline has revealed some statistical constants across the different data sets.
+    This includes the observation that the edge surrounding the house consistently exhibits the most extreme derivative values.
+    Despite the potential presence of high-order derivatives aside from these, the following observation holds: the precise difference between such extreme derivatives is inconsequential. 
+    Consequently, the clipping of those values followed by normalization positively enhances the contrast of the image, thereby facilitating the evaluation process for the algorithm without the loss of crucial information.
+
+    In this context, setting the clipping percentage to 10 percent entails the reduction of the highest and lowest 10 percent values.
+    It is evident that, given the normalization of the values preceding this step, the derivative values between $[-255, 255]$, in this example, will be set to $[-230, 230]$. Consequently, all values that fall outside this range will be set to the new extrema.
+
+    It has also demonstrated that interpreting the actually clipped values as edges and executing the surface generation steps on them can function as a mask for base area detection, as will be discussed in @section:surfaces:filtering.
 
     #heading(depth: 5, numbering: none, bookmarked: false)[Implementation]
     ```python
     def edge_detection(...):
+      percent = params.clipping_percentage
+
       # ... other steps
 
       ####### STEP 3 : CLIPPING
@@ -206,6 +224,9 @@
     #heading(depth: 5, numbering: none, bookmarked: false)[Implementation]
     ```python
     def edge_detection(...):
+      lower = params.canny_values[0]
+      upper = params.canny_values[1]
+
       # ... other steps
 
       ####### STEP 5 : EDGE DETECTION
@@ -298,10 +319,12 @@
 
     ==== Surface Growth
 
+    ==== Base Area Filtering <section:surfaces:filtering>
+
     ==== Separation and Relinking
 
 
-
+    /*
     Using the edges calculated in the edge detection pipeline, the algorithm is able to generate surfaces.
     This is done by simply letting all non-edge pixel #quote("grow") into all directions until only edge pixel are left and thereby all disjunct pixel structures represent a surface.
     While this in itself is relatively simple, @fig:surface_separation shows further improvements on this.
@@ -371,7 +394,7 @@
 
     Additionaly the example house shown in the image shows that the algorithm without dynamic determination of parameters is not sufficient to solve the problem, because the house's small squared flat roof in the middle got merged with two outer roofs, which is plain wrong and should be detected and fixed.
     Respectively, the next section is about exactly that, the scoring system, which is neccessary to evaluate the quality of the generated surfaces.
-
+    */
 
 
 

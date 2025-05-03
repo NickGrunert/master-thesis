@@ -2,7 +2,7 @@
 
 #let ablation() = {
   text(lang:"en")[
-    == Ablation Study and Algorithm Improvement
+    == Ablation Study and Algorithm Improvement <section:ablation>
     This section describes the ablation study performed to evaluate the impact of different hyperparameters on the performance of the proposed algorithm.
     The study was conducted to identify the optimal values for the hyperparameters and to understand how they affect the algorithm.
     Filtering the hyperparameters to include fewer values to be computed will greatly improve the time efficiency of the algorithm.
