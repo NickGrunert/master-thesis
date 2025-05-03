@@ -2,39 +2,57 @@
 #let abbreviations = (
   "MAE": (
     long: "Mean Absolute Error",
-    type: "abbr"
   ),
   "MSE": (
     long: "Mean Squared Error",
-    type: "abbr"
   ),
   "RMSE": (
     long: "Root Mean Squared Error",
-    type: "abbr"
   ),
   "SAM": (
     long: "Segment Anything Model",
-    type: "abbr"
   ),
   "TP": (
     long: "True Positive",
-    type: "abbr"
   ),
   "TN": (
     long: "True Negative",
-    type: "abbr"
   ),
   "FP": (
     long: "False Positive",
-    type: "abbr"
   ),
   "FN": (
     long: "False Negative",
-    type: "abbr"
+  ),
+  "DSM": (
+    long: "Digital Surface Model",
   ),
   "nDSM": (
     long: "normalized Digital Surface Model",
-    type: "abbr"
+  ),
+  "DL": (
+    long: "Deep Learning",
+  ),
+  "LiDAR": (
+    long: "Light Detection and Ranging",
+  ),
+  "CNN": (
+    long: "Convolutional Neural Network",
+  ),
+  "FCN": (
+    long: "Fully Convolutional Network",
+  ),
+  "CRF": (
+    long: "Conditional Random Field",
+  ),
+  "AI": (
+    long: "Artificial Intelligence",
+  ),
+  "ViT": (
+    long: "Vision Transformer",
+  ),
+  "GPU": (
+    long: "Graphics Processing Unit",
   ),
 )
 
@@ -84,7 +102,6 @@
   for item in sorted-terms {
     let term-key = item.at(0)
     let data = abbreviations.at(term-key)
-    let is-abbr = data.type == "abbr"
     
     let needed-dots = 15 - term-key.len()
     let dots = if needed-dots > 0 { "．" * needed-dots } else { "" }
