@@ -1,7 +1,6 @@
 #import "@preview/subpar:0.2.0"
-#import "../templates/terms.typ": abr
 
-#let truth_compare() = {
+#let truth_compare(abr) = {
   text(lang:"en")[
     == Objective Analysis of Score by Comparison with Truth Data
     It is essential to recall that the primary objective of the segmentation calculated here is to provide sufficiently accurate points within each segment to prompt #abr("SAM").

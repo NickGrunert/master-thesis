@@ -1,3 +1,33 @@
+#import "templates/terms.typ": get_key
+
+#let _used_abbreviations_ = state("used_abbreviations", ())
+#let update_counter = state("update_counter", 0)
+
+#let abr(input) = {
+    context {
+        let data = get_key(input)
+        let (short, long) = (data.at(0), data.at(1))
+
+        // Handle the state and find out if it was used before
+        let all_used_abbreviations = _used_abbreviations_.get()
+        let used = all_used_abbreviations.any(item => item == short)
+
+        let link-text = if not used { 
+            long + " (" + short + ")"
+        } else { 
+            short
+        }
+
+        link("#term-" + short)[#link-text]
+    }
+
+    _used_abbreviations_.update(lst => {
+		lst.push(input)
+		return lst
+	})
+    update_counter.update(c => c + 1)
+}
+
 #import "templates/thesis.typ": project
 #import "metadata.typ": details
 #import "modules/00_intro.typ": intro
@@ -9,12 +39,11 @@
 #import "modules/05_SAM.typ": sam_inclusion
 #import "modules/conclusion.typ": conclusion
 
-
 #show: body => project(details, body)
 
-
 // 0
-#intro()
+#intro(abr)
+
 #data()
 
 // 1
@@ -24,7 +53,7 @@
 #ndsm_analysis()
 
 // 3
-#truth_compare()
+#truth_compare(abr)
 
 // 4
 #ablation()
@@ -34,3 +63,6 @@
 
 // 6
 #conclusion()
+
+
+#pagebreak()

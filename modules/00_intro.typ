@@ -1,6 +1,6 @@
-#import "../templates/terms.typ": abr
+//#import "../templates/terms.typ": abr
 
-#let intro() = {
+#let intro(abr) = {
   text(lang:"en")[
     = Introduction
 

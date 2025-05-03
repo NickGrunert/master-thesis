@@ -34,7 +34,7 @@
     */
 
 
-    === Edge Detection using the Canny Algorithm <section:edge_detection>
+    === Edge Detection <section:edge_detection>
 
     ==== Calculating the Derivative
     
@@ -295,6 +295,12 @@
 
 
     === Surface Growth <section:surface_growth>
+
+    ==== Surface Growth
+
+    ==== Separation and Relinking
+
+
 
     Using the edges calculated in the edge detection pipeline, the algorithm is able to generate surfaces.
     This is done by simply letting all non-edge pixel #quote("grow") into all directions until only edge pixel are left and thereby all disjunct pixel structures represent a surface.

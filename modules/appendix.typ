@@ -2,6 +2,8 @@
 
 = Supplementary Material Images
 
+#heading(depth: 5, numbering: none, bookmarked: false)[Generated Segmentations]
+
 #subpar.grid(
   columns: 1,
   gutter: 1mm,
@@ -67,6 +69,8 @@
     All result segmentations.
   ],
 )
+
+#heading(depth: 5, numbering: none, bookmarked: false)[Correlation Results]
 
 #subpar.grid(
   columns: 5,
@@ -407,4 +411,178 @@ class Combined(Strategy):
       input_label.append(current_labels)
 
     return input_points, input_label
+```
+
+
+
+
+
+
+
+#heading(depth: 5, numbering: none, bookmarked: false)[Surface Growth]
+```python
+# STEP 1: INITIAL SURFACE GROWTH
+def calculate_initial_surfaces(edges):
+  surfaces = []
+  visited = np.zeros_like(edges, dtype=bool)
+  visited[edges != 0] = True
+
+  for row in range(edges.shape[0]):
+    for col in range(edges.shape[1]):
+      if not edges[row, col] and not visited[row, col]:
+        surface = []
+        stack = [(row, col)]
+
+        while stack:
+          r, c = stack.pop()
+          if (
+            0 <= r < edges.shape[0]
+            and 0 <= c < edges.shape[1]
+            and not edges[r, c]
+            and not visited[r, c]
+          ):
+            visited[r, c] = True
+            surface.append((r, c))
+
+            stack.extend([
+              (r + 1, c),
+              (r - 1, c),
+              (r, c + 1),
+              (r, c - 1),
+            ])
+        if surface:
+          surfaces.append(surface)
+
+  return surfaces
+```
+
+#heading(depth: 5, numbering: none, bookmarked: false)[Separation]
+```python
+def separation(surfaces, edges):
+  results = []
+  for surface in surfaces:
+    # Separate edge and inner pixels
+    inner_pixels = [
+      (r, c) for r, c in surface
+      if (
+        1 <= r < edges.shape[0] - 1
+        and 1 <= c < edges.shape[1] - 1
+        and not edges[r - 1, c]
+        and not edges[r + 1, c]
+        and not edges[r, c - 1]
+        and not edges[r, c + 1]
+      )
+    ]
+    edge_pixels = [
+      (r, c) for r, c in surface
+      if (r, c) not in inner_pixels
+    ]
+
+    # Split disconnected inner pixel regions
+    separated = []
+    if inner_pixels:
+      mask = np.zeros_like(edges, dtype=bool)
+      for r, c in inner_pixels:
+        mask[r, c] = True
+
+      labeled_array, num_features = ndimage_label(mask)
+      split_surfaces = [
+        [(r, c) for r, c in np.argwhere(labeled_array == label_num)]
+        for label_num in range(1, num_features + 1)
+      ]
+      separated.extend(split_surfaces)
+
+      # Reassign edge pixel
+      unassigned = edge_pixels[:]
+      while unassigned:
+        assigned = {}
+        for pixel in unassigned:
+          for i, split_surface in enumerate(split_surfaces):
+            for r, c in split_surface:
+              if abs(pixel[0] - r) <= 1 and abs(pixel[1] - c) <= 1:
+                assigned[pixel] = i
+                break
+            else:
+              continue
+            break
+
+        # Apply assignments
+        assigned_here = []
+        for pixel, i in assigned.items():
+          separated[len(separated) - len(split_surfaces) + i].append(pixel)
+          assigned_here.append(pixel)
+
+        # Remove newly assigned from unassgined
+        unassigned = [p for p in unassigned if p not in assigned_here]
+        # If for some reason no new assignment was made
+        if not assigned_here:
+          break
+      # Add all unadded as one coherent surface
+      if unassigned:
+        separated.extend([[pixel] for pixel in unassigned])
+    else:
+      if edge_pixels:
+        # If only edge pixels, add them as a separate surface
+        separated.append(edge_pixels)
+    # For the current surface, add a list of all separations from it
+    results.append(separated)
+  return results
+```
+
+
+#heading(depth: 5, numbering: none, bookmarked: false)[Relink]
+```python
+# STEP 3: RELINKING BASED ON SIMILAR DERIVATIVE AVERAGES
+def relink(surfaces, data, threshold):
+  surface_derivatives = []
+  for surface in surfaces:
+    x = [data['x']['clipped'][row, col] for row, col in surface]
+    y = [data['y']['clipped'][row, col] for row, col in surface]
+
+    derivatives = {
+      'surface': surface,
+      'x_avg': np.median(x),
+      'y_avg': np.median(y)
+    }
+    surface_derivatives.append(derivatives)
+
+  # Group surfaces based on derivatives
+  groups = []
+  for surface_data in surface_derivatives:
+    found = False
+    for group in groups:
+      for existing in group:
+        if (abs(surface_data['x_avg'] - existing['x_avg']) <= threshold and
+            abs(surface_data['y_avg'] - existing['y_avg']) <= threshold):
+          group.append(surface_data)
+          found = True
+          break
+      if found:
+        break
+    # Create new group
+    if not found:
+      groups.append([surface_data])
+
+  # Merge surfaces within each group
+  merged = []
+  for group in groups:
+    merged_surface = []
+    for surface in group:
+      merged_surface.extend(surface['surface'])
+    merged.append(merged_surface)
+
+  results = []
+  for surface in merged:
+    mask = np.zeros_like(data['combined_edges'], dtype=bool)
+    for row, col in surface:
+      mask[row, col] = True
+    labeled_mask, num_features = ndimage_label(mask)
+    if num_features > 1:
+      for label in range(1, num_features + 1):
+        surface = [(r, c) for r, c in np.argwhere(labeled_mask == label)]
+        results.append(surface)
+    else:
+      results.append(surface)
+
+  return results
 ```

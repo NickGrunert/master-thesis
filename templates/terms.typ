@@ -62,39 +62,21 @@
   )
 )
 
-#let _used_abbreviations_ = state("used_abbreviations", ())
-#let abr(input) = context{
-  // Find matching term (case-sensitive)
+#let get_key(key) = {
   let matched-key = {
-    for key in abbreviations.keys() {
-      if key == input {
-        key
+    for k in abbreviations.keys() {
+      if k == key {
+        k
       }
     }
     none
   }
 
-  // Get the abbreviation data from the global list
   let term-data = abbreviations.at(matched-key)
   let short = matched-key
   let long = term-data.long
 
-  // Handle the state and find out if it was used before
-  let all_used_abbreviations = _used_abbreviations_.get()
-  let used = all_used_abbreviations.any(item => item == short)
-
-  if not used {
-    all_used_abbreviations.push(short)
-    _used_abbreviations_.update(all_used_abbreviations)
-  }
-
-  let link-text = if not used { 
-    long + " (" + short + ")"
-  } else { 
-    short
-  }
-
-  link("#term-" + short)[#link-text]
+  (short, long)
 }
 
 #let abbreviation-list() = {
