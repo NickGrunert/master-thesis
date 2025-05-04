@@ -99,14 +99,13 @@
     Nevertheless, the prevailing focus in these cases is on the discussion of the validity of ideas and the construction of rudimentary frameworks for algorithms.
     It is noteworthy that the code created in these cases is rarely incorporated into the final product, since most of it had to be rewritten completely.
 
-
-
-
-
-
+    While all texts in this work were originally written by the author, DeepL @deepl was used for text improvement.
+    Specifically, it is notable for its ability to rewrite text in an academic style, thereby enhancing its quality, and conducting grammar checks.
+    However, these texts were not simply adopted directly; rather, they underwent a thorough review process that often involved their rewriting, as their language was often considered overly sophisticated.
 
     == Definitions
 
+    // TODO
 
     /*
     Wang et al @ruralBuildingRoofTypes roof types are listed into 5 categories: gabled, flat, hipped, complex and mono-pitched. about 91,6% of their training set's roofs where almost evenly split between gabled and flat roofs
