@@ -50,6 +50,8 @@
 
     #heading(depth: 5, numbering: none, bookmarked: false)[Implementation]
     While all of the following implementations do not distinguish between the x and y directions, in this single section it is necessary due to implementation details where they need to be handled separately.
+    The possible derivatives are defined via an enum for better identification and case matched inside the edge detection algorithm.
+    The Scharr Method uses a Sobel kernel with -1, which is defined in the cv2 documentation as a standard 3x3 Scharr kernel @derivative_sobel1.
 
     ```python
     class DerivativeMethod(Enum):
@@ -160,8 +162,30 @@
     It is evident that, given the normalization of the values preceding this step, the derivative values between $[-255, 255]$, in this example, will be set to $[-230, 230]$. Consequently, all values that fall outside this range will be set to the new extrema.
 
     It has also demonstrated that interpreting the actually clipped values as edges and executing the surface generation steps on them can function as a mask for base area detection, as will be discussed in @section:surfaces:filtering.
+    The direct effect of this is shown in @fig:algorithm:clipping, which shows the difference between applying 0 and 7 percent clipping.
+    While no clipping shows very low distinguishable values, the shape of the roof becomes visible after the clipping is applied.
+    Inside the value graph, the hills representing the individual segments become visible.
+    It should be noted that in the example shown no normalization was applied, but the general effect is not affected by this.
+    Said theory of base area detection can also be seen in the visualization of the clipped values in the bottom column of the graphs.
+
+    #subpar.grid(
+      columns: 2,
+      gutter: 2mm,
+      box(figure(image("../figures/clipping/0.png"), caption: [0%]), clip: true, width: 100%, inset: (bottom: 0.1in, left: -4.3in, right: -4.3in)),
+      box(figure(image("../figures/clipping/7.png"), caption: [7%]), clip: true, width: 100%, inset: (bottom: 0.1in, left: -4.3in, right: -4.3in)),
+      caption: [
+        Comparison between applying 0 and 7 percent clipping.
+      ],
+      label: <fig:algorithm:clipping>,
+    )
 
     #heading(depth: 5, numbering: none, bookmarked: false)[Implementation]
+    The implementation of this process is a relatively uncomplicated matter.
+    The algorithm does not make any assumptions regarding the distribution of derivatives. 
+    It also does not calculate individual threshold values depending on the actual distribution between negative and positive values.
+    Instead, the values on each side are taken equally.
+    The values that were clipped will be saved for later use in the surface generation step.
+
     ```python
     def edge_detection(...):
       percent = params.clipping_percentage
@@ -246,6 +270,13 @@
     It is important to acknowledge that this approach will essentially replicate the utilization of absolute values directly, as the data undergoes normalization to fall within the range of 0 to 255 prior to the application of the Canny algorithm.
 
     #heading(depth: 5, numbering: none, bookmarked: false)[Implementation]
+    It is crucial to note that the Canny algorithm exclusively accepts positive integer inputs.
+    The negligible loss of information when transitioning from $[-255, 255]$ to $[0, 255]$, which entails halving the value range, is an inherent risk and is presumed to exert a negligible effect on the outcomes, at most.
+
+    The threshold values are designated as the lower and upper percentiles of the normalized image.
+    While they are set at equal intervals in this instance for the sake of simplicity, they can be adjusted to allow for uneven percentiles in the future, should preliminary results prove unsatisfactory.
+    For instance, setting the percentage to 35 will result in a threshold of $[89, 179]$, a representation that nearly perfectly aligns with the novel approach of setting the upper threshold at double the lower threshold.
+
     ```python
     def edge_detection(...):
       lower = params.canny_values[0]
@@ -271,13 +302,6 @@
 
 
     /*
-    #figure(
-      image("../figures/apply_log/Result.png", width: 100%),
-      caption: [
-        Comparison between using the Logarithm on the original nDSM Image data and the original nDSM Image data without prior adjustments.
-      ],
-    ) <fig:algorithm:log>
-
     @fig:edp:pipeline shows the full pipeline used for the edge detection.
     For now, the pipeline is kept simple, as the main goal is to create a basis for further experiments.
     The derivatives are distinguished between x and y directions, as using the combined values in the form of magnitude creates error.
@@ -310,23 +334,10 @@
     Disregarding the visual step back, @fig:clipping shows the difference between using and not using the clipping step.
     After clipping the data, the hills stemming from the roof segments are clearly visible.
     This however is not only visual for analysis but also helps the last edge detection step to find edges, since the absolute value of the inner edges is not overshadowed as much by the outer house edges.
-
-    #subpar.grid(
-      columns: 1,
-      gutter: 2mm,
-      figure(image("../figures/clipping/0.png"), caption: [
-        Edge detection without clipping any values
-      ]), <fig:clipping:a>,
-      figure(image("../figures/clipping/7.png"), caption: [
-        Edge detection clipping the highest and lowest 7% of values
-      ]), <fig:clipping:b>,
-      caption: [
-        Edge Detection pipeline comparing the difference between no clipping and clipping 7% of maxima values.
-      ],
-      label: <fig:clipping>,
-    )
-
     */
+
+    
+
 
 
 
