@@ -89,9 +89,45 @@
     ==== Applying Logarithmic Scaling
 
     #heading(depth: 5, numbering: none, bookmarked: false)[Theory]
-    // TODO
+    There are many ways to improve the contrast of images @log3.
+    This subsection will focus on one such chosen method, namely using applying a logarithmic transformation to the input data.
+    A higher contrast is generally helpful for visual confirmation, as well as presumably helpful for the general performance of the algorithm.
+    At the very least, the visual appeal of the intermediate derivative image is greatly improved, making most values and edges more distinguishable.
+    The strong effect of this can be seen in @fig:algorithm:log, where not only a visual distinction is possible only after scaling, but also the distribution plot clearly reflecting better utilization of the value spectrum.
+
+    This is due to the analysis of the derivative data, which shows that even after normalization, the derivative data consists of mostly dark values clustered around zero, since there are some extreme outliers in the data, creating a highly uneven distribution of values.
+    It is shown that such distorted data can be made more robust for analysis by applying the logarithm to it @log1.
+    General image analysis seems to be improved by such transformations @log2.
+
+    #subpar.grid(
+      columns: 3,
+      gutter: 1mm,
+      box(figure(image("../figures/apply_log/original_data/no_log.png")), clip: true, width: 100%, inset: (right: -19in, bottom: -4.0in)),
+      box(figure(image("../figures/apply_log/original_data/no_log.png")), clip: true, width: 100%, inset: (right: -6in, left: -1in, bottom: -0.8in)),
+      box(figure(image("../figures/apply_log/original_data/log.png")), clip: true, width: 100%, inset: (right: -6in, left: -1in, bottom: -0.8in)),
+
+      box(figure(image("../figures/apply_log/original_data/round_no_log.png")), clip: true, width: 100%, inset: (right: -19in, bottom: -4.0in)),
+      box(figure(image("../figures/apply_log/original_data/round_no_log.png")), clip: true, width: 100%, inset: (right: -6in, left: -1in, bottom: -0.8in)),
+      box(figure(image("../figures/apply_log/original_data/round_log.png")), clip: true, width: 100%, inset: (right: -6in, left: -1in, bottom: -0.8in)),
+      caption: [
+        Impact of applying the logarithm on derivative data.
+      ],
+      label: <fig:algorithm:log>,
+    )
 
     #heading(depth: 5, numbering: none, bookmarked: false)[Implementation]
+    The following implementation stores the sign of each value first, because the logarithm is not defined for negative values.
+    Therefore, after applying the logarithm to the absolute derivative values, they are normalized and multiplied by the original sign.
+    In this way, the logarithm can be applied while preserving the original sign of the derivative values, i.e. without losing the differentiability of the derivative direction.
+
+    Note that the neutral value 0 will most likely be moved away from the origin in one of the following steps.
+    This is because to solve this problem, the algorithm would have to treat positive and negative values completely separately, or else the normalization would cause this effect.
+    However, this effect has shown up only rarely in experiments, and even when it does occur, it has not proven to have a negative effect on results, or rather, in some experiments, handling it had a negative effect.
+
+    This observation will not be analyzed further, and the decision has been made to simply always use the logarithm; no extensive experimentation and analysis will be done to understand the effect of this further.
+    Later, results will be shown where this effect can be seen by slightly coloring the segments, where the expected result would be a mean derivative of 0 for exemplary flat roofs.
+    If the specific segment is slightly colored, this is most likely due to this effect.
+
     ```python
     def edge_detection(...):
       # ... other steps
@@ -111,17 +147,6 @@
 
       # ... other steps
     ```
-
-
-    /*
-    Using the Logarithm on the original, but normalized, nDSM Image data will help to enhance the contrast of the image. This will not only make the image more visually appealing but also easier to interpret. 
-    @fig:algorithm:log shows the difference when applying the Logarithm directly after calculating the derivative.
-    It is observable that the image which contains logarithmic normalization has less extreme maxima and minima, which makes it easier to interpret the image, due to the smaller values being more prominent, leading to a more balanced image in intensity.
-    In the Image not using logarithmic scaling, most colours become very pale whilest only the extreme values on for example the edges of the house become intensively coloured, leading to the fact, that the image becomes hard to interpret by human eyes when trying to evaluate or validate the calculated data.
-    The results of both are of quite different quality, which is due to the parameter of 'clipped percentage’ and input parameter for the Canny Edge Detection algorithm. 
-    It appears that they could be changed in such a way that both images are much more similar in quality, but this is not researched in depth until after @section:scoring, when better experimentation is possible due to the scoring system.
-    For now, further experiments will continue to use the logarithmic normalization, as it is a simple and effective way to enhance the contrast of the image, which in turn results in a wider or better scope for parameter tuning.
-    */
 
     ==== Clipping extreme Values
 
@@ -219,7 +244,6 @@
     However, this was not implemented due to initial tests not yielding promising results.
     Conversely, the algorithm will utilize dynamic percentage thresholds.
     It is important to acknowledge that this approach will essentially replicate the utilization of absolute values directly, as the data undergoes normalization to fall within the range of 0 to 255 prior to the application of the Canny algorithm.
-
 
     #heading(depth: 5, numbering: none, bookmarked: false)[Implementation]
     ```python
