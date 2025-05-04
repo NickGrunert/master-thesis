@@ -360,46 +360,55 @@
     This hypothesis is substantiated by observation of the distribution charts.
     The impact of blurring is discernible, as the surface coloration exhibits a more polished and smooth appearance subsequent to the application of this technique.
 
-    
-
-
-
-
-
     === Surface Growth <section:surface_growth>
 
-    ==== Surface Growth
+    // TODO
 
-    ==== Base Area Filtering <section:surfaces:filtering>
+    ==== Surface Growth
+    Using the edges computed in the edge detection pipeline, the algorithm is able to generate surfaces.
+    First, filter out all edge pixels and consider only non-edge pixels.
+    Assign one of them as a surface, then iteratively append all adjacent pixels from the list of non-edges until no connected pixels remain.
+    If there are no appended non-edge pixels left, assign one of them as a new surface and repeat the process.
+    This continues until all pixels are assigned.
+    There is no parameterization required and no edge cases that need to be considered.
 
     ==== Separation and Relinking
+    Next, the algorithm takes the generated surfaces and splits them on pixels that do not belong to edges but are adjacent to an edge, before attempting to reconnect such separated surfaces if their mean derivative is similar enough.
+    In general, these two steps are fail-safes to prevent the algorithm from connecting surfaces on loose connections due to small gaps between edges.
 
-
-    /*
-    Using the edges calculated in the edge detection pipeline, the algorithm is able to generate surfaces.
-    This is done by simply letting all non-edge pixel #quote("grow") into all directions until only edge pixel are left and thereby all disjunct pixel structures represent a surface.
-    While this in itself is relatively simple, @fig:surface_separation shows further improvements on this.
-    Generally speaking, they are failsafes to prevent the algorithm from connecting surfaces on loose connections due to the edges having minor error.
-    This is done by categorizing pixel touching edges as edge-pixel and separating surfaces which were only connecting through such.
-    There were attempts to apply morpholigcal operations such as erosion and dilation @MorphologicalOperator to achieve this, but they were not successful, as they lead to the algorithm not being able to detect thin roof parts.
-    Simply put, no matter how small for example the erosion kernel was, it would always lead to too many pixels being lost, meaning in turn small or thin parts of the roof would be filtered out, due to the small image size.
-    As this was not satisfying, the current approach of pixel categorization was developed, as it also simplifies re-adding the removed pixel.
+    In an effort to achieve the desired outcome, attempts were made to implement morphologic operations, erosion and dilation @MorphologicalOperator. 
+    However, these attempts proved unsuccessful, as they resulted in the algorithm's inability to detect thin roof parts.
+    In summary, regardless of the minimal size of the erosion kernel, it inevitably proved to be excessively radical, resulting in a significant number of pixels and especially entire surfaces being lost.
+    Given the small image size, too many components of the roof, small or thin sections, were being filtered out during the process.
+    Therefore, this approach was found to be unsatisfactory, since detection of all components is a requirement. 
+    Consequently, the current method of pixel categorization was developed, as it enables greater control over the behavior of the pixels.
     
-    However as this may lead to some real surfaces being split into multiple surfaces, a re-linking step is neccessary.
-    For this, the algorithm calculates the mean derivative of each surface and connects surfaces which are close enough in their mean derivative.
+    In this step, surfaces that are only connected through thin parts are subdivided into multiple smaller surfaces.
+    In such instances, the algorithm will attempt to reconnect the resulting sub-components.
+    In order to accomplish the aforementioned objective, the algorithm first calculates the mean derivative of each surface.
+    Subsequently, the method identifies surfaces that were previously part of the same surface and are sufficiently proximate in their mean derivatives. These surfaces are then reconnected accordingly.
+    The mean derivative has been identified as the most robust method for this purpose, as the average derivative is more susceptible to outlier values.
 
-    In turn, this leads to the introduction of the next parameter, the absolute minimum difference between the mean derivative of two surfaces to be connected, later simply called threshold.
-    A threshold too high leads to rightly separated surfaces being falsely reconnected while a threshold too low, which is less problematic, leads to surfaces being split into multiple surfaces, which mostly happens on smaller surfaces.
-    The threshold value thereby is absolute, as any form of percentage based threshold leads to a false bias against flat roof structures and too highly encoureages the algorithm to combine high derivative surfaces.
+    Consequently, this results in the introduction of a new parameter: the absolute minimum difference between the mean derivative of two surfaces to be connected.
+    In instances where the threshold is set at an too-high level, correctly separated surfaces are erroneously reconnected.
+    Conversely, when the threshold is set too low, surfaces are split into multiple surfaces, a phenomenon that predominantly occurs on smaller surfaces.
+    The threshold value is established as absolute, given the substantiated finding that percentage-based thresholds induce a false bias against flat roof structures and excessively prompt the algorithm to merge high derivative surfaces.
 
-    Later on after @section:scoring, the algorithm may be able to dynamically determine the threshold, but for now it is set to a fixed value, which was found to be the best for the current data whilest admitting limitaions.
-    Also, merging based on this value may not be the best approach at all.
-    There may later on be a better approach by simply testing if the merging of two surfaces leads to a higher score, which should in theory lead to the same or rather better results.
-    For now however, this remains theoretical and only a possibility for future improvements.
+    The linking step implements a failsafe that verifies spatial connectivity following the merging of two surfaces. This is due to the fact that a simple combination of derivatives does not guarantee this, particularly when larger surfaces are fragmented into numerous components.
+    This issue primarily originates from improper parameterization in the Canny algorithm outlined in @section:canny. 
+    This challenge was addressed regardless.
 
-    In general this leads to good results, as the mean derivative of a surface should be quite similar across the whole surface whilest the derivative of two distinct surfaces should be different enough to not be connected.
-    Two disjunct surfaces in question can only have about the same mean derivative if they are connected through another surface, which in turn should be detected by the algorithm, because after re-linking they are spatially not connected.
-    On the other hand they could have the same mean if they have a gap in height between them, which should definitely be detected by the edge detection algorithm, or at least this concern would need to be addressed there.
+    This step, in general, only serves as a minor improvement and does not alter the outcome of the algorithm in a significant way.
+    Consequently, no comprehensive analysis or enhancement will be conducted on it, as preliminary experiments have demonstrated that an absolute reconnection threshold of 35 performs adequately overall.
+    Errors resulting from erroneous surface connections will be addressed through a negative impact on the segmentation evaluation in @section:scoring.
+    
+    Subsequent research endeavors may seek to enhance the present methodology, particularly given its focus on reconnecting surfaces that have been separated during the current procedure. Additionally, it could be worthwhile to investigate the potential for interconnectedness among adjacent surfaces in a comprehensive manner.
+    Consequently, this would necessitate a more sophisticated approach, as the algorithm would be required to verify all adjacent surfaces, as opposed to solely those that were divided.
+    Additionally, the prevailing algorithm does not incorporate failsafes against the occurrence of two adjacent surfaces having the same mean derivative, yet being at different height levels, signifying that they are, in fact, not connected.
+
+    ==== Results
+    @fig:surface_separation shows how the surfaces are created and how the separation and linking steps influence the outcome.
+    // TODO
 
     #subpar.grid(
       columns: 4,
@@ -413,51 +422,45 @@
       figure(image("../figures/surface_separation/3.png"), caption: [
         Re-linking.
       ]), <fig:surface_separation:c>,
-      figure(image("../figures/surface_separation/4.png"), caption: [
-        Magnitude.
-      ]), <fig:surface_separation:d>,
       caption: [
-        Example of what happens internly during the Surface Growth algorithm. 
-        The effect of separation and re-linking are clearly visible here. 
-        Since the previous edge detection algorithm did not supply sufficient edges, the splitting is neccessary to create a good segmentation, while the linking is neccessary to not split thin edges more than needed.
+        Surface Growth, Separation and Re-linking.
       ],
       label: <fig:surface_separation>,
     )
 
-    The final step in the surface generation is the filtering of the surfaces.
-    This is done by using the same Surface Grwoth algorithm to generate surfaces on the image of clipped pixels instead of the edge pixel.
-    Albeit not perfect, this algorithms then takes the input data into account, in which the house's base layout is given.
-    For simplification and to prevent the algorithm from filtering out too much, we take into account all clipped surfaces which have an overlap of at least 50% with the house's base layout.
-    Then again we take this 50% parameter to filter out surfaces from the edge pixel images which do not have sufficient overlap.
+    ==== Base Area Filtering <section:surfaces:filtering>
+    At this stage, the algorithm identifies all surfaces within the image, extending beyond the base area of the structure.
+    This could be regarded as a non-issue, as it is theoretically possible to consider all extant surfaces in the image.
+    Nonetheless, the decision was made to exclusively examine and inspect the surfaces within the house's base area. 
+    Consequently, this necessitated the implementation of a filtration process to remove external surfaces.
 
-    @fig:surfaces_pipeline shows the results of each step inside the surface pipeline.
-    It is visible that this successfully filters out the non-house surfaces from the image as well as filters out many small surfaces which were generated due to the algorithm having certain problems near clipped pixels.
-    An example for this is the visible imperfection near the red surface on ther lower right side of the house.
+    Given that the algorithm has already obtained the clipped pixel from the edge detection pipeline, it was determined that it was feasible to utilize this information in this particular step.
+    The implementation of the surface growth algorithm on the clipped pixel image produces a set of surfaces that approximately define the areas of the image.
+    By this set of segments, the house area can be identified.
+    Due to practicality, the algorithm will simply check with overlap regarding the mask from the input data. However, a more sophisticated approach independent of the input data could be developed in future work.
 
-    The soft cyan and lime green clipped surfaces also show that indeed the algorithm can not just take the one best surfaces as balconies or similar structures need to be taking into account.
+    In the final algorithm for this section, the base area filtering will be executed prior to separation and re-linking, as the filtration of surfaces before these steps exerts a significant influence on the resulting execution time.
+    Given the potential abundance of small surfaces in the external environment, the efficiency of the algorithm is contingent upon the optimization of its calculation process.
+    In addition, preliminary experimentation has demonstrated that employing the refinement steps intended for normal surfaces on the base area surfaces yields no more positive results than negative ones.
+    While it demonstrates increased resilience against minor variations in the house outlines, it exhibits reduced robustness in other aspects.
+    The prevailing assumption was that if an insufficient amount of clipping for detecting the building's outline was applied, remediation was possible by simply increasing the clipping percentage.
+    While this approach is not without its limitations, as it likely results in more clipping than necessary and is not entirely robust, these aspects will not be addressed in this work.
+    This is partially due to the fact that the base area detection will be addressed by @section:replace_clipping_by_sam, which will replace this specific part of the algorithm by using SAM on the nDSM data to find the base area.
 
     #figure(
-      image("../figures/surfaces/surfaces_pipeline.png", width: 100%),
+      image("../data/6/1/v1/surfaces.png", width: 100%),
       caption: [
-        The result of each step inside the surface pipeline. The parameter used here are 50% minimum overlap for the Best Surfaces as well as the Filtered Surfaces.
+        Intermediary steps of the Surface Generation.
       ],
     ) <fig:surfaces_pipeline>
 
-    Additionaly the example house shown in the image shows that the algorithm without dynamic determination of parameters is not sufficient to solve the problem, because the house's small squared flat roof in the middle got merged with two outer roofs, which is plain wrong and should be detected and fixed.
-    Respectively, the next section is about exactly that, the scoring system, which is neccessary to evaluate the quality of the generated surfaces.
-    */
-
-
-
-
-
-
-
-
-
-
+    As illustrated by @fig:surfaces_pipeline, the surface steps from one of the image test runs are displayed.
+    The detection of the house area is evident, as is the filtration of numerous small surfaces in the external environment.
+    The necessity to overestimate the clipping percentage can be determined by the presence of clipped values throughout the house, suggesting a higher than necessary value, as actual information on the roof may be lost.
+    However, the algorithm appears to be functioning adequately during initial experimentation on a diverse set of houses.
 
     === Scoring System for Evaluation <section:scoring>
+    /*
 
     While for the earlier tests the quality of most surfaces was sufficiently evaluatbable by human eyes, a greater need for objective criterion arose.
     This function should be able to evaluate the quality of the surfaces based on the following criteria:
@@ -643,5 +646,6 @@
       ],
       label: <fig:scores:founderror>,
     )
+    */
   ]
 }

@@ -95,7 +95,7 @@
     Additionally, it was used during debugging processes to identify errors. 
     However, this approach yielded at most modest success.
 
-    The efficacy of ideas and their subsequent implementation were partly validated through consultations with DeepSeek @deepseek and ChatGPT @chatgpt.
+    The effectiveness of ideas and their subsequent implementation were partly validated through consultations with DeepSeek @deepseek and ChatGPT @chatgpt.
     Nevertheless, the prevailing focus in these cases is on the discussion of the validity of ideas and the construction of rudimentary frameworks for algorithms.
     It is noteworthy that the code created in these cases is rarely incorporated into the final product, since most of it had to be rewritten completely.
 
