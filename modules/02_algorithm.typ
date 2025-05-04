@@ -408,7 +408,10 @@
 
     ==== Results
     @fig:surface_separation shows how the surfaces are created and how the separation and linking steps influence the outcome.
-    // TODO
+    Initially, three larger surfaces were merged despite the presence of a clearly defined edge between them; however, this edge was only partially identified but not fully connected.
+    Consequently, the algorithm divided them into three smaller surfaces.
+    Subsequently, reconnecting the surfaces was attempted; however, the mean derivative of the surfaces was found to be too different, rigthfully not resulting in reconnection.
+    Nonetheless, the algorithm successfully reconnected numerous small surfaces that had been divided due to their inherent thinness.
 
     #subpar.grid(
       columns: 4,
@@ -525,6 +528,7 @@
 
 
     ==== Plateau Algorithm
+    /*
 
     For this purpose a custom algorithm was developed which evaluates the quality of a surface.
     It does this by analyzing each surfaces derivative values, in each direction meaning x, y and their combination.
@@ -651,9 +655,6 @@
     #subpar.grid(
       columns: 1,
       gutter: 1mm,
-      figure(image("../figures/scoring_algorithm/found_mistake/1.png"), caption: [
-        Edge Detection Pipeline.
-      ]), <fig:scores:founderror:a>,
       figure(image("../figures/scoring_algorithm/found_mistake/2.png"), caption: [
         Surface generation using refinement of the clipped surfaces.
       ]), <fig:scores:founderror:b>,
@@ -665,5 +666,6 @@
       ],
       label: <fig:scores:founderror>,
     )
+    */
   ]
 }

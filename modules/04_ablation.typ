@@ -54,7 +54,7 @@
       box(figure(image("../data/6/17/v1/heatmap_medium.png")), clip: true, width: 110%, inset: (bottom: -2.1in, top: -4.15in, right: -10.45in)),
       box(figure(image("../data/6/17/v1/heatmap_medium.png")), clip: true, width: 80%, inset: (bottom: -2.7in, top: -4.75in, left: -4.9in, right: -8.5in)),
       caption: [
-        Extract from the Heatmaps on the only house where not blurring is optimal.
+        Heatmap extracts where not blurring appears optimal.
       ],
       label: <fig:ablation:blurring_none>,
     )

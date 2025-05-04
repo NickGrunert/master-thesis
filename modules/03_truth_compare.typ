@@ -244,7 +244,7 @@
       figure(image("../figures/truth_compare/completeness/4.png")), <fig:truth_compare:completeness:c>,
       figure(image("../figures/truth_compare/completeness/10.png")), <fig:truth_compare:completeness:d>,
       caption: [
-        Calculated recall and precision for different numbers of calculated surfaces matched to one ground truth surface.
+        Different n-to-1 relations from generated Segments to Ground Truth.
       ],
       label: <fig:truth_compare:completeness>,
     )
@@ -328,8 +328,7 @@
       figure(image("../figures/truth_compare/hungarian/error2.png")),
       figure(image("../figures/truth_compare/hungarian/error3.png")),
       caption: [
-        The Comparison between old scoring system and new clearly show a mismatch in precision calculation. 
-        However, no example was found in which this influenced the final outcome of choosing a segmentation.
+        Mismatch in Precision between old and new Scoring.
       ],
       label: <fig:truth_compare:hungarian_error>,
     )
@@ -845,7 +844,7 @@
 
     #figure(
       image("../figures/truth_compare/final_results/all_data.png"), 
-      caption: [All twenty normalized Point Clouds showing Pearson and Spearman Coefficients.],
+      caption: [Normalized Point Clouds with Pearson and Spearman Coefficients.],
     )<fig:truth_compare:final>
 
     Two datasets demonstrate only a relatively minor correlation, while one exhibits no correlation.
