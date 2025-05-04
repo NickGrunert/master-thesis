@@ -30,20 +30,23 @@
     
     Lastly, @section:ablation of this chapter will then return to said parameter and perform an ablation study on the actual effect of these, intended for the purpose of achieving a better understanding and filtering out those parameter with minor effect so that they will not be considered in further calculations on unseen data.
 
-
-
-
-
-
-
     == Identification of Roof Structures through Analysis of nDSM Data <section:algorithm>
+    In the following sections, the nDSM data will be utilized to calculate derivatives, process the data, and consequently detect edges inside the image.
+    The derivatives are generally distinguished between x and y directions.
+    The utilization of combined values, expressed as magnitudes, is not a viable approach. 
+    In the context of mathematics, the operation of multiplying "x" by "-y" is equivalent to the inverse operation of multiplying "-x" by "y."
+    However, in practical applications, it is essential to differentiate between these two cases.
+    This predicament stems from the problem of opposing roofs having mirrored signs, which is most problematic on axis-aligned houses, where the resulting magnitude of opposing roofs can be identical.
+    Consequently, the algorithm may interpret these surfaces as identical, despite substantial disparities in their individual x and y values.
 
+    Derivatives are constructed using appropriate algorithms as outlined in the @section:edge_detection. 
+    Subsequently, the algorithm implements a series of transformations: logarithmic scaling in @section:log, clipping in @section:clipping, and Gaussian blurring in @section:gaussian_blurring. 
+    The purpose of these transformations is to enhance contrast and remove noise, thereby facilitating improved algorithmic analysis.
+    In conclusion, @section:canny will outline the utilization of the Canny Edge Detection algorithm.
+    Subsequently, the edges originating from the x and y directions are combined through the application of logical or, thereby yielding the final edges.
+    
     === Edge Detection <section:edge_detection>
 
-
-
-    ==== Calculating the Derivative
-    
     #heading(depth: 5, numbering: none, bookmarked: false)[Theory]
     //TODO
     @ScharrOperator @SobelOperator
@@ -88,7 +91,7 @@
       # ... other steps
     ```
 
-    ==== Applying Logarithmic Scaling
+    ==== Applying Logarithmic Scaling <section:log>
 
     #heading(depth: 5, numbering: none, bookmarked: false)[Theory]
     There are many ways to improve the contrast of images @log3.
@@ -150,7 +153,7 @@
       # ... other steps
     ```
 
-    ==== Clipping extreme Values
+    ==== Clipping extreme Values <section:clipping>
 
     #heading(depth: 5, numbering: none, bookmarked: false)[Theory]
     A visual analysis of the individual steps during the initial setup of this pipeline has revealed some statistical constants across the different data sets.
@@ -204,7 +207,7 @@
       # ... other steps
     ```
 
-    ==== Gaussian Blurring
+    ==== Gaussian Blurring <section:gaussian_blurring>
 
     #heading(depth: 5, numbering: none, bookmarked: false)[Theory]
     Overall, the derivative is very noisy due to inconsistencies in the input height information.
@@ -247,7 +250,7 @@
       # ... other steps
     ```
 
-    ==== Canny Edge Detection
+    ==== Canny Edge Detection <section:canny>
 
     #heading(depth: 5, numbering: none, bookmarked: false)[Theory]
     The concluding step of this section involves the implementation of the Canny Edge Detection algorithm @Canny1.
@@ -296,55 +299,25 @@
       # ... other steps
     ```
     
-
-
-
-
-
-    /*
-    @fig:edp:pipeline shows the full pipeline used for the edge detection.
-    For now, the pipeline is kept simple, as the main goal is to create a basis for further experiments.
-    The derivatives are distinguished between x and y directions, as using the combined values in the form of magnitude creates error.
-    This problems stem from the fact that opposing roofs can have mirrored signs in their derivative values, which in turn leads to the algorithm interpreting them as the same surface even though their x and y values may highly differ.
+    ==== Results
 
     #figure(
       image("../figures/edge detection/pipeline1.png", width: 100%),
       caption: [
-        Later Iteration of the Edge Detection Pipeline using found Improvements in calculation and visualisation.
+        Edge Detection Pipeline.
       ],
-    ) <fig:edp:pipeline>
+    ) <fig:algorithm:edges:pipeline>
 
-    For better comparisons accross multiple roofs as well as better generalization, between each step the data gets normalized.
-    The pipeline starts with the calculation of the derivative of the nDSM data using the Sobel operator .
-    Interestingely, visualizing the absolute values inside the bars plots shows the roof segments quite clearly, as the graph is a layering of the individual segments graphs.
-    While the clipping which follows in the next step was introduced to improve the contrast in the values, we also apply logarithmic scaling to the output values of the derivative.
-    //Further discussed in @section:log, this step is helpful in enhancing the contrast of the image, which in turn makes it easier to interpret.
+    @fig:algorithm:edges:pipeline demonstrates the full pipeline that was utilized for the edge detection step.
+    The derivatives for each step are assigned a color, ranging from blue to red, with blue signifying negative values and red denoting positive ones.
+    Given that these are divided into the x and y directions, this coloration method is adequate.
 
-    The next step is clipping the extreme values of the derivative data.
-    This step may not be neccessary, but it adds nice and wanted improvements to the algorithm.
-    These are, the most extreme values are ver likely to belong to the houses surface and are also very likely to outlier in regards to the rest of the data due to them simply logically being the highest changes in height.
-    Therefore, clipping them has two effects:
-    - The contrast in the values is increased, which makes the image easier to interpret.
-      Not only visually but also for the algorithm, as the edges between roofs are more pronounced, which in turn leads to the algorithm being able to detect them more easily.
-    - Using the clipped values gives a base for guessing the layout of the house.
-      This is theoretically not neccessary, as the input data regarding the house's layout is given and of acceptable quality, but it may be useful for further experiments, as the algorithm may be able to detect missing areas of the house, which are not covered by the input data.
-    However, this step creates a hyperparameter, which may need to be adjusted for each house, as the perfect percentage of clipped values may vary between houses.
-    Using a value too high may lead to atrifacts inside the roof segments or even clipping entire surfaces together, using a value too low may lead to the algorithm not being able to detect house layout, meaning all surfaces will be filtered out, see @section:surface_growth.
-
-    Disregarding the visual step back, @fig:clipping shows the difference between using and not using the clipping step.
-    After clipping the data, the hills stemming from the roof segments are clearly visible.
-    This however is not only visual for analysis but also helps the last edge detection step to find edges, since the absolute value of the inner edges is not overshadowed as much by the outer house edges.
-    */
+    It should be noted that the parameters were not optimized for this specific image, but are exclusively utilized for illustrative purposes here.
+    For instance, given the absence of substantial outliers in the image, which would typically serve to diminish contrast, it is plausible that the clipping value was set at an excessively high value. 
+    This hypothesis is substantiated by observation of the distribution charts.
+    The impact of blurring is discernible, as the surface coloration exhibits a more polished and smooth appearance subsequent to the application of this technique.
 
     
-
-
-
-
-
-
-
-
 
 
 
