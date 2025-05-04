@@ -460,50 +460,62 @@
     However, the algorithm appears to be functioning adequately during initial experimentation on a diverse set of houses.
 
     === Scoring System for Evaluation <section:scoring>
-    /*
-
-    While for the earlier tests the quality of most surfaces was sufficiently evaluatbable by human eyes, a greater need for objective criterion arose.
-    This function should be able to evaluate the quality of the surfaces based on the following criteria:
-    - The coherence of the surface's values, meaning that optimaly the surface should have a similar value over the whole surface.
-      While realistically this value will not achieve a perfect score due to the aforementioned noise and imperfection of input data, it should be as high as possible.
-      In experiments it becomes clears that almost no surface has a perfect derivative across all values or even if it does, it is also possible that an actually bigger surface go split too much by the algorithm.
-    - The size of the surface. 
-      To address the algorithm cutting down surfaces too much, I propose to add a reward for bigger surfaces.
-      // TODO: valentina mentioned oversegmentation here
-      This should be done in a way that the reward is not too big, as it could lead to the algorithm just merging all surfaces into one big surface.
-      A bigger surface which is not coherent should be penalized accordingly.
+    In the preceding tests, the quality of the majority of surfaces could be adequately assessed by manual observation for initial parameter tuning and theory validation.
+    However, as the general structure was being established, a greater necessity for objective evaluation criteria emerged.
+    The methodology under consideration should possess the capacity to evaluate the quality of surfaces based on the following criteria:
+    - The surface's values must be coherent, meaning that the surface's values should be similar throughout its entirety.
+      While it is acknowledged that this value will not attain a perfect score due to the aforementioned noise and imperfection of input data, it is expected to be maximized.
+      Preliminary experimental findings suggest that the majority of surfaces appear to exhibit a derivative that is not perfectly continuous across all values.
+      The objective of this criterion is to guarantee that the algorithm does not undersegment the data.
+      In the event that the algorithm merges surfaces incorrectly, the resultant derivative values will be inconsistent, which will consequently lead to a lower score here.
+    - The surface area is a critical consideration in this analysis.
+      In order to address the issue of the algorithm undersegmenting surfaces, it is proposed that a reward be allocated for surfaces of greater size.
+      It is imperative that the augmentation of score through the implementation of this reward does not violate the established first criteria of coherence.
     
-    Also note that for better visual clarity most figures in this section or rather from now on use magnitude colouring.
-    What this means is that the colour of a surface is determined by the mean magnitude calculated from x and y direction.
-    While most algorithms do not use the magnitude for calculation, for example the edge detection pipeline using x and y directions distinctly, this is a still a good way for simple visualization of the data.
-    While two magnitudes of defintely disjunct roof tiles can be the same, which can be confusing to look at, it is still preferebly to random colouring of surfaces, as random colouring across multiple images in a series of experiments creates unnecessary hardship when evaluating the data.
-
     ==== Experimental Usage of DBSCAN
 
-    // TODO: DBSCAN source and why it theoretically could have been used
-    Using spatial information by for example using labeling through DBSCAN failed in almost every case due to the data inconsistency inside even perfect surfaces.
-    The algorithm may be able to detect that something wrong, but not consistently enough to be used in the scoring system or in generell serious evaluation.
-    Further experimentation with the algorithms parameter of epsilon and minimum sample number may be possible, and quick tests have shown that the algorithms quality can highly vary depending on these, but achieving satisfying results seems unfeesable.
-    For demonstration @fig:dbscan shows examplary results of the DBSCAN algorithm three different surfaces with subpar results.
-    While @fig:dbscan:a would in reality be three surfaces, @fig:dbscan:b and @fig:dbscan:c are actually one surface each. 
-    As an example to adjust parameters, @fig:dbscan:b would need a higher minimum sample number, so that the algorithms ignores inconsistencies in the data, whilest @fig:dbscan:c would actually need a lower value to detect anything, assuming no change to epsilon.
+    An initial attempt was made to use the Density-Based Spatial Clustering of Applications with Noise (DBSCAN) algorithm @dbscan1.
+    This algorithm is employed to detect clusters in data, a common task in machine learning.
+    The interpretation of surface derivatives as a point cloud renders them applicable to this algorithm.
+
+    The algorithm's capacity to discern anomalies may be adequate; however, its precision is not sufficiently reliable for incorporation into the scoring system or for general evaluation purposes.
+    The implementation of the algorithm is contingent upon two parameters: the epsilon and the minimum sample number. These parameters delineate the requisite spatial density of a cluster.
+    Additional experimentation with the algorithms parameter may be feasible; however, preliminary tests have demonstrated that the quality of the algorithms is contingent on this parameter. Achieving satisfactory results, nevertheless, appears to be impracticable.
+    
+    To illustrate the problematic application, @fig:dbscan presents illustrative results of the DBSCAN algorithm on three disparate surfaces, yielding suboptimal outcomes in each instance.
+    The surface utilized in @fig:dbscan:a is comprised of three surfaces that have been erroneously merged. 
+    In contrast, @fig:dbscan:b and @fig:dbscan:c are each a single, coherent surface.
+    For purposes of illustration, consider the adjustment of parameters. 
+    To that end, @fig:dbscan:b would require a higher minimum sample number, thereby enabling the algorithms to disregard inconsistencies in the data. 
+    Conversely, @fig:dbscan:c would necessitate a lower value to detect anything, under the assumption that epsilon remains constant in both cases.
+
     #subpar.grid(
       columns: 3,
       gutter: 2mm,
       figure(image("../figures/dbscan_test/1.png"), caption: [
-        Three falsely merged surfaces.
+        Falsely merged surfaces.
       ]), <fig:dbscan:a>,
       figure(image("../figures/dbscan_test/2.png"), caption: [
-        Surface with little noise.
+        Little noise.
       ]), <fig:dbscan:b>,
       figure(image("../figures/dbscan_test/3.png"), caption: [
-        Surface with a lot of noise.
+        Much noise.
       ]), <fig:dbscan:c>,
       caption: [
-        One iteration of the DBSCAN results. Clustering here was only done on derivative data not on spatial information, since the algorithm would otherwise only detect the fact that, of course, it is spatially connected. The algorothm detected 17, 3 and 0 Cluster respectively, showing too high dependency on the parameter.
+        Execution of DBSCAN on three different surfaces.
       ],
       label: <fig:dbscan>,
     )
+
+    The necessity of precise parametrization in each instance constitutes a significant challenge, as this section aims to assess the validity of any surface with a high degree of success.
+    Consequently, as this approach necessitates an evaluation of the scoring parameter, its applicability in this context is considered limited.
+    While the method could potentially be applied for surface evaluation or even segmentation in general, it will not be pursued further in this study.
+
+
+
+
+
+
 
     ==== Plateau Algorithm
 
@@ -646,6 +658,5 @@
       ],
       label: <fig:scores:founderror>,
     )
-    */
   ]
 }
