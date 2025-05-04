@@ -483,8 +483,15 @@
     Additional experimentation with the algorithms parameter may be feasible; however, preliminary tests have demonstrated that the quality of the algorithms is contingent on this parameter. Achieving satisfactory results, nevertheless, appears to be impracticable.
     
     To illustrate the problematic application, @fig:dbscan presents illustrative results of the DBSCAN algorithm on three disparate surfaces, yielding suboptimal outcomes in each instance.
-    The surface utilized in @fig:dbscan:a is comprised of three surfaces that have been erroneously merged. 
-    In contrast, @fig:dbscan:b and @fig:dbscan:c are each a single, coherent surface.
+    Note that the label -1 is given to all points considered noise @dbscan2.
+    The surface utilized in @fig:dbscan:a is comprised of three surfaces that have been erroneously merged.
+    Nonetheless, the algorithm proved incapable of identifying this particular instance and instead labeled 17 different surfaces. 
+    Notably, it failed to recognize the two outer surfaces as coherent entities and erroneously merged the inner surface with the edges surrounding the other two.
+    
+    In contrast, the other two examples are each a single, coherent surface.
+    In @fig:dbscan:b, a perfectly normal surface only affected by minor noise inside the derivative values, the entire surface is identified as noise, with the actual noise for some reason being given multiple labels.
+    @fig:dbscan:c contains a significant amount of noise, resulting in no surface detection at all, labeling everything as noise.
+
     For purposes of illustration, consider the adjustment of parameters. 
     To that end, @fig:dbscan:b would require a higher minimum sample number, thereby enabling the algorithms to disregard inconsistencies in the data. 
     Conversely, @fig:dbscan:c would necessitate a lower value to detect anything, under the assumption that epsilon remains constant in both cases.
