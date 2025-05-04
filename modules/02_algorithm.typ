@@ -44,17 +44,53 @@
     The purpose of these transformations is to enhance contrast and remove noise, thereby facilitating improved algorithmic analysis.
     In conclusion, @section:canny will outline the utilization of the Canny Edge Detection algorithm.
     Subsequently, the edges originating from the x and y directions are combined through the application of logical or, thereby yielding the final edges.
+    Lastly, @section:edges:results outlines the combined steps which make up the overall edge detection pipeline.
     
     === Edge Detection <section:edge_detection>
 
+    #heading(depth: 5, numbering: none, bookmarked: false)[Kernel]
+    $ "Sobel": G_x = mat(
+      -1, 0, 1;
+      -2, 0, 2;
+      -1, 0, 1;
+    ) "  and" G_y = mat(
+      -1, -2, 1;
+      0, 0, 0;
+      1, 2, 1;
+    ) $ <formula:sobel>
+
+    $ "Scharr": G_x = mat(
+      -3, 0, 3;
+      -10, 0, 10;
+      -3, 0, 3;
+    ) "and" G_y = mat(
+      -3, -10, 3;
+      0, 0, 0;
+      3, 10, 3;
+    ) $ <formula:scharr>
+
+    $ f′(x_i) ≈ (f(x_i+1)-f(x_i-1)) / (2h) $ <formula:gradient>
+
     #heading(depth: 5, numbering: none, bookmarked: false)[Theory]
-    //TODO
-    @ScharrOperator @SobelOperator
+    There exists a multitude of methodologies for the calculation of derivatives with regard to two-dimensional image data.
+    The Sobel and Scharr operators are common approximation method frequently employed for this purpose.
+    The two methods under discussion are based on the idea of using convolution, whereby a specific kernel is slid over the image, calculating the derivative at each pixel.
+    Given that the kernels employed are of sizes 3x3 or 5x5, these are approximations, since the derivative should typically consider only the two pixels directly adjacent to it.
+    In essence, the functionality of both operators is equivalent; the only discrepancy lies in the kernel utilized, as illustrated by @formula:sobel and @formula:scharr @ScharrOperator @SobelOperator @derivative_sobel1.
+
+    A more conventional way of calculating the derivative is to interpret each row and column as a function defining the values x and then to use the standard mathematical approach demonstrated by @formula:gradient. 
+    Here, the derivative is calculated by taking the difference between two adjacent pixels and dividing it by the distance between them. 
+    Since the distance between two pixels is always 1, the parameter h can be omitted. 
+    While this is theoretically the most mathematically accurate way of calculating the derivative, it is also the most computationally expensive, since the kernel convolution can be optimized quite efficiently. 
+    Nevertheless, it is definitely a promising approach and will be included in the algorithm for later evaluation. 
+    A fourth method, called the sliding window approach, mimics the novel approach of calculating the gradient without the mathematical correctness of the division by $2h$. 
+    This was used as a kind of test alongside the other methods, just for experimentation.
 
     #heading(depth: 5, numbering: none, bookmarked: false)[Implementation]
     While all of the following implementations do not distinguish between the x and y directions, in this single section it is necessary due to implementation details where they need to be handled separately.
     The possible derivatives are defined via an enum for better identification and case matched inside the edge detection algorithm.
     The Scharr Method uses a Sobel kernel with -1, which is defined in the cv2 documentation as a standard 3x3 Scharr kernel @derivative_sobel1.
+    Gradient calculation is implemented using the numpy gradient function @gradient.
 
     ```python
     class DerivativeMethod(Enum):
@@ -208,6 +244,12 @@
     ```
 
     ==== Gaussian Blurring <section:gaussian_blurring>
+    #heading(depth: 5, numbering: none, bookmarked: false)[Kernel]
+    $ "Gaussian 3x3" = 1 / 4.672 * mat(
+      0.210, 0.458, 0.210;
+      0.458, 1.000, 0.458;
+      0.210, 0.458, 0.210;
+    ) $ <formula:gaussian_kernel>
 
     #heading(depth: 5, numbering: none, bookmarked: false)[Theory]
     Overall, the derivative is very noisy due to inconsistencies in the input height information.
@@ -219,9 +261,10 @@
     The sigma values define the standard deviation of the Gaussian function, which in turn determines the amount of blur applied to the image.
     However, the influence of these parameters will not be explored extensively, and only 3x3 and 5x5 kernels will be tested, as well as whether noise reduction has the desired positive influence at all.
     The sigma values are not explicitly set, so the algorithm automatically calculates them to be $≈0.8$ and $≈1.1$ for 3x3 and 5x5 kernels respectively.
+    @formula:gaussian_kernel shows the mathmatically correct Gaussian 3x3 kernel using the given parameter.
+    It is noteworthy that the OpenCV kernel deviates marginally at the four edge values due to the implementation of corrections, which results in a kernel sum that approaches closer to 1 to reduce errors.
 
     The position in the overall edge detection pipeline just before Canny Edge Detection is applied and after the derivatives have been computed and clipped was determined after some minor experimentation that proved less successful than placing it here.
-
     Note that due to the small size of the image, this blurring leads to a loss of detail, which will mean problems in detecting thin roof parts.
 
     #heading(depth: 5, numbering: none, bookmarked: false)[Implementation]
@@ -299,7 +342,7 @@
       # ... other steps
     ```
     
-    ==== Results
+    ==== Results <section:edges:results>
 
     #figure(
       image("../figures/edge detection/pipeline1.png", width: 100%),
