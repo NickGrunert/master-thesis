@@ -709,7 +709,7 @@
     Given that both scores are on a scale from 0 to 1, with 1 representing the optimal result, the final score can be calculated as a weighted sum of these two scores.
     The determination was made that an equal weighting would be sufficient, as a lower weighing of the negative score could lead to the algorithm not detecting missing areas as well as it should and a higher value underfactorization of the actual segment quality.
 
-    #heading(depth: 5, numbering: none, bookmarked: false)[Explanation]
+    #heading(depth: 5, numbering: none, bookmarked: false)[Results]
     #subpar.grid(
       columns: 1,
       gutter: 1mm,
