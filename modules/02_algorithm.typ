@@ -522,13 +522,15 @@
     While the method could potentially be applied for surface evaluation or even segmentation in general, it will not be pursued further in this study.
 
     ==== Plateau Algorithm
+    #heading(depth: 5, numbering: none, bookmarked: false)[Theory]
     To achieve this objective, a tailored algorithm was developed to assess the quality of the results obtained. 
     This algorithm functions independently of the specific input data, thereby eliminating the need for adjustments.
     This process is achieved through the analysis of the derivatives of each surface in all directions, including the x, y, and magnitude values.
     In each of these directions, the algorithm seeks to identify regions exhibiting approximately constant or close values. 
     These regions will henceforth be designated as plateaus, as visualizing the data reveals the ideal representation of a perfect surface.
+    The final result will be an equal-valued combination of the three directions.
 
-    The objective function for each surface is defined by the multiplication of its size, S, and the number of coherent values, V.
+    The objective function for each surface is defined by the multiplication of its size by the number of coherent values.
     The score in question is inherently constrained within the interval from 0 to 1, with 1 representing the maximum attainable score, as required.
     As previously stated, the algorithm calculates the surface area squared in order to assign greater rewards to surfaces of greater size in comparison to smaller surfaces.
     Consequently, a large surface with optimal values will achieve a higher score than two smaller surfaces with perfect values. 
@@ -540,36 +542,96 @@
     However, it should be noted that this algorithm is inherently incapable of detecting surfaces that are connected and exhibit close derivatives.
     Addressing this issue would necessitate the identification of jumps in the height value graph of the surface, a topic that will not be further explored in this study.
 
+    The implementation of the plateau algorithm is not entirely independent of parameter.
+    The subject of this discussion is the minimum plateau relevance and the plateau tolerance.
+    The minimum plateau relevance is defined as the percentage of numbers that must be in a points vicinity to be considered a plateau.
+    In this particular instance, the term "vicinity" is defined by the plateau tolerance, which delineates the absolute permissible discrepancy in values between two points until they are no longer regarded as being within the same plateau.
+    However, all subsequent scores will be calculated by setting the parameter to 0.1 and 15, respectively. 
+    The rationale behind this selection is that these values demonstrated notable success in identifying plateaus during the testing phase.
 
+    #heading(depth: 5, numbering: none, bookmarked: false)[Implementation]
+    ```python
+    def scoring(...):
+      relevance = params.minimum_plateau_relevance
+      tolerance = params.plateau_tolerance
 
+      # Find Center Points counting as plateaus pillar
+      def find_plateau(values):
+        counts = {}
+        for value in values:
+          rounded = round(value / tolerance) * tolerance
+          counts[rounded] = counts.get(rounded, 0) + 1
+        plateau_values = []
+        for rounded_value, count in counts.items():
+          if count / len(values) >= relevance:
+            plateau_values.append(rounded)
+        return plateau_values
 
+      # Get score from given plateaus values
+      def calculate(values, plateaus):
+        if not plateaus:
+          return 0
 
-    @fig:scores shows the results of the algorithm on different houses.
-    Sorting the derivative values belonging to detected plateaus not only serves as a good visualisation, but also removes the spatial correletaion between the values as was the case in the DBSCAN algorithm.
-    The algorithm is able to detect good surfaces, as shown in @fig:scores:a, but also has problems with surfaces which have a high variance of values, as shown in @fig:scores:b.
-    On partly incorrect surfaces like @fig:scores:c, the algorithm does not fail completely, but gives an acceptible result.
-    The problem is, that the derivative values on the roof top edges simply do not match the surface's values, so by algorithm it is encoured to split those values into a non-real surface spanning the edge.
-    Currently, this is not a big problem, as it only minorly effects the results, as in generel they do not need to be perfect, but merely good enough to be used as a vague basis for further analysis.
-    Due to this, it can be argued that errors in @fig:scores:b and @fig:scores:c are not too severe, as the surfaces are either small enough too not invalidate the whole segmentation of the house or are hard to interpret for a human as well.
+        # Check if all plateau values are within tolerance distance
+        has_one_plateau = all(
+          abs(plateaus[j] - plateaus[j - 1]) <= tolerance
+          for j in range(1, len(plateaus))
+        )
 
+        if has_one_plateau:
+          num_plateau_pixels = sum(
+            1 for value in values
+            if any(abs(value - pillar) <= tolerance for pillar in plateaus)
+          )
+          return num_plateau_pixels / len(values) if values else 0
+        else:
+          return 0
+
+      # ...
+
+      # Calculate for each direction
+      combined_score = 0
+      for derivative in [x, y, magnitude]:
+        plateaus = find_plateau(derivative)
+        score = calculate(derivative, plateaus)
+        combined_score += scores
+
+      return combined score /= 3
+    ```
+
+    #heading(depth: 5, numbering: none, bookmarked: false)[Results]
     #subpar.grid(
       columns: 1,
       gutter: 1mm,
-      figure(image("../figures/scoring_algorithm/surface_scoring/1.png")),
-      figure(image("../figures/scoring_algorithm/surface_scoring/4.png"), caption: [
-        Two good surfaces.
-      ]), <fig:scores:a>,
-      figure(image("../figures/scoring_algorithm/surface_scoring/3.png"), caption: [
-        Small surface with high variance of values.
-      ]), <fig:scores:b>,
-      figure(image("../figures/scoring_algorithm/surface_scoring/2.png"), caption: [
-        Hard to interpret surface.
-      ]), <fig:scores:c>,
+      box(figure(image("../data/6/1/v1/plateau.png")), clip: true, width: 100%, inset: (bottom: -11.1in)),
+      box(figure(image("../data/6/4/v1/plateau.png")), clip: true, width: 100%, inset: (bottom: -9.9in, top: -2.5in)),
+      box(figure(image("../data/6/4/v1/plateau.png")), clip: true, width: 100%, inset: (bottom: -12.35in)),
       caption: [
-        Example results of the plateau algorithm with values belonging to detected plateaus coloured in green.
+        Results of the Plateau Algorithm.
       ],
-      label: <fig:scores>,
+      label: <fig:plateau>,
     )
+
+    @fig:plateau presents exemplary extracts from the graphs representing the algorithm's results.
+    The first example illustrates a flawless surface, which is identified as such by the algorithm.
+    It is important to acknowledge that the graphs are not normalized, which results in an apparent unevenness that does not accurately reflect the underlying data.
+    The values ranging from 80 to 100 are regarded as sufficiently proximate to be classified as a single, cohesive plateau.
+
+    The second example row demonstrates a surface that persists of two merged surfaces, which the algorithm detects in the x and magnitude direction. 
+    This is visually quite good and can be confirmed as two distinct plateaus in the data.
+
+    The third row illustrates a regrettable scenario in which both the x and y directions exhibit a single dominant plateau, a phenomenon that is accurately reflected in the scores.
+    However, the magnitude direction indicates a single elevated jump in values, resulting in the identification of two plateaus rather than one. 
+    Consequently, the score is rendered null.
+    This is unfortunate and likely indicative of the fragility of the magnitude values, which renders them unsuitable for use in the score calculation.
+    However, given the algorithm's equitable allocation of values to all three directions, this issue is mitigated, as the remaining two directions retain the capacity to generate a satisfactory score.
+    
+
+
+
+
+
+    
 
     Adjusting the visual output by adding the calculated scores directly into the image and running the algorithm on an objectively harder to segment roof shape, the results are shown in @fig:scores2.
     The algorithm shows clear signs of struggling with the roof shape, as the derivative values are not as coherent as on the previous surfaces, not due to noise, but due to the rounded shape.
@@ -594,6 +656,12 @@
       ],
       label: <fig:scores2>,
     )
+
+
+
+
+
+
 
     Following the individual scoring of the surfaces, the generated scores need to be put together to create a final score which evaluates the segmentation of the roof as a whole.
     This is done by the aforementioned even scoring between the three directions, which is then multiplied by the sum of the squares of the surface sizes.
