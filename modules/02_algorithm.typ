@@ -664,18 +664,28 @@
     
     ==== Segmentation Scoring
     #heading(depth: 5, numbering: none, bookmarked: false)[Formula]
-    $ S_"pos" &= (sum_(i=0)^n ((S_x (i) + S_y (i) + S_m (i)) / 3 * abs(i)²)) / (sum_(i=0)^n (abs(i)²)) \
-      S_"neg" &= (sum_(i=0)^n abs(i)) / N \
-      S &= S_"pos" * p + S_"neg" * (1 - p) $ <formula:score>
+    S = Set of all surfaces
+
+    $p_i$ = Plateau score for surface i
+
+    $A_i$ = Size of surface i
+
+    N = Size of Base Area
+
+    $ #sym.Phi _"pos" &= (sum_(i #sym.in 0) (p_i * A_i²)) / (sum_(i #sym.in 0) (A_i²)) \
+      \
+      #sym.Phi _"neg" &= (sum_(i #sym.in 0) (A_i²)) / N \
+      \
+      #sym.Phi _"res" &= (#sym.Phi _"pos" + #sym.Phi _"neg") / 2 $ <formula:segment_score>
 
     #heading(depth: 5, numbering: none, bookmarked: false)[Explanation]
-
     Following the individual scoring of the surfaces, the generated scores must be aggregated to create a final score that evaluates the segmentation of the roof in its entirety.
     The preliminary implementation of this process entails the combination of each individual surface score.
     The surface's score is subject to manipulation by multiplication of two components: the result score of the plateau algorithm and the surface's squared size.
     As previously stated, the algorithm calculates this in order to assign greater rewards to surfaces of greater size in comparison to smaller surfaces.
     Therefore, a surface with a large surface area and optimal values will achieve a higher score than two smaller surfaces with perfect values.
     However, a small surface with imperfect values will likely demonstrate superior performance in comparison to a large surface characterized by numerous incoherent values.
+    This calculation is denoted as $#sym.Phi _"pos"$ in @formula:segment_score.
 
     #figure(
       box(figure(image("../figures/scoring_algorithm/segmentation_scoring/1.png")), clip: true, width: 100%, inset: (bottom: -2.6in, left: -0.3in)),
@@ -690,29 +700,16 @@
     This is attributable to the fact that the algorithm does not take into account the filtration of an excessively large area of the roof or even entire segments.
     As illustrated, this effect occurs when the clipping value is increased because the current algorithm is unaffected by a reduction in overall surface area.
 
+    A segmentation that results in the complete removal of a surface should cause the score of the algorithm to be reduced, as this process decreases the percentage of the base area that is covered.
+    For this purpose, a negative score has been introduced in addition to the positive score. This negative score is denoted by $#sym.Phi _"neg"$.
+    The base area is currently derived from the input data, but it has the potential to be calculated dynamically if a more robust method for base area detection is identified.
+    While the mask contained within the input data may be unsuitable for more specific analysis due to missing quality, the area covered by the house is adequate for utilization in this algorithm.
 
+    In this manner, the algorithm is able to detect missing house areas.
+    Given that both scores are on a scale from 0 to 1, with 1 representing the optimal result, the final score can be calculated as a weighted sum of these two scores.
+    The determination was made that an equal weighting would be sufficient, as a lower weighing of the negative score could lead to the algorithm not detecting missing areas as well as it should and a higher value underfactorization of the actual segment quality.
 
-
-
-
-    When a parameter change is made, which results in a good surface being completely filtered out, the score of the algorithm should be lowered accordingly.
-    For this purpose the algorithm splits the score into a positive and a negative score.
-    In addition to the positive score the negative score is calculated by the percentage of the combined area of the filtered surfaces to the total area of the roof, which is given in the input data.
-    This way the algorithm aquires the ability to detect missing house areas, which are not covered by the generated surfaces.
-    While the exact roof structure inside the input data may be unusable due to their missing quality, the area covered by the house is good enough for usage in the algorithm.
-    With having both a positive and a negative score ranging from 0 to 1, which both having 1 as the optimal result, the final score may be a weighted sum of those two.
-    For now, an equal weighting is deemed sufficient as lower weighing of the negative score could lead to the algorithm not detecting missing areas as good as it should.
-    From this, the resulting formula can be seen in @formula:score, where p currently is as said 0.5 and N is the total number of pixels belonging to the house according to the data given.
-    
-
-    In @fig:scores:squareornot the difference between using the square of Safethe surface size and not using it is shown.
-    Looking at the positive score, it becomes clear that it does indeed have the intended effect, as in @fig:scores:squareornot:a the bigger surface is rewarded more than the smaller one, while in @fig:scores:squareornot:b the smaller surface is rewarded more than the bigger one which in turn leads to the clearly worse segmentation on the right having the same positive score, even though the noise edges inside surfaces are clearly visible and divide big surfaces into multiple smaller ones.
-    On the other hand this example also shows the working effect of the negative score, as the more an image is to the right the lower the resulting score, due to the fact that the right images have a lot of area falsely filtered out.
-    Also the absolute values of positive scores are not comparible between the two approaches, since the squared scores have a higher variety of values, since there denominator becomes bigger.
-    This in turn leads to the negative score having different influence on the resulting score, which may lead to a therorical need for adjustments.
-    In reality this is only a minor influence to the overall performance.
-    Continuing foreward, the algorithm will use the squaring method, as the results are more satisfying.
-
+    #heading(depth: 5, numbering: none, bookmarked: false)[Explanation]
     #subpar.grid(
       columns: 1,
       gutter: 1mm,
@@ -723,9 +720,21 @@
         Not using the square of the surface size
       ]), <fig:scores:squareornot:b>,
       caption: [
-        Example comparison betweens using or not using the square of the surface size.
+        Results for Segmentation Scoring.
       ],
       label: <fig:scores:squareornot>,
     )
+
+    @fig:scores:squareornot encapsulates the results for the segmentation scoring done consequently to the plateau algorithm for every surface.
+    Two examples are provided to illustrate the distinction between utilizing the square of the surface area and employing the surface area directly, without any bias toward larger surfaces.
+    Upon examination of the positive score, it becomes evident that the intended effect is indeed being achieved. 
+    As illustrated in @fig:scores:squareornot:a, the larger surface is given greater value than the smaller one.
+    @fig:scores:squareornot:b prioritizes smaller surfaces over larger segments. This is due to the fact that the two smaller surfaces possess differing mean derivatives. Consequently, there is an indirect increase in the change for each value to be near the current mean.
+    Consequently, the segmentation on the right, which is visibly suboptimal, exhibits an analogous positive score despite the discernible noise edges that divide large surfaces into multiple smaller ones.
+    
+    The example demonstrates the operational dynamics of the negative score, whereby the score undergoes a reduction in proportion to the extent of clipping, as an increasing number of segments are systematically filtered out.
+    In addition, the absolute values of positive scores are not directly comparable between the two approaches. 
+    This is due to the fact that the squared scores exhibit a greater range of values, given that the denominator in the calculation increases.
+    However, the impact of the negative score on the resulting score becomes evident, as it offers a more accurate reflection of the quality of the segmentation compared to the previous example before its implementation.
   ]
 }
