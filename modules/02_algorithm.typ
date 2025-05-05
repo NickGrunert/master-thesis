@@ -442,9 +442,22 @@
     By this set of segments, the house area can be identified.
     Due to practicality, the algorithm will simply check with overlap regarding the mask from the input data. However, a more sophisticated approach independent of the input data could be developed in future work.
 
+    #subpar.grid(
+      columns: 2,
+      gutter: 1mm,
+      box(figure(image("../figures/scoring_algorithm/found_mistake/2.png")), clip: true, width: 100%, inset: (left: -5.4in, right: -2.8in, top: -0.3in)),
+      box(figure(image("../figures/scoring_algorithm/found_mistake/3.png")), clip: true, width: 100%, inset: (left: -5.4in, right: -2.8in, top: -0.3in)),
+      caption: [
+        Base Area Detection with (left) and without (right) Refinement.
+      ],
+      label: <fig:scores:founderror>,
+    )
+
     In the final algorithm for this section, the base area filtering will be executed prior to separation and re-linking, as the filtration of surfaces before these steps exerts a significant influence on the resulting execution time.
     Given the potential abundance of small surfaces in the external environment, the efficiency of the algorithm is contingent upon the optimization of its calculation process.
     In addition, preliminary experimentation has demonstrated that employing the refinement steps intended for normal surfaces on the base area surfaces yields no more positive results than negative ones.
+    A notable distinction emerges in the application of refinement to the detected base area, as illustrated in @fig:scores:founderror. 
+    The application of refinement to the thin segment on the left would result in the erroneous filtration of that segment.
     While it demonstrates increased resilience against minor variations in the house outlines, it exhibits reduced robustness in other aspects.
     The prevailing assumption was that if an insufficient amount of clipping for detecting the building's outline was applied, remediation was possible by simply increasing the clipping percentage.
     While this approach is not without its limitations, as it likely results in more clipping than necessary and is not entirely robust, these aspects will not be addressed in this work.
@@ -521,7 +534,7 @@
     Consequently, as this approach necessitates an evaluation of the scoring parameter, its applicability in this context is considered limited.
     While the method could potentially be applied for surface evaluation or even segmentation in general, it will not be pursued further in this study.
 
-    ==== Plateau Algorithm
+    ==== Plateau Algorithm for individual Surfaces
     #heading(depth: 5, numbering: none, bookmarked: false)[Theory]
     To achieve this objective, a tailored algorithm was developed to assess the quality of the results obtained. 
     This algorithm functions independently of the specific input data, thereby eliminating the need for adjustments.
@@ -550,6 +563,10 @@
     The rationale behind this selection is that these values demonstrated notable success in identifying plateaus during the testing phase.
 
     #heading(depth: 5, numbering: none, bookmarked: false)[Implementation]
+    The following implementation illustrates the calculation of individual scores for each surface in relation to the derivative values and their interpretation.
+    This excludes all filtering and optimization steps, such as the initial sorting of derivative values.
+    Additionally, this does not address the method by which the surfaces are subsequently integrated to generate the segmentation score in its entirety.
+
     ```python
     def scoring(...):
       relevance = params.minimum_plateau_relevance
@@ -626,25 +643,6 @@
     This is unfortunate and likely indicative of the fragility of the magnitude values, which renders them unsuitable for use in the score calculation.
     However, given the algorithm's equitable allocation of values to all three directions, this issue is mitigated, as the remaining two directions retain the capacity to generate a satisfactory score.
     
-
-
-
-
-
-    
-
-    Adjusting the visual output by adding the calculated scores directly into the image and running the algorithm on an objectively harder to segment roof shape, the results are shown in @fig:scores2.
-    The algorithm shows clear signs of struggling with the roof shape, as the derivative values are not as coherent as on the previous surfaces, not due to noise, but due to the rounded shape.
-    This data however shows, that the algorithms works as expected.
-    The wrong segmentation creates clear plateaus in the data, which are perfectly detected by the algorithm by having multiple green areas on the surface which are not connected.
-    However, even though for now this algorithm will be used in further experiments, this data creates questions, to which the answers could lead to  further improvements on the algorithms scoring system:
-    - By hand or other means creating a perfect segmentation on the rounded surface may lead to interesting insights on the perfect result, which in turn,  may generate a better insight on how to improve the algorithm.
-    - Currently the even scoring between the three directions leads to the algorithm only minorly punishing the two plateaus in the x direction, even though in this specific case it is enough proof that the surface was segmented wrong. 
-      Maybe a harsher punishment for having 0 values is neccessary, but in turn for exampe making the entire surfaces score 0 would probably be too harsh.
-    - Trying to create a method to add the spatial correlation, which was removed by sorting the values, may lead to methods of better scoring round roofs.
-      The only problem with this is that this would also lead to the algorithm being susceptible to outliers in the middle of surfaces again, which currently are not a problem, since they are ignored outliers on the graphs extrema.
-      They currently do not effect functionality but only very slightly decreasing the score, which is worth the improvement on the algorithm's robustness against noisy data.
-
     #subpar.grid(
       columns: 1,
       gutter: 1mm,
@@ -652,11 +650,31 @@
       figure(image("../figures/scoring_algorithm/surface_scoring/6.png")),
       figure(image("../figures/scoring_algorithm/surface_scoring/5.png")),
       caption: [
-        Excerpt from the next iteration of the scoring algorithm calculated on a spire roof, meaning a complicated roof shape for the algorithm due to varying derivative values on single surfaces.
+        Plateau Algorithm on a Spire Roof.
       ],
       label: <fig:scores2>,
     )
 
+    The performance of the algorithm on a more challenging roof shape, namely a spire, is demonstrated in @fig:scores2.
+    The algorithm exhibits clear indications of encountering challenges in processing the roof geometry, as evidenced by the coherent nature of the derivative values, which are monotonically increasing. 
+    This inherent property is characteristic of roof types of this nature.
+    Nevertheless, the data indicates that the functionality of the algorithms remains consistent with the expected operational parameters.
+    The erroneous segmentation of the data results in the formation of distinct plateaus, which are subsequently identified by the algorithm. 
+    These plateaus manifest as multiple green areas on the surface that are wrongfully merged together.
+    The data indicates that, in these cases, the magnitude value is significantly impactful. 
+    On a spire or rounded surfaces in general, the multiplication of the x and y directions generates a coherent plateau which is mathematically provable.
+
+    However, this data gives rise to inquiries that could potentially inform enhancements to the system's algorithms.
+    Presently, the equitable distribution of points among the three directions results in the algorithm's minimal penalization of the two plateaus in the x direction, despite the fact that, in certain instances, this may serve as sufficient evidence of an erroneous surface segmentation.
+    It may be necessary to consider the implementation of a more stringent penalty for instances where values are absent. However, it is important to note that imposing a penalty of zero for the entire surface area may prove to be overly severe.
+    
+    ==== Segmentation Scoring
+    #heading(depth: 5, numbering: none, bookmarked: false)[Formula]
+    $ S_"pos" &= (sum_(i=0)^n ((S_x (i) + S_y (i) + S_m (i)) / 3 * abs(i)²)) / (sum_(i=0)^n (abs(i)²)) \
+      S_"neg" &= (sum_(i=0)^n abs(i)) / N \
+      S &= S_"pos" * p + S_"neg" * (1 - p) $ <formula:score>
+
+    #heading(depth: 5, numbering: none, bookmarked: false)[Explanation]
 
 
 
@@ -685,9 +703,7 @@
     With having both a positive and a negative score ranging from 0 to 1, which both having 1 as the optimal result, the final score may be a weighted sum of those two.
     For now, an equal weighting is deemed sufficient as lower weighing of the negative score could lead to the algorithm not detecting missing areas as good as it should.
     From this, the resulting formula can be seen in @formula:score, where p currently is as said 0.5 and N is the total number of pixels belonging to the house according to the data given.
-    $ S_"pos" &= (sum_(i=0)^n ((S_x (i) + S_y (i) + S_m (i)) / 3 * abs(i)²)) / (sum_(i=0)^n (abs(i)²)) \
-      S_"neg" &= (sum_(i=0)^n abs(i)) / N \
-      S &= S_"pos" * p + S_"neg" * (1 - p) $ <formula:score>
+    
 
     In @fig:scores:squareornot the difference between using the square of Safethe surface size and not using it is shown.
     Looking at the positive score, it becomes clear that it does indeed have the intended effect, as in @fig:scores:squareornot:a the bigger surface is rewarded more than the smaller one, while in @fig:scores:squareornot:b the smaller surface is rewarded more than the bigger one which in turn leads to the clearly worse segmentation on the right having the same positive score, even though the noise edges inside surfaces are clearly visible and divide big surfaces into multiple smaller ones.
@@ -710,29 +726,6 @@
         Example comparison betweens using or not using the square of the surface size.
       ],
       label: <fig:scores:squareornot>,
-    )
-
-    Looking at the results of this scoring led to the invastigation on why the results show some minor errors.
-    @fig:scores:founderror shows the intermediary steps on how the roof got segmented.
-    Here it becomes visible, that it is inconvenient to use the refinement used in the surface pipeline when generating the surfaces on the clipped values to generate the house's base area to filter from.
-    Accordingly, changing this in the code leads to @fig:scores:founderror:c, which does indeed show a better segmentation.
-    However, it also becomes clear that this change only minimaly effects overall performance, as the "All Surfaces" column clearly shows the edge detection having problems on the thin roof part due to it having bad alignment with the pictures axes.
-    While this also only minorly influences the result, it may be worth noting that this simple change increases the score by 1%.
-    This again may not seem much but may later on prove to be crucial between deciding between segmentations.
-
-    #subpar.grid(
-      columns: 1,
-      gutter: 1mm,
-      figure(image("../figures/scoring_algorithm/found_mistake/2.png"), caption: [
-        Surface generation using refinement of the clipped surfaces.
-      ]), <fig:scores:founderror:b>,
-      figure(image("../figures/scoring_algorithm/found_mistake/3.png"), caption: [
-        Surface generation without refinement.
-      ]), <fig:scores:founderror:c>,
-      caption: [
-        Comparison between using and not using the refinement of the clipped surfaces.
-      ],
-      label: <fig:scores:founderror>,
     )
   ]
 }
