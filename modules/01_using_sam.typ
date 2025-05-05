@@ -4,20 +4,93 @@
   text(lang:"en")[
     = Segment Anything Model (SAM)
 
-    == Input Prompting
 
-    #heading(depth: 5, numbering: none, bookmarked: false)[Random Strategy]
-    #heading(depth: 5, numbering: none, bookmarked: false)[Center Strategy]
-    #heading(depth: 5, numbering: none, bookmarked: false)[Combined Strategy]
+
 
     == Images
 
+
+
     #heading(depth: 5, numbering: none, bookmarked: false)[RGB Image]
+
     #heading(depth: 5, numbering: none, bookmarked: false)[nDSM Image]
+    #subpar.grid(
+      columns: 5,
+      gutter: 2mm,
+      box(figure(image("../data/6/1/sam/sam_mask.png")), clip: true, width: 100%, inset: (right: -2.9in)),
+      caption: [
+        nDSM Image.
+      ],
+      label: <fig:sam:images:ndsm>,
+    )
+
     #heading(depth: 5, numbering: none, bookmarked: false)[Custom Derivative Image]
+    ```python
+    def get_color(x, y):
+      magnitude = np.sqrt(x**2 + y**2)
+
+      if x >= 0 and y >= 0:
+          # Red for Quadrant I
+          return (magnitude, 0, 0)
+      elif x < 0 and y >= 0:
+          # Green for Quadrant II
+          return (0, magnitude, 0)
+      elif x < 0 and y < 0:
+          # Blue for Quadrant III
+          return (0, 0, magnitude)
+      else:
+          # Yellow for Quadrant IV
+          return (magnitude, magnitude, 0) # Yellow = Red + Green
+    ```
+
     #heading(depth: 5, numbering: none, bookmarked: false)[Color Channel Swaps]
 
+    #heading(depth: 5, numbering: none, bookmarked: false)[Results]
+    #subpar.grid(
+      columns: 5,
+      gutter: 2mm,
+      box(figure(image("../data/6/1/sam/0.png")), clip: true, width: 100%, inset: (right: -1.2in, top: -0.15in)),
+      box(figure(image("../data/6/1/sam/1.png")), clip: true, width: 100%, inset: (right: -1.2in, top: -0.15in)),
+      box(figure(image("../data/6/1/sam/2.png")), clip: true, width: 100%, inset: (right: -1.2in, top: -0.15in)),
+      box(figure(image("../data/6/1/sam/3.png")), clip: true, width: 100%, inset: (right: -1.2in, top: -0.15in)),
+      box(figure(image("../data/6/1/sam/4.png")), clip: true, width: 100%, inset: (right: -1.2in, top: -0.15in)),
+      caption: [
+        Image Types which will be used in further Analysis.
+      ],
+      label: <fig:sam:images>,
+    )
+      
+
+
+
+
+    == Input Prompting
+
+
+
+    #heading(depth: 5, numbering: none, bookmarked: false)[Random Strategy]
+
+    #heading(depth: 5, numbering: none, bookmarked: false)[Center Strategy]
+
+    #heading(depth: 5, numbering: none, bookmarked: false)[Combined Strategy]
+    
+    #heading(depth: 5, numbering: none, bookmarked: false)[Results]
+    #subpar.grid(
+      columns: 1,
+      gutter: 2mm,
+      figure(image("../data/6/1/sam/strategy_example.png")),
+      caption: [
+        Input Prompts depending on Strategy and Parameter.
+      ],
+      label: <fig:sam:strategy_example>,
+    )
+
+
+
+
     == Results
+
+
 
     #heading(depth: 5, numbering: none, bookmarked: false)[Automatic Mask Generator]
     #subpar.grid(
@@ -46,16 +119,6 @@
 
     #heading(depth: 5, numbering: none, bookmarked: false)[Input Prompting]
     #subpar.grid(
-      columns: 1,
-      gutter: 2mm,
-      figure(image("../data/6/1/sam/strategy_example.png")),
-      caption: [
-        Example for Input Prompts depending on Strategy.
-      ],
-      label: <fig:sam:strategy_example>,
-    )
-
-    #subpar.grid(
       columns: 4,
       gutter: 2mm,
       figure(image("../data/6/1/image.png", width: 100%)),
@@ -73,7 +136,7 @@
       figure(image("../data/6/19/mask.png", width: 100%)),
       figure(image("../data/6/19/sam/best/mask.png", width: 100%)),
       caption: [
-        Example for Input Prompts depending on Strategy.
+        Using SAM with Input Prompts from the Mask.
       ],
       label: <fig:sam:mask_all>,
     )
