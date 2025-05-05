@@ -521,28 +521,28 @@
     Consequently, as this approach necessitates an evaluation of the scoring parameter, its applicability in this context is considered limited.
     While the method could potentially be applied for surface evaluation or even segmentation in general, it will not be pursued further in this study.
 
-
-
-
-
-
-
     ==== Plateau Algorithm
-    /*
+    To achieve this objective, a tailored algorithm was developed to assess the quality of the results obtained. 
+    This algorithm functions independently of the specific input data, thereby eliminating the need for adjustments.
+    This process is achieved through the analysis of the derivatives of each surface in all directions, including the x, y, and magnitude values.
+    In each of these directions, the algorithm seeks to identify regions exhibiting approximately constant or close values. 
+    These regions will henceforth be designated as plateaus, as visualizing the data reveals the ideal representation of a perfect surface.
 
-    For this purpose a custom algorithm was developed which evaluates the quality of a surface.
-    It does this by analyzing each surfaces derivative values, in each direction meaning x, y and their combination.
-    For each direction the algorithm tries to generate plateaus, which are areas with approximately constant derivative values, or at least no sudden or big changes in the derivative value.
-    // TODO: better explanation or find a formula for each surface
-    By simpe multiplication of a surfaces size and the number of coherent values, the algorithm can generate a score for each surface.
-    As required, this score naturally lies between 0 and 1, where 1 is the best possible score.
-    To realize the aforementioned reward for bigger surfaces, the algorithm multiplies the score with the size of the surface squared.
-    This way a perfect big surface will outscore two perfect small surfaces, but a perfect small surface will outscore a big surface with a lot of incoherent values.
+    The objective function for each surface is defined by the multiplication of its size, S, and the number of coherent values, V.
+    The score in question is inherently constrained within the interval from 0 to 1, with 1 representing the maximum attainable score, as required.
+    As previously stated, the algorithm calculates the surface area squared in order to assign greater rewards to surfaces of greater size in comparison to smaller surfaces.
+    Consequently, a large surface with optimal values will achieve a higher score than two smaller surfaces with perfect values. 
+    However, a small surface with imperfect values will perform better than a large surface with numerous incoherent values.
 
-    Also a failsafe was added which harshly penalizes a surface which has more than one plateau, meaning that the surface shows signes of being a two surfaces being merged into one.
-    For now this penalty simply makes each of these wrong surfaces have a score of 0.
-    Practice has shown that this is neccessary due to the fact that the existence of weak edges can lead to multiple surfaces being merged into one.
-    If this happens, the algorithm can by itself not detect two same-derivative-surfaces being connected through another surface, as no spatial information is used in the algorithm.
+    A failsafe has been incorporated to address the issue of surfaces exhibiting characteristics indicative of undersegmentation, such as the presence of multiple plateaus indicating a merge of at least two surfaces into a single one.
+    At present, the penalty is excessively severe in that it results in the surfaces' score being reduced to zero in such cases.
+    Empirical observation has demonstrated that this step is necessary due to the existence of weak edges and the necessity to detect them.
+    However, it should be noted that this algorithm is inherently incapable of detecting surfaces that are connected and exhibit close derivatives.
+    Addressing this issue would necessitate the identification of jumps in the height value graph of the surface, a topic that will not be further explored in this study.
+
+
+
+
 
     @fig:scores shows the results of the algorithm on different houses.
     Sorting the derivative values belonging to detected plateaus not only serves as a good visualisation, but also removes the spatial correletaion between the values as was the case in the DBSCAN algorithm.
@@ -666,6 +666,5 @@
       ],
       label: <fig:scores:founderror>,
     )
-    */
   ]
 }
