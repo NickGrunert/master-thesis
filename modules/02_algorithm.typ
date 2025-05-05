@@ -541,13 +541,7 @@
     This process is achieved through the analysis of the derivatives of each surface in all directions, including the x, y, and magnitude values.
     In each of these directions, the algorithm seeks to identify regions exhibiting approximately constant or close values. 
     These regions will henceforth be designated as plateaus, as visualizing the data reveals the ideal representation of a perfect surface.
-    The final result will be an equal-valued combination of the three directions.
-
-    The objective function for each surface is defined by the multiplication of its size by the number of coherent values.
-    The score in question is inherently constrained within the interval from 0 to 1, with 1 representing the maximum attainable score, as required.
-    As previously stated, the algorithm calculates the surface area squared in order to assign greater rewards to surfaces of greater size in comparison to smaller surfaces.
-    Consequently, a large surface with optimal values will achieve a higher score than two smaller surfaces with perfect values. 
-    However, a small surface with imperfect values will perform better than a large surface with numerous incoherent values.
+    The final result will be a score between 0 and 1 for each surface, which itself is an equal-valued combination of the three directions.
 
     A failsafe has been incorporated to address the issue of surfaces exhibiting characteristics indicative of undersegmentation, such as the presence of multiple plateaus indicating a merge of at least two surfaces into a single one.
     At present, the penalty is excessively severe in that it results in the surfaces' score being reduced to zero in such cases.
@@ -676,26 +670,32 @@
 
     #heading(depth: 5, numbering: none, bookmarked: false)[Explanation]
 
-
-
-
-
-
-    Following the individual scoring of the surfaces, the generated scores need to be put together to create a final score which evaluates the segmentation of the roof as a whole.
-    This is done by the aforementioned even scoring between the three directions, which is then multiplied by the sum of the squares of the surface sizes.
-    @fig:score:segmentation shows the results of the scoring algorithm on an example house.
-    Here, It quickly becomes visible why the algorithm needs to be expanded by a negative score.
-    Run on some example values on the input parameters, the algorithm performs quite well, which as expected results in high scores.
+    Following the individual scoring of the surfaces, the generated scores must be aggregated to create a final score that evaluates the segmentation of the roof in its entirety.
+    The preliminary implementation of this process entails the combination of each individual surface score.
+    The surface's score is subject to manipulation by multiplication of two components: the result score of the plateau algorithm and the surface's squared size.
+    As previously stated, the algorithm calculates this in order to assign greater rewards to surfaces of greater size in comparison to smaller surfaces.
+    Therefore, a surface with a large surface area and optimal values will achieve a higher score than two smaller surfaces with perfect values.
+    However, a small surface with imperfect values will likely demonstrate superior performance in comparison to a large surface characterized by numerous incoherent values.
 
     #figure(
-      image("../figures/scoring_algorithm/segmentation_scoring/1.png", width: 100%),
+      box(figure(image("../figures/scoring_algorithm/segmentation_scoring/1.png")), clip: true, width: 100%, inset: (bottom: -2.6in, left: -0.3in)),
       caption: [
-        The result of each step inside the surface pipeline. The parameter used here are 50% minimum overlap for the Best Surfaces as well as the Filtered Surfaces.
+        Example Scores for different Clipping Values.
       ],
     ) <fig:score:segmentation>
 
-    However, the algorithm at this point did not take into account that values which are too high clip the image in a way that the surface overlapping filters out too much area of the roof.
-    When a parameter change is made, which results in a good surface being completely filtered out, the score of the algorithm should be lower.
+    As demonstrated by @fig:score:segmentation, this scoring method produces overall acceptible results.
+    The performance of the algorithm was satisfactory when executed with the provided parameter values, evidenced by the high scores obtained.
+    However, it has become evident that the algorithm requires augmentation through the incorporation of a negative score. 
+    This is attributable to the fact that the algorithm does not take into account the filtration of an excessively large area of the roof or even entire segments.
+    As illustrated, this effect occurs when the clipping value is increased because the current algorithm is unaffected by a reduction in overall surface area.
+
+
+
+
+
+
+    When a parameter change is made, which results in a good surface being completely filtered out, the score of the algorithm should be lowered accordingly.
     For this purpose the algorithm splits the score into a positive and a negative score.
     In addition to the positive score the negative score is calculated by the percentage of the combined area of the filtered surfaces to the total area of the roof, which is given in the input data.
     This way the algorithm aquires the ability to detect missing house areas, which are not covered by the generated surfaces.
