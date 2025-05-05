@@ -50,10 +50,10 @@
 #sam()
 
 // 2
-#ndsm_analysis()
+// #ndsm_analysis()
 
 // 3
-#truth_compare(abr)
+// #truth_compare(abr)
 
 // 4
 #ablation()
