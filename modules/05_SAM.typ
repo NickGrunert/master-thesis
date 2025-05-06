@@ -15,22 +15,47 @@
 
     == Filtering of generated Segmentations
 
+    In this section, an analysis of the generated segmentations will be conducted. The objective of this analysis is to ascertain whether the segmentations can serve as adequate inputs for SAM in the subsequent sections.
+    The objective is to establish input surfaces from which the discussed strategies can be applied to generate input prompts.
+    
+    Firstly, the analysis will continue to utilize the input mask for the time being.
+    This comparison is intended to determine the potential for enhancement, as preliminary experimentation indicated that the mask's functionality is suboptimal.
+    Consequently, the efficacy of the mask can be further assessed in this context, thereby serving as a pivotal point for comparative analysis of available alternatives.
+
+    Secondly, the generated surfaces could be used as input without undergoing any refinement.
+    However, due to the absence of refinement, these surfaces exhibit a high number of surfaces, resulting from the presence of numerous small fragments that infest areas with abnormalities, such as those observed around chimneys or other height variations, including ridges.
+
+    Consequently, two distinct methods of filtering are proposed, both of which operate by filtering the surfaces by pixels adjacent to edges.
+    The first method, referred to as "filtering," involves the removal of all directly adjacent pixels. 
+    The second method, referred to as "dilation," involves the application of a 3x3 kernel for erosion, followed by the re-adding of the removed pixels via dilation @MorphologicalOperator. 
+    This process effectively removes all surfaces that do not survive the initial erosion step.
+    Nevertheless, the erosion and dilation process exhibits a more aggressive approach, also filtering over edge connections.
+
     #subpar.grid(
       columns: 1,
       gutter: 0mm,
-      box(figure(image("../data/6/5/sam/surface_dilution.png")), clip: true, width: 100%, inset: (bottom: -0.2in, top: -0.2in, right: -0.7in, left: -1.0in)),
-      box(figure(image("../data/6/18/sam/surface_dilution.png")), clip: true, width: 100%, inset: (bottom: -0.6in, top: -0.6in, right: -0.7in, left: -1.0in)),
-      box(figure(image("../data/6/8/sam/surface_dilution.png")), clip: true, width: 100%, inset: (bottom: -0.2in, top: -0.2in, right: -0.7in, left: -1.0in)),
+      box(figure(image("../data/6/5/sam/surface_dilution.png")), clip: true, width: 100%, inset: (bottom: -0.4in, top: -0.2in, right: -0.7in, left: -1.0in)),
+      box(figure(image("../data/6/18/sam/surface_dilution.png")), clip: true, width: 100%, inset: (bottom: -0.6in, top: -0.75in, right: -0.7in, left: -1.0in)),
+      box(figure(image("../data/6/8/sam/surface_dilution.png")), clip: true, width: 100%, inset: (bottom: -0.2in, top: -0.4in, right: -0.7in, left: -1.0in)),
       caption: [
         Impact of Filtering or Dilution on the Generated Segmentations.
       ],
       label: <fig:sam:dilution>,
     )
 
+    The individual potential images for prompt generation are depicted in @fig:sam:dilution.
+    The results obtained all demonstrate the potential for utilization.
+    The reduction in the number of surfaces is clearly visible, with the filtering process being evidently more conservative.
+    However, it is visible that certain small, but right, surfaces are filtered out subsequent to dilation.
+    The results obtained led to the formulation of the theory that suggests the dilation process may not yield optimal solutions. 
+    This is due to the hypothesis that the presence of additional fragments may have a less significant impact than the absence of specific surfaces, which may be critical.
+    The subsequent section will present a detailed analysis of the outcomes, including the practical applications of SAM in this context.
+
     == Experiment Results
 
     This section presents the findings from the experiments that employed the aforementioned methods, utilizing input images and segmentation to generate the input prompts.
     The results of this study will be thoroughly analyzed and compared to ascertain the viability of the proposed solutions.
+    Eliminating experimental inputs that demonstrate inefficient is of the utmost importance for enhancing the calculation time necessary to generate results for analysis.
     This also includes improvements to the algorithm, which become apparent through this analysis.
     The result of this process will be a final algorithm capable of generating the optimal segmentation for the specified dataset with minimal computational effort. 
     Consequently, a definitive assessment of the segmentation's quality will be rendered.
@@ -82,14 +107,14 @@
 
     #subpar.grid(
       table(
-        columns: (1fr,1fr,1fr,1fr,1fr),
+        columns: (1fr,1fr,1fr,1fr),
         rows: 2,
         inset: 10pt,
         align: center,
         table.header(
-          [], [Mask], [Generated], [Filtered], [Dilated]
+          [Mask], [Generated], [Filtered], [Dilated]
         ),
-        [Number], [0], [3], [13], [4],
+        [0], [3], [13], [4],
       ),
       caption: [
         Table of the best Results for each Input Segmentation.
@@ -97,12 +122,10 @@
       label: <tab:sam:input>
     )
 
-
-
-
-
-
-
+    It is regrettable that the results displayed in @tab:sam:strategy lack the level of conciseness that was exhibited by the preceding results.
+    A definitive tendency regarding the optimal number of input points remains elusive. 
+    The disparities are more pronounced between each individual number than between the generated surfaces and the filtered surfaces.
+    Moreover, the addition of negative points is nearly indispensable in certain instances, while in others, they prove to be of no discernible benefit.
 
     #subpar.grid(
       table(
@@ -122,5 +145,14 @@
       label: <tab:sam:strategy>
     )
 
+    It has been demonstrated that utilizing solely the positive center points appears to be the optimal strategy, with the employment of two or four points demonstrating a higher degree of proficiency.
+    A number of additional observations can be made.
+    The utilization of negative points was suboptimal, as the process of determining the most suitable surfaces from which to derive negative points was not executed in a dynamic manner.
+    For instance, in place of merely selecting the largest other surfaces, it would be more advantageous to discern merged surfaces from the simple Center Strategy results and re-run the algorithm with those surfaces incorporated as negatives.
+    This conclusion was derived from meticulous observation of the result segmentations, which exhibited such discrepancies even when employing the negative points in their present calculation method.
+    
+    Furthermore, an absence of direct correlation is observed between the results obtained from any Center Strategy and the Combined Strategy, given the utilization of an equivalent number of input points.
+    A reasonable expectation would have been that the results would demonstrate some degree of similarity.
+    However, this expectation was not met, which renders a direct comparison between the effectiveness of the two strategies unfeasible.
   ]
 }

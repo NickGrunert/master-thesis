@@ -2,6 +2,7 @@
 
 = Supplementary Material Images
 
+/*
 #heading(depth: 5, numbering: none, bookmarked: false)[Generated Segmentations]
 
 #subpar.grid(
@@ -69,6 +70,10 @@
     All result segmentations.
   ],
 )
+
+*/
+
+/*
 
 #heading(depth: 5, numbering: none, bookmarked: false)[Correlation Results]
 
@@ -209,6 +214,7 @@
     All results for the Spearman Metric.
   ],
 )
+*/
 
 #heading(depth: 5, numbering: none, bookmarked: false)[SAM Results]
 
@@ -312,7 +318,7 @@
   figure(image("../data/6/18/sam/best/dilated.png")),
   numbering: (..nums) => [#counter(figure.where(outlined: true)).display((..num_figs)=>num_figs.pos().at(0))],
   caption: [
-    All Best SAM results for each Input Segmentation.
+    Best SAM results for Mask / Generated / Filtered / Dilated.
   ],
   label: <fig:appendix:sam:results>,
 )
