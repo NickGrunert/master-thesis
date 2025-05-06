@@ -277,18 +277,17 @@
     #heading(depth: 5, numbering: none, bookmarked: false)[Theory]
     Overall, the derivative is very noisy due to inconsistencies in the input height information.
     To address this issue, the algorithm will use Gaussian smoothing for noise reduction.
-    A 2-dimensional kernel approximating a Gaussian is used to apply a convolution to the image.
-    This blurs the entire image @Gauss1.
+    A two-dimensional kernel approximating a Gaussian distribution is used to apply a convolution to the image, thereby blurring the image @Gauss1.
 
-    Using the OpenCV Gaussian blur implementation @Gauss2 introduces several new possible parameters, the kernel size and sigma values.
-    The sigma values define the standard deviation of the Gaussian function, which in turn determines the amount of blur applied to the image.
-    However, the influence of these parameters will not be explored extensively, and only 3x3 and 5x5 kernels will be tested, as well as whether noise reduction has the desired positive influence at all.
+    The implementation of this introduces the parameters of kernel size and sigma value @Gauss2.
+    The sigma value defines the standard deviation of the Gaussian function, which in turn determines the amount of blur applied to the image.
+    However, the influence of these parameters will not be explored extensively, and only 3x3 and 5x5 kernels will be tested, as well as whether noise reduction has the desired positive influence.
     The sigma values are not explicitly set, so the algorithm automatically calculates them to be $≈0.8$ and $≈1.1$ for 3x3 and 5x5 kernels respectively.
     @formula:gaussian_kernel shows the mathematically correct Gaussian 3x3 kernel using the given parameter.
     It is noteworthy that the OpenCV kernel deviates marginally at the four edge values due to the implementation of corrections, which results in a kernel sum that approaches closer to 1 to reduce errors.
 
     The position in the overall edge detection pipeline, just before Canny Edge Detection is applied, after the derivatives have been computed and clipped, was determined after a series of preliminary experiments that proved less successful than placing it here.
-    Note that due to the small size of the image, this blurring leads to a loss of detail, which may lead to problems in detecting thin roof parts.
+    Note that due to the small size of the image, this blurring leads to a loss of detail, which results in a loss of detail and, consequently, may result in an inability to detect thin roof parts.
 
     #heading(depth: 5, numbering: none, bookmarked: false)[Implementation]
     ```python
@@ -329,8 +328,7 @@
     A substantial number of comparisons between Sobel and Canny detection have been documented.
     The Sobel filter's most notable strength is its simplicity, which is advantageous in applications where rapid execution is paramount @Sobel1.
     However, the temporal efficiency of the process is not a primary concern; instead, the emphasis is placed on the quality of the results obtained.
-    Canny's superior performance is attributable to its capacity for enhanced parameter tuning, a feature that is particularly advantageous in achieving more precise edge detection @Sobel3. 
-    This is a notable benefit, given that this work does involve the use of low-resolution images.
+    Canny's superior performance is attributable to its capacity for enhanced parameter tuning, a feature that is particularly advantageous in achieving more precise edge detection @Sobel3.
 
     The determination of the optimal values for the lower and upper threshold will necessitate a process of experimentation and will vary between houses.
     There have been suggestions of dynamically calculating the threshold values based on the gradient's median value @Canny3. 
