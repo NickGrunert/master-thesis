@@ -53,7 +53,7 @@
       gutter: 2mm,
       box(figure(image("../data/6/1/sam/sam_mask.png")), clip: true, width: 100%, inset: (right: -2.9in)),
       caption: [
-        nDSM Image.
+        nDSM Image with Value Distribution.
       ],
       label: <fig:sam:images:ndsm>,
     )

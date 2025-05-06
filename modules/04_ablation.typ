@@ -7,7 +7,7 @@
     The study was conducted to identify the optimal values for the hyperparameters and to understand how they affect the algorithm.
     Filtering the hyperparameters to include fewer values to be computed will greatly improve the time efficiency of the algorithm.
     While time efficiency is not a major concern in this study, it is considered here in the context of not sacrificing quality of results for it.
-    The original proposed values for each parameter were very broad and probably harshly overestimated which values are sensical to measure.
+    The original proposed values for each parameter were very broad and probably harshly overestimated which values are reasonable to measure.
 
     @fig:ablation:time shows the average time per execution.
     Remember that we currently calculate $4 * 10 * 7 * 3 = 840$ executions per image before extracting the best result.
@@ -33,7 +33,7 @@
     #figure(
       image("../figures/ablation/blurring.png"), 
       caption: [
-        Statistics over Blurring Methods from Best Results.
+        Statistics over Blurring Methods from Best Results
       ],
     ) <fig:ablation:blurring>
 
@@ -41,8 +41,8 @@
     The loss of quality, at least numerically, seems to be quite obvious.
     Note that this is the only house in the test data that consists of flat roof surfaces.
     The negative effect of blurring is most likely due to the fact that flat roof surfaces are less likely to have noise inside them, since the non-changing height is less susceptible to calculation inaccuracies.
-    While the score heatmap shows the change to be quite drastic, looking at the truth scores and the resulting segmentations shows the change to be less drastic.
-    The best truth scores are $0.751, $0.737, and $0.740$, which by far do not represent this trend of decreasing quality.
+    While the score heatmap shows the change to be quite drastic, looking at the truth scores and the resulting segmentations show the change to be less drastic.
+    The best truth scores are $0.751$, $0.737$, and $0.740$, which by far do not represent this trend of decreasing quality.
 
     #subpar.grid(
       columns: 2,
@@ -54,7 +54,7 @@
       box(figure(image("../data/6/17/v1/heatmap_medium.png")), clip: true, width: 110%, inset: (bottom: -2.1in, top: -4.15in, right: -10.45in)),
       box(figure(image("../data/6/17/v1/heatmap_medium.png")), clip: true, width: 80%, inset: (bottom: -2.7in, top: -4.75in, left: -4.9in, right: -8.5in)),
       caption: [
-        Heatmap extracts where not blurring appears optimal.
+        Heatmap extracts where not blurring appears optimal
       ],
       label: <fig:ablation:blurring_none>,
     )
@@ -77,7 +77,7 @@
       box(figure(image("../data/6/1/v1/heatmap_medium.png")), clip: true, width: 110%, inset: (bottom: -2.1in, top: -4.15in, right: -10.45in)),
       box(figure(image("../data/6/1/v1/heatmap_medium.png")), clip: true, width: 80%, inset: (bottom: -2.7in, top: -4.75in, left: -4.9in, right: -8.5in)),
       caption: [
-        Example Impact of using different blurring methods.
+        Example Impact of using different blurring methods
       ],
       label: <fig:ablation:blurring_example>,
     )
@@ -89,7 +89,7 @@
     #figure(
       image("../figures/ablation/blurring_example.png"), 
       caption: [
-        Impact of Blurring on an example row and column.
+        Impact of Blurring on an example row and column
       ],
     ) <fig:ablation:blurring_statistic>
 
@@ -107,7 +107,7 @@
     #figure(
       image("../figures/ablation/derivative.png"), 
       caption: [
-        Statistics over Derivative Methods from Best Results.
+        Statistics over Derivative Methods from Best Results
       ],
     ) <fig:ablation:derivative>
 
@@ -122,7 +122,7 @@
       figure(image("../data/6/17/sam/sam_mask.png")),
       figure(image("../data/6/18/sam/sam_mask.png")),
       caption: [
-        Base Area Detection using SAM.
+        Base Area Detection using SAM
       ],
       label: <fig:ablation:base_area>,
     )
@@ -138,7 +138,7 @@
         After Base Area Detection Change.
       ]), <fig:ablation:clipping:b>,
       caption: [
-        Statistics over Clipping Percentages from Best Results.
+        Statistics over Clipping Percentages from Best Results
       ],
       label: <fig:ablation:clipping>,
     )
@@ -154,7 +154,7 @@
         After Base Area Detection Change.
       ]), <fig:ablation:canny:b>,
       caption: [
-        Statistics over Canny Values from Best Results.
+        Statistics over Canny Values from Best Results
       ],
       label: <fig:ablation:canny>,
     )

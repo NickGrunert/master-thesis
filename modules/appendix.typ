@@ -216,6 +216,7 @@
 )
 */
 
+#pagebreak()
 #heading(depth: 5, numbering: none, bookmarked: false)[SAM Results]
 
 #subpar.grid(
@@ -327,6 +328,9 @@
 
 
 = Supplementary Material Source Code
+
+
+#pagebreak()
 #heading(depth: 5, numbering: none, bookmarked: false)[Strategy Base Class]
 ```python
 class Strategy:
@@ -337,7 +341,9 @@ class Strategy:
   def get_points(self, surfaces):
     raise NotImplementedError("Subclasses must implement get_points")
 
+  # Base implementation simply adding every point as positive
   def get_sam_inputs(self, surfaces):
+    # Get input points from current strategies implementation
     input_point_lists = self.get_points(surfaces)
 
     # Initialize empty lists
@@ -531,6 +537,7 @@ class Combined(Strategy):
 
 
 
+#pagebreak()
 #heading(depth: 5, numbering: none, bookmarked: false)[Surface Growth]
 ```python
 # STEP 1: INITIAL SURFACE GROWTH

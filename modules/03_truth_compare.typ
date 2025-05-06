@@ -42,8 +42,8 @@
     It must also again be noted that the RGB data and the #abr("nDSM") data are not perfectly aligned.
     Consequently, an attempt to create a ground truth based only on the RGB data would yield a different result than the #abr("nDSM") data, particularly with regard to the house outlines, where the misalignment becomes quite evident.
     The ground truth data will therefore mainly be built solely upon the #abr("nDSM") data, whereby it must be noted that this approach introduces a discrimination against later analysis happening on the RGB data.
-    This is deemed accceptable because of the assumption that the height information is neccessary for good evaluation anyway, and biasing it here makes sense.
-
+    This is considered an acceptable practice due to the assumption that the height information is necessary for a comprehensive evaluation, and biasing it at this stage is a logical decision.
+    
     As illustrated by @fig:truth_compare:truth_example, four of the twenty images are displayed, along with their respective derivative images and the ground truth segmentations.
     It is evident that certain challenges have emerged in relation to this matter.
     Due to the insufficient contrast present in the #abr("nDSM") images and data, precise identification of the subject was not possible by hand. 
@@ -150,8 +150,9 @@
     The Calculation of the precision metric is demonstrated in @formula:precision; making use of true and false positives.
     The metric will be employed to assess the correctness of the prediction and is therefore also a measure of accuracy.
     It is the ratio of correctly identified pixels to the total number of pixels predicted as part of the surface. 
-    Consequently, it can either increase or decrease, contingent on the number of pixels that are not part of the surface but are predicted as such.
-    In other words, it defines on how much one can trust into a positive prediction by the algorithm, stated at the beginning of this chapter, the first and most directive the algorithm has to fullfil.
+    Consequently, the value can either increase or decrease, contingent on the number of pixels that are not part of the surface but are predicted as such.
+    In summary, the definition provides a quantitative measure of the reliability of a positive prediction.
+    As previously stated, this is the initial and most imperative directive for the algorithm to fulfill.
 
 
 
@@ -301,11 +302,10 @@
     
     ==== Using the Hungarian Matching Algorithm for Scores
     #heading(depth: 5, numbering: none, bookmarked: false)[Explanation]
-    Subsequent to the completion of the task of manually creating the scores, as delineated in the preceding section, this section will briefly detail the process of reducing and overhauling the code while refactoring.
-    Despite the absence of a fundamental shift in the overarching concept, certain components have undergone an adaptation process, incorporating the utilization of library functions and well-established algorithms, as well as finding and fixing errors which become appearant in comparison.
+    The objective of this section is twofold: first, to reduce the scoring code, and second, to overhaul the implementation of the scoring algorithm. The latter will be achieved by using less manually created methods and instead employing novel algorithms and library functions.
+    Despite the absence of a fundamental shift in the overarching concept, certain components have undergone an adaptation process, incorporating the utilization of library functions and well-established algorithms, as well as finding and fixing errors which become apparent in comparison.
 
     Constraining the matching of generated segments and ground truth segments to being strictly 1-to-1 is essentially equivalent to using the #abr("HMA"), also called the Kuhn-Munkres algorithm @hungarian1.
-    The necessity of maintaining a list to precisely match each surface with a single ground truth segment, with the intention of subsequently selecting the most suitable one, will be rendered obsolete.
     The #abr("HMA") is a computational optimization technique that addresses the assignment problem in polynomial time. 
     It can be utilized to identify the optimal assignment of generated segments to ground truth segments by cost minimization @hungarian2.
     A two-dimensional matrix of size $n*m$ is employed, wherein $n$ denotes the number of predicted segments and $m$ signifies the number of segments in the ground truth data. This matrix contains all #abr("IoU") values.
@@ -340,7 +340,8 @@
     The algorithm would only need to address the issue of oversegmentation, as this would result in fewer prompts than the number of truth surfaces.
     In the subsequent implementation using the #abr("HMA"), however, this concept is no longer utilized due to reevaluation of the approach.
     The objective is to ascertain the validity of the concept in relation to the ground truth. 
-    Consequently, the penalization of erroneous surfaces through undersegmentation is required to ensure the integrity of this endeavor, since else the score of wrong segmentations could be overrestimated drastically.
+    Consequently, the penalization of erroneous surfaces through undersegmentation is required to ensure the integrity of this endeavor.
+    In the alternative, the score of segmentations could be overestimated to a considerable degree.
 
     As demonstrated by @fig:truth_compare:hungarian_compare, a new visualization method has been developed for the purpose of illustrating the handling of segments.
     The absence of matches for two ground truth segments is readily apparent.
@@ -478,7 +479,7 @@
     Consequently, the experiment variables were expanded to include the following:
     The clipping values were subjected to testing within the range of zero to ten percent.
     In the context of the Gaussian Blurring process, three distinct kernel sizes were employed, and a total of seven configurations were examined for the lower and upper threshold of the Canny algorithm.
-    This resulted in a total of 210 data points for each of Sobel, Sliding, Gradient and Scharr, which falls slightly below the optimal requirement of at least 250 data points.
+    This resulted in a total of 210 data points for each of Sobel, Sliding, Gradient and Scharr, which falls slightly below the recommended minimal requirement of at least 250 data points.
     Nevertheless, this led to a more extensive distribution of data points, thus yielding improved outcomes with respect to the correlation.
 
     A comprehensive evaluation of the data indicates that while the outcomes for houses are not directly comparable to those of other houses, they are consistent within their own respective dataset.
@@ -549,7 +550,7 @@
     This observation indicates that the linear relationship between the scores and truth scores is more skewed towards the origin in comparison to the scenario depicted before, but does not generally depict a better linear relationship between the data itself.
 
     @fig:truth_compare:metrics:b offers yet another perspective.
-    The R2 Score remains in a negative range, although it is less pronounced than in in the first example but more significant than in the second.
+    The R2 Score remains in a negative range, although it is less pronounced than in the first example but more significant than in the second.
     Visual examination of the data reveals a more widespread distribution compared to the other two examples.
     This demonstrates the challenge posed by a score of 0.8 in the scoring system being able to range from exemplary 0.5 to 0.9 within the truth scores.
     This constitutes a clear violation of the requirement that the scores be reliable, meaning an accurate representation of the algorithm's performance and thereby truth scores.
@@ -592,7 +593,7 @@
     The cosine similarity is calculated by taking the dot product of the two vectors and dividing it by the product of both vectors' magnitudes, as shown in @formula:cosine.
 
     Nevertheless, said similarity is still derived from the direction of the origin (0, 0).
-    This means the algorithm still asummes an identity mapping between the two datasets, a property that, as previously discussed, is not wanted.
+    This means the algorithm still assummes an identity mapping between the two datasets, a property that, as previously discussed, is not wanted.
     A potential solution to this issue is normalization of the data, which would result in the data falling within the full range of 0 to 1.
 
     The calculation of cosine similarity on normalized data is analogous to the calculation of the Pearson coefficient @Pearson4 @Pearson2 @Pearson3.
@@ -664,7 +665,7 @@
     This objective was accomplished by using the LinearRegression class of the scikit-learn library @LinearRegressor, which facilitated the calculation of a linear regression line between the two datasets and enables the calculation of the R2 Score and the #abr("MAE") towards that linear regression line.
     This fulfills the requirement of a non-strict 1-to-1 linear relationship between the two datasets, as well as returns the metrics that indicate the performance of the algorithm.
     In addition, the R2 Score this time is effectively constrained to the range of 0 to 1 in this iteration, in contrast to previous iterations. 
-    This is due to the fact that, under the most sub-optimal conditions, the algorithm would return 0, meaning the regressor essentially mimicing the mean of the data.
+    This is due to the fact that, under the most sub-optimal conditions, the algorithm would return 0, meaning the regressor essentially mimics an algorithm which simply takes the mean of the data.
     This represents a marked enhancement over earlier iterations, in which the R2 Score was not constrained and could attain unconstrained negative values, leading to challenges in interpretation.
 
     As previously outlined in @section:metrics, the #abr("MAE") is a reliable metric for assessing the accuracy of the algorithm, while the R2 Score is a valuable indicator of the suitability of the data for a linear model.
@@ -769,7 +770,7 @@
 
     #heading(depth: 5, numbering: none, bookmarked: false)[Formula]
     $ "Spearman" r_s = 1 - (6 * sum(d_i^2)) / (n * (n^2 - 1)) $ <formula:spearman>
-    With $d_i$ signifying the difference in ranks between the two datasets and $n$ being the number of data points.
+    $d_i$ signifies the difference in ranks between the two datasets and $n$ is the number of overall data points.
     For instance, the sets $[1, 2, 3]$ and $[3, 2, 1]$ would result in $d_i = [2, 0, -2]$ and $n = 3$.
 
     #heading(depth: 5, numbering: none, bookmarked: false)[Explanation]
@@ -782,7 +783,7 @@
     The range and interpretation of the resulting score function similarly to the Pearson correlation coefficient @spearman2.
 
     #heading(depth: 5, numbering: none, bookmarked: false)[Code Snippet]
-    The implementation of the Spearman coefficient, like to the Pearson coefficient, also utilizes the Scipy library implementation @spearman3.
+    The implementation of the Spearman coefficient, much alike the implementation of the Pearson coefficient, also utilizes the Scipy library implementation @spearman3.
 
     ```python
     from scipy.stats import spearmanr
@@ -828,7 +829,7 @@
     This also renders the data more visually comprehensible and facilitates the consolidation of the datasets into a single entity, as otherwise, the consolidation of the rankings would be unfeasible.
     This means that the absolute values of each individual dataset are lost, which will lead to complications in the subsequent analyses.
     Contrary to the preceding sections, the present section does not entail the evaluation of the method of metric calculation. 
-    Rather, the emphasis has shifted to the examination of the actual results and the entry data that gave rise outlier.
+    Rather, the emphasis has shifted to the examination of the actual results and the entry data which gave rise to outlier.
 
     #heading(depth: 5, numbering: none, bookmarked: false)[Individual Entries]
     As demonstrated by @fig:truth_compare:final, the aggregate data for all derivatives, subsequent to being normalized, is confined within the full spectrum of $[0, 1]$.
@@ -873,7 +874,7 @@
     The majority of points are situated along the Identity Axis.
     It is evident that there are specific points in the top-left and bottom-right corners of the graph that correspond to the sections of the graph that are considered unfavorable.
     The upper left corner of the matrix displays points that exhibited low algorithm scores but demonstrated satisfactory values when compared with ground truths. This observation is not problematic.
-    In general, all points with a score lower than the truth score are of no concern, since this could be due to already acknowledged restrictions like harsher punishment for miss-classifications.
+    In general, all points with a score lower than the truth score are of no concern, since this could be due to already acknowledged restrictions like harsher punishment for misclassifications.
 
     A matter of concern arises in instances where the score significantly exceeds the truth score.
     While minor discrepancies may be disregarded, instances where a minimal truth score is accompanied by an elevated algorithm score in the bottom-right corner pose significant challenges.
@@ -881,7 +882,9 @@
     The population of this corner is predominantly attributable to the previously delineated unfortunate normalization of individual data sets due to outliers.
 
     Given that this is normalized data, discrepancies between scores and truth scores that are initially smaller appear to be more problematic than in most cases.
-    The issue could only be resolved by ensuring that all original data sets contained a wider range of data points for comparison. However, the algorithm currently outputs a limited number of segmentations of low quality, making it difficult to achieve this objective. Changing the algorithm to do so would be an unsensical endeavor.
+    The issue could only be resolved by ensuring that all original data sets contained a wider range of data points for comparison. 
+    However, the algorithm currently outputs a limited number of segmentations which are of low quality, making it difficult to achieve this objective. 
+    Changing the algorithm to do so would be nonsensical.
     
     The Pearson and Spearman scores demonstrate a high degree of correlation between the data, with values of $0.695$ and $0.666$, respectively.
     The findings indicate that the hypothesis is valid in general, as the scoring system appears to accurately reflect or represent the true score in relation to a ground truth.

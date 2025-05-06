@@ -51,7 +51,7 @@
     This is due to the hypothesis that the presence of additional fragments may have a less significant impact than the absence of specific surfaces, which may be critical.
     The subsequent section will present a detailed analysis of the outcomes, including the practical applications of SAM in this context.
 
-    == Experiment Results
+    == Results
 
     This section presents the findings from the experiments that employed the aforementioned methods, utilizing input images and segmentation to generate the input prompts.
     The results of this study will be thoroughly analyzed and compared to ascertain the viability of the proposed solutions.
@@ -62,7 +62,7 @@
 
     #subpar.grid(
       columns: 4,
-      gutter: 1mm,
+      gutter: 2mm,
       figure(image("../data/6/19/sam/best/mask.png"), caption: [
         Mask
       ]), <fig:sam:results2:a>,
@@ -154,5 +154,36 @@
     Furthermore, an absence of direct correlation is observed between the results obtained from any Center Strategy and the Combined Strategy, given the utilization of an equivalent number of input points.
     A reasonable expectation would have been that the results would demonstrate some degree of similarity.
     However, this expectation was not met, which renders a direct comparison between the effectiveness of the two strategies unfeasible.
+
+    @fig:sam:problem illustrates a magnitude of problem that came up when running SAM.
+    First, the truth score was calculated the same way it was done in @section:truth_compare, which has not proven unsuccessful, but could be improved upon.
+    The algorithm still favors correctness of the surfaces, but since we are no longer evaluating it's effectiveness in producing input prompts, but the actual surfaces themselves, the set bias no longer makes sense.
+    The other way arround, favouring completeness would make sense now, since it better encapsulates the wanted correlation between ground truth and the generated surfaces.
+
+    Secondly, the derivative data is still riddled with problemns stemming from noise and miscalculations from the height information.
+    The small windows on the most top have a substantially wrong influence on the derivative.
+    In this case, the RGB data outperforms, the execution on the derivative image, since such noise is not present, or in the case of the color swapped image less previlant enough to result in a smooth, correct surface.
+    On the other hand, the example also shows pretty well that it cuts the big surface to the right in half, since there is a clear visual line between the segments.
+    It could be argued that this is not of high importance, since the two individual surfaces can still be used to later generate the accurate structure of the house pretty well, or could be algorithmically merged.
+
+    #subpar.grid(
+      columns: 1,
+      gutter: 0mm,
+      figure(image("../figures/sam/problem.png")),
+      caption: [
+        Excerpt from SAM results.
+      ],
+      label: <fig:sam:problem>,
+    )
+
+    Also, the RGB data serves in actually recognizing some edges between segments of equal derivative.
+    This can be visually confirmed on the bottom right of the example house.
+    Since the derivatives are equal, almost all experiments solely run on data derived from the nDSM are unable to recognize the edge.
+    However, inclusion of the RGB data can solve this problem, as the colour swapped image and RGB image itself recognize this edge.
+
+    Additionaly, it has become more apparent that the truth comparison should have a higher bias against segmentations which do not find generated segments for any ground truth segment.
+    It has been proven that the mapping of score to ground score works.
+    This is approved by the complete results of entire SAM algorithm executions, where the best results by score matches the best results by ground truth score.
+    However, here, the visual confirmation is given that the effects of missing matches would preferebly be stronger, to better invalidate some results.
   ]
 }
