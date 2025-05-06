@@ -3,17 +3,51 @@
 #let sam() = {
   text(lang:"en")[
     = Segment Anything Model (SAM)
-
-
-
+    In this chapter, we will initiate the experimental phase concerning the usability of SAM in the context of roof segmentation.
+    The objective is to ascertain the necessary input data to facilitate effective segmentations and to determine the optimal utilization of SAM to achieve this objective.
 
     == Images
-
-
+    This section will shortly list the types of images that will be used in the evaluation.
+    While other concepts were briefly explored, none of these approaches represented novel methodologies and were met with very limited success.
+    The objective of this section is to identify promising candidates of images, data, or preprocessing steps that have the potential to serve as input data for the SAM model to subsequently generate segmentations displaying the roof shape.
 
     #heading(depth: 5, numbering: none, bookmarked: false)[RGB Image]
+    One of the images that can be used is the original RGB image itself.
+    However, it should be noted that the utilization of RGB data does not provide additional height information and presents certain challenges.
+
+    For instance, the presence of shadows within the data can result in severe misclassifications, as the model may lack the capacity to differentiate between the shadow and the object.
+    It has been observed that, due to geometric constraints, the majority of surfaces are either wholly shaded or wholly illuminated; however, this is not guaranteed.
+    In the context of color channel manipulation, particularly in the red, green, and blue channels, the presence of shadows can result in strongly divergent values across all three channels. 
+    This phenomenon hinders the effectiveness of an algorithm in identifying similarities between segments that are not shaded and those that are shaded.
+
+    Shadows are a prominent feature of the input data, attributable to the geographical location of Germany, which results in a sun position that casts shadows on a significant proportion of residential structures.
+    In order to enhance the utilization of the raw RGB data, an algorithm for shadow removal is implemented. 
+    This algorithm utilizes Gaussian kernels to identify and eliminate shadowed regions @shadows1 @shadows2 @shadows3.
+
+    #subpar.grid(
+      columns: 2,
+      gutter: 2mm,
+      figure(image("../data/6/19/image.png", width: 50%)),
+      figure(image("../data/6/19/sam/shadow_removed_image.png", width: 50%)),
+      caption: [
+        Comparison between Image and Shadow Removed Image.
+      ],
+      label: <fig:sam:shadows>,
+    )
+
+    As demonstrated by @fig:sam:shadows, a clear distinction emerges between the original image and the shadow removed image.
+    The efficacy of the shadow removal algorithm is questionable. 
+    It is evident that the algorithm modifies the overall coloration of the image. 
+    This modification may be advantageous in that it prevents the algorithm from being distracted by color changes across a coherent surface.
+    The presence of discernible boundaries within the color channels is indicative of a failure to effectively differentiate between surfaces.
+    This finding merits further consideration in subsequent experiments. 
+    The objective of these experiments is to ascertain whether the shadow removal algorithm can enhance the segmentation results of the SAM model.
 
     #heading(depth: 5, numbering: none, bookmarked: false)[nDSM Image]
+    Due to the fact that the RGB data contains a substantial amount of information that is either not beneficial or even detrimental when provided to SAM, we will try to enhance the input data by using the nDSM data.
+    The nDSM data contains the height information of the current image frame.
+    The incorporation of this data is expected to result in enhanced quality, as it is considered to be valuable information regarding the surface structure.
+
     #subpar.grid(
       columns: 5,
       gutter: 2mm,
@@ -23,6 +57,19 @@
       ],
       label: <fig:sam:images:ndsm>,
     )
+
+    However, the utilization of nDSM data as SAM input appears to be unfeasible in a direct manner.
+    This thesis is the result of a thorough analysis of @fig:sam:images:ndsm.
+    This phenomenon is evidenced by the minimal contrast present in the image, indicative of its limited information content.
+    However, the value graph distinctly demonstrates the potential for differentiating between the roof and the ground.
+    As this topic has not been the primary focus of the present discussion, further examination of it will be reserved for a later in @section:replace_clipping_by_sam.
+
+
+
+
+
+
+
 
     #heading(depth: 5, numbering: none, bookmarked: false)[Custom Derivative Image]
     ```python
@@ -73,7 +120,7 @@
     #heading(depth: 5, numbering: none, bookmarked: false)[Center Strategy]
 
     #heading(depth: 5, numbering: none, bookmarked: false)[Combined Strategy]
-    
+
     #heading(depth: 5, numbering: none, bookmarked: false)[Results]
     #subpar.grid(
       columns: 1,
