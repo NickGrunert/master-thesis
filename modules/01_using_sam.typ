@@ -159,7 +159,7 @@
         Blue Channel Swapped.
       ]), <fig:sam:automatic:e>,
       caption: [
-        Result Segmentations using the Automatic Mask Generator.
+        Segmentations using the Automatic Mask Generator.
       ],
       label: <fig:sam:automatic>,
     )
@@ -178,13 +178,16 @@
       figure(image("../data/6/18/mask.png", width: 100%)),
       figure(image("../data/6/18/sam/best/mask.png", width: 100%)),
 
-      figure(image("../data/6/19/image.png", width: 100%)),
-      figure(image("../data/6/19/truth.png", width: 100%)),
-      figure(image("../data/6/19/mask.png", width: 100%)),
-      figure(image("../data/6/19/sam/best/mask.png", width: 100%)),
+      figure(image("../data/6/19/image.png", width: 100%), caption: [Image]),
+      figure(image("../data/6/19/truth.png", width: 100%), caption: [Ground Truth]),
+      figure(image("../data/6/19/mask.png", width: 100%), caption: [Mask]),
+      figure(image("../data/6/19/sam/best/mask.png", width: 100%), caption: [Output]),
       caption: [
         Using SAM with Input Prompts from the Mask.
       ],
+      show-sub-caption: (num, it) => {
+        [#it.body]
+      },
       label: <fig:sam:mask_all>,
     )
   ]

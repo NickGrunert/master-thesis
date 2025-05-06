@@ -39,12 +39,39 @@
     This predicament stems from the problem of opposing roofs having mirrored signs, which is most problematic on axis-aligned houses, where the resulting magnitude of opposing roofs can be identical.
     Consequently, the algorithm may interpret these surfaces as identical, despite substantial disparities in their individual x and y values.
 
-    Derivatives are constructed using appropriate algorithms as outlined in the @section:edge_detection. 
-    Subsequently, the algorithm implements a series of transformations: logarithmic scaling in @section:log, clipping in @section:clipping, and Gaussian blurring in @section:gaussian_blurring. 
-    The purpose of these transformations is to enhance contrast and remove noise, thereby facilitating improved algorithmic analysis.
-    In conclusion, @section:canny will outline the utilization of the Canny Edge Detection algorithm.
-    Subsequently, the edges originating from the x and y directions are combined through the application of logical or, thereby yielding the final edges.
-    Lastly, @section:edges:results outlines the combined steps which make up the overall edge detection pipeline.
+    - Initially, derivatives are constructed using appropriate algorithms to generate data that is more conducive to analysis than the raw nDSM data.
+      In this case, the derivatives will be separated into two distinct components: x and y directions. 
+      Each of these components will be managed independently.
+    - Subsequently, the algorithm implements a series of transformations, including logarithmic scaling, clipping, and Gaussian blurring. 
+      The objective of these transformations is to enhance contrast and remove noise, thereby facilitating improved algorithmic analysis.
+    - Subsequently, the Canny Edge Detection algorithm will be implemented to identify edges in both directions, with each direction processed individually.
+      Subsequently, the edges originating from the x and y directions are combined through the application of logical operations. 
+      This process ultimately yields the final, combined edges.
+    - In summary, the last sub-section will delineate the combined steps constituting the entire edge detection pipeline together.
+
+    At the beginning and after every step, the algorithm will normalize the values.
+    This will be the range $[-255, 255]$ at first, to represent positive and negative derivatives, and later $[0, 255]$ to be in valid range for the Canny Edge Detection algorithm.
+    This creates better comparability between different input data and will serve to increase the contrast of the values.
+
+    This process of normalization may result in a particular side effect.
+    Given the absence of assurance that the quantity of positive values is equivalent to the quantity of negative values, the algorithm may potentially displace the neutral value for flat surfaces away from zero.
+    This phenomenon can be illustrated by examining @fig:algorithm:zero_moving, in which the neutral value is shifted to the right.
+    As the contrast of the data is enhanced, the perceptibility of the effect increases. 
+    This phenomenon is illustrated on the right side of the figure, where the red coloration of the flat ground is more pronounced in comparison to the left side.
+    To address this issue, the algorithm would need to implement a complete separation of positive and negative values during each normalization.
+    However, this effect has only been observed on rare occasions, and even in cases where it has been observed, its impact on the algorithm has not been definitively negative.
+    The effect of this appears to be primarily visual, as the algorithm does not take into account the location of the zero value within the value spectrum.
+    In the event that the absolute value of the derivatives were to be utilized in subsequent analyses, this would indeed need to be solved in the future.
+
+    #subpar.grid(
+      columns: 2,
+      gutter: 2mm,
+      box(figure(image("../data/6/5/v2/edges.png")), clip: true, width: 100%, inset: (bottom: -1.0in, left: -1.5in, right: -3.8in)),
+      caption: [
+        Visualization of normalization moving the zero value
+      ],
+      label: <fig:algorithm:zero_moving>,
+    )
     
     === Edge Detection <section:edge_detection>
 
@@ -83,8 +110,8 @@
     Since the distance between two pixels is always 1, the parameter h can be omitted. 
     While this is theoretically the most mathematically accurate way of calculating the derivative, it is also the most computationally expensive, since the kernel convolution can be optimized quite efficiently. 
     Nevertheless, it is definitely a promising approach and will be included in the algorithm for later evaluation. 
-    A fourth method, called the sliding window approach, mimics the novel approach of calculating the gradient without the mathematical correctness of the division by $2h$. 
-    This was used as a kind of test alongside the other methods, just for experimentation.
+    A fourth method, called the sliding window approach, mimics the novel approach of calculating the gradient without the mathematical correctness of the division by $2h$.
+    This approach was utilized as a form of exploratory experimentation, in combination with the other methods, to assess if it could be effective.
 
     #heading(depth: 5, numbering: none, bookmarked: false)[Implementation]
     While all of the following implementations do not distinguish between the x and y directions, in this single section it is necessary due to implementation details where they need to be handled separately.
@@ -132,7 +159,8 @@
     #heading(depth: 5, numbering: none, bookmarked: false)[Theory]
     There are many ways to improve the contrast of images @log3.
     This subsection will focus on one such chosen method, namely applying a logarithmic transformation to the input data.
-    A higher contrast is generally helpful for visual confirmation, as well as presumably helpful for the general performance of the algorithm.
+    It is generally accepted that higher contrast is beneficial for visual confirmation. 
+    Additionally, it is presumed that higher contrast enhances the overall performance of the algorithm.
     At the very least, the visual appeal of the intermediate derivative image is greatly improved, making most values and edges more distinguishable.
     The strong effect of this can be seen in @fig:algorithm:log, where not only a visual distinction is possible only after scaling, but also the distribution plot clearly reflecting better utilization of the value spectrum.
 
@@ -160,14 +188,6 @@
     The following implementation stores the sign of each value first, because the logarithm is not defined for negative values.
     Therefore, after applying the logarithm to the absolute derivative values, they are normalized and multiplied by the original sign.
     In this way, the logarithm can be applied while preserving the original sign of the derivative values, i.e. without losing the differentiability of the derivative direction.
-
-    Note that the neutral value 0 will most likely be moved away from the origin in one of the following steps.
-    This is because to solve this problem, the algorithm would have to treat positive and negative values completely separately, or else the normalization would cause this effect.
-    However, this effect has shown up only rarely in experiments, and even when it does occur, it has not proven to have a negative effect on results, or rather, in some experiments, handling it had a negative effect.
-
-    This observation will not be analyzed further, and the decision has been made to simply always use the logarithm; no extensive experimentation and analysis will be done to understand the effect of this further.
-    Later, results will be shown where this effect can be seen by slightly coloring the segments, where the expected result would be a mean derivative of 0 for exemplary flat roofs.
-    If the specific segment is slightly colored, this is most likely due to this effect.
 
     ```python
     def edge_detection(...):
@@ -213,8 +233,11 @@
       box(figure(image("../figures/clipping/0.png"), caption: [0%]), clip: true, width: 100%, inset: (bottom: 0.1in, left: -4.3in, right: -4.3in)),
       box(figure(image("../figures/clipping/7.png"), caption: [7%]), clip: true, width: 100%, inset: (bottom: 0.1in, left: -4.3in, right: -4.3in)),
       caption: [
-        Comparison between applying 0 and 7 percent clipping
+        Comparison between clipping percentages
       ],
+      show-sub-caption: (num, it) => {
+        [#it.body]
+      },
       label: <fig:algorithm:clipping>,
     )
 
@@ -347,7 +370,7 @@
     #figure(
       image("../figures/edge detection/pipeline1.png", width: 100%),
       caption: [
-        Edge Detection Pipeline.
+        Edge Detection Pipeline
       ],
     ) <fig:algorithm:edges:pipeline>
 
@@ -690,7 +713,7 @@
     #figure(
       box(figure(image("../figures/scoring_algorithm/segmentation_scoring/1.png")), clip: true, width: 100%, inset: (bottom: -2.6in, left: -0.3in)),
       caption: [
-        Example Scores for different Clipping Values
+        Scores for different clipping values
       ],
     ) <fig:score:segmentation>
 
@@ -720,7 +743,7 @@
         Not using the square of the surface size
       ]), <fig:scores:squareornot:b>,
       caption: [
-        Results for Segmentation Scoring
+        Results for scoring based on segmentation
       ],
       label: <fig:scores:squareornot>,
     )
