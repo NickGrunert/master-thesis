@@ -85,7 +85,7 @@
     #abr("SAM") for 3D Point Clouds: SAMNet++ @intro16 adapts #abr("SAM") for 3D LiDAR point clouds (SAM LiDAR) by segmenting a 2D rasterized, colorized representation based on color as well as texture information, followed by refinement via PointNet++ @intro17.
     In this case, initial segmentation relies on color in the 2D projection rather than on 3D geometry directly.
 
-    == Tools
+    == Tools <section:tools>
     A variety of tools were used during this work.
     In the context of research, in addition to manual inquiries through search engines, Perplexity AI @perplexity was employed as a contemporary search engine that utilizes artificial intelligence to locate relevant sources.
     Moreover, Connected Papers @connectedpaper was utilized to identify related publications for particular sources.
@@ -103,34 +103,25 @@
     Specifically, it is notable for its ability to rewrite text in an academic style, thereby enhancing its quality, and conducting grammar checks.
     However, these texts were not simply adopted directly; rather, they underwent a thorough review process that often involved their rewriting, as their language was often considered overly sophisticated.
 
-    == Definitions
+    == Motivation
 
-    // TODO
+    // TODO talk about LOD2
 
-    /*
-    Wang et al @ruralBuildingRoofTypes roof types are listed into 5 categories: gabled, flat, hipped, complex and mono-pitched. about 91,6% of their training set's roofs where almost evenly split between gabled and flat roofs
-
-
-
-
-
-
-    In the paper @buildingContours the problem of separating buildings is described
-
-    The paper @extractUAV uses DSM data for additional picture information to separate buildings from flora
-
-    @dataQuality1 describes that duplicates can decrease the ai quality by creating a wrong bias
+    == Research Questions
     
-    @dataQuality2 highlights the importance of a balanced dataset to avoid a bias in the ai model and the relevance of completeness
+    Domain Adaptation and Generalization
+    How can SAM be adapted to different types of aerial imagery (e.g., varying resolutions, sensor types, geographic locations)? How well does SAM generalize to different roof materials, and roof structures? Can we develop strategies to improve SAM's adaptability to diverse building types and reduce the need for fine- tuning?
 
-    @dataQuality3 describes the importance of a high quality dataset for the ai model to work properly, as bad input data will always lead to bad output data
+    One-Shot Learning for Building Analysis
+    How effective is SAM's zero-shot learning capability in accurately segmenting building roof details (roof segments, roof building parts, etc.) without prior training data?
+    What improvements can be achieved by implementing a one-shot learning approach using text prompts or single-point prompts for building roof detail segmentation?
+    Develop a methodology for implementing one-shot learning in SAM using text prompts and single-point prompts.
 
-    @dataQuality4 describes how error in the training data can greatly decrease the ai model's performance
+    Incorporating nDSM Data
+    How can nDSM data be effectively incorporated into SAM's segmentation process to improve the accuracy of building analysis tasks? Can we develop a fusion mechanism that combines features from RGB and nDSM data to enhance the segmentation of building components?
 
-    @smallData1 stresses the importance of a high quality dataset, as a small high quality dataset can outperform a large low quality dataset
-
-    @smallData2 says how good quality / filtering of data can increase the performance in contrast to using an unfiltered large dataset
-
-    */
+    Workflow Implementation:
+    Design and implement an automated workflow for generating training data using SAM’s segmentation capabilities.
+    Conduct real-time segmentation experiments on large-scale aerial imagery datasets and document the practical challenges and solutions.
   ]
 }
