@@ -38,7 +38,7 @@
       box(figure(image("../data/6/18/sam/surface_dilution.png")), clip: true, width: 100%, inset: (bottom: -0.6in, top: -0.75in, right: -0.7in, left: -1.0in)),
       box(figure(image("../data/6/8/sam/surface_dilution.png")), clip: true, width: 100%, inset: (bottom: -0.2in, top: -0.4in, right: -0.7in, left: -1.0in)),
       caption: [
-        Impact of Filtering or Dilution on the Generated Segmentations.
+        Impact of filtering or dilution on the generated segmentations
       ],
       label: <fig:sam:dilution>,
     )
@@ -80,7 +80,7 @@
       figure(image("../data/6/1/sam/best/filtered.png")),
       figure(image("../data/6/1/sam/best/dilated.png")),
       caption: [
-        Best SAM results for each Input Segmentation.
+        Best SAM results for each input segmentation
       ],
       label: <fig:sam:results2>,
     )
@@ -117,7 +117,7 @@
         [0], [3], [13], [4],
       ),
       caption: [
-        Table of the best Results for each Input Segmentation.
+        Table of the best results for each input segmentation
       ],
       label: <tab:sam:input>
     )
@@ -140,7 +140,7 @@
         [Combined], [2], [1], [2], [2],
       ),
       caption: [
-        Table of the best results for each Strategy.
+        Table of the best results for each strategy
       ],
       label: <tab:sam:strategy>
     )
@@ -171,7 +171,7 @@
       gutter: 0mm,
       figure(image("../figures/sam/problem.png")),
       caption: [
-        Excerpt from SAM results.
+        Excerpt from SAM results
       ],
       label: <fig:sam:problem>,
     )
