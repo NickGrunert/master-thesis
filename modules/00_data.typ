@@ -19,7 +19,7 @@
 
     In light of the aforementioned limitations on the quality of the nDSM data, it is necessary to exercise caution in the subsequent evaluation of this research and to be aware of them or eventually handle them.
 
-    == Input Data
+    == Data Collection
 
     The input data for this research needs to be collected, described and analysed.
     The aim is to identify existing data and make an initial assessment of whether and how it can be used for the research.
@@ -59,6 +59,46 @@
     The roof data theoretically contains a lot of information that could be useful if it were available, such as the pitch and type of roof.
     In the first case, if such data were already available in good quality, this research would not be necessary, as we are researching ways to create such data.
 
+    == Filtering
+    The data from the established sources need to be filtered in order to improve reliability and overall quality.
+    Therefore, this section will describe the filtering process by statistical analysis.
+
+
+    #subpar.grid(
+      columns: (3fr, 1fr),
+      gutter: 2mm,
+      figure(image("../figures/input/heatmaps.png")),
+      figure(image("../figures/input/build_parts.png")),
+      caption: [
+        Heatmaps over the data's geometries
+      ],
+      label: <fig:input:heatmaps>,
+    )
+
+    #subpar.grid(
+      columns: 2,
+      gutter: 2mm,
+      figure(image("../figures/input/before_filter/area.png")),
+      figure(image("../figures/input/before_filter/confidence.png")),
+      figure(image("../figures/input/before_filter/bbox.png")),
+      figure(image("../figures/input/before_filter/roof_parts.png")),
+      caption: [
+        Input data statistics
+      ],
+      label: <fig:input:statistics>,
+    )
+
+    #subpar.grid(
+      columns: 2,
+      gutter: 0mm,
+      image("../figures/input/bbox_to_area.png"), 
+      image("../figures/input/area_to_confidence.png"),
+      caption: [
+        Area Correlation
+      ],
+      label: <fig:input:area_correlation>,
+    )
+
 
 
     /*
@@ -79,6 +119,8 @@
     @smallData2 says how good quality / filtering of data can increase the performance in contrast to using an unfiltered large dataset
 
     */
+
+    == Results
 
     #stack(
       image("../figures/prompts/example_entry_1.png", width: 100%),
