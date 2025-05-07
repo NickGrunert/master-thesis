@@ -337,8 +337,11 @@
     It is important to acknowledge that this approach will essentially replicate the utilization of absolute values directly, as the data undergoes normalization to fall within the range of 0 to 255 prior to the application of the Canny algorithm.
 
     #heading(depth: 5, numbering: none, bookmarked: false)[Implementation]
-    It is crucial to note that the Canny algorithm exclusively accepts positive integer inputs.
-    The negligible loss of information when transitioning from $[-255, 255]$ to $[0, 255]$, which entails halving the value range, is an inherent risk and is presumed to exert a negligible effect on the outcomes, at most.
+    The Canny algorithm is restricted to positive integer inputs.
+    Therefore, the range of values must undergo transformation from $[-255, 255]$ to $[0, 255]$, entailing the halving of the value range.
+    Consequently, there is a marginal loss of information, as the range of positive and negative values is reduced by half each.
+    For instance, the values 255 and 254 are combined into a single value of 255 after the transformation process, becoming indistinguishable.
+    However, this informational reduction is presumed to exert a negligible effect on the outcomes.
 
     The threshold values are designated as the lower and upper percentiles of the normalized image.
     While they are set at equal intervals in this instance for the sake of simplicity, they can be adjusted to allow for uneven percentiles in the future, should preliminary results prove unsatisfactory.
@@ -386,12 +389,14 @@
     // TODO
 
     ==== Surface Growth
-    Using the edges computed in the edge detection pipeline, the algorithm is able to generate surfaces.
-    First, filter out all edge pixels and consider only non-edge pixels.
-    Assign one of them as a surface, then iteratively append all adjacent pixels from the list of non-edges until no connected pixels remain.
-    If there are no appended non-edge pixels left, assign one of them as a new surface and repeat the process.
-    This continues until all pixels are assigned.
-    There is no parameterization required and no edge cases that need to be considered.
+    The subsequent generation of surfaces is enabled by the utilization of the edges that have been computed in the edge detection pipeline.
+    Initially, all edge pixels must be filtered out, leaving only non-edge pixels for consideration.
+    The initial step involves the designation of one of these pixels as a surface. 
+    Subsequently, an iterative process is employed to append all adjacent pixels from the list of non-edges.
+    This process is repeated until no connected pixels remain, at which point the current surface has grown to occupy the entirety of its available space.
+    In the event that there are non-edge pixels remaining that have not yet been assigned to any surface, it is necessary to assign one of them as a new surface and to begin appending all adjacent pixels once more.
+    This process is repeated until all pixels of the image are assigned.
+    There is no need for parameterization, nor are there any edge cases that must be considered.
 
     ==== Separation and Relinking
     Next, the algorithm takes the generated surfaces and splits them on pixels that do not belong to edges but are adjacent to an edge, before attempting to reconnect such separated surfaces if their mean derivative is similar enough.
@@ -406,8 +411,8 @@
     
     In this step, surfaces that are only connected through thin parts are subdivided into multiple smaller surfaces.
     In such instances, the algorithm will attempt to reconnect the resulting sub-components.
-    In order to accomplish the aforementioned objective, the algorithm first calculates the mean derivative of each surface.
-    Subsequently, the method identifies surfaces that were previously part of the same surface and are sufficiently proximate in their mean derivatives. These surfaces are then reconnected accordingly.
+    To accomplish said reconnection, the algorithm first calculates the mean derivative of each surface.
+    Subsequently, the method identifies surfaces that were previously part of the same surface and are sufficiently proximate in their mean derivatives.
     The mean derivative has been identified as the most robust method for this purpose, as the average derivative is more susceptible to outlier values.
 
     Consequently, this results in the introduction of a new parameter: the absolute minimum difference between the mean derivative of two surfaces to be connected.
@@ -428,11 +433,12 @@
     Additionally, the prevailing algorithm does not incorporate failsafes against the occurrence of two adjacent surfaces having the same mean derivative, yet being at different height levels, signifying that they are, in fact, not connected.
 
     ==== Results
-    @fig:surface_separation shows how the surfaces are created and how the separation and linking steps influence the outcome.
+    @fig:surface_separation illustrates the three-step process of surface generation: the initial surface growth phase, the separation phase, and the re-linking step.
+    The provided example shows how the separation and linking steps influence the outcome.
     Initially, three larger surfaces were merged despite the presence of a clearly defined edge between them; however, this edge was only partially identified but not fully connected.
-    Consequently, the algorithm divided them into three smaller surfaces.
-    Subsequently, reconnecting the surfaces was attempted; however, the mean derivative of the surfaces was found to be too different, rightfully not resulting in reconnection.
-    Nonetheless, the algorithm successfully reconnected numerous small surfaces that had been divided due to their inherent thinness.
+    The algorithm was able to accurately divide the surfaces into three smaller surfaces.
+    Subsequently, an attempt was made to reconnect the surfaces; however, the mean derivative of the surfaces was found to be too different, rightly resulting in not reconnecting them.
+    Notwithstanding, the algorithm effectively reconnected numerous small surfaces that had been divided due to their inherent thinness.
 
     #subpar.grid(
       columns: 4,
@@ -447,8 +453,11 @@
         Re-linking.
       ]), <fig:surface_separation:c>,
       caption: [
-        Surface Growth, Separation and Re-linking
+        Steps of the Surface Generation
       ],
+      show-sub-caption: (num, it) => {
+        [#it.body]
+      },
       label: <fig:surface_separation>,
     )
 
@@ -476,7 +485,7 @@
 
     In the final algorithm for this section, the base area filtering will be executed prior to separation and re-linking, as the filtration of surfaces before these steps exerts a significant influence on the resulting execution time.
     Given the potential abundance of small surfaces in the external environment, the efficiency of the algorithm is contingent upon the optimization of its calculation process.
-    Moreover, preliminary experimentation has demonstrated that employing the refinement steps intended for normal surfaces on the base area surfaces yields no more positive results than negative ones.
+    Furthermore, preliminary experimentation has demonstrated that employing the refinement steps intended for normal surfaces on the base area surfaces can neither be called definitely positive nor negative.
     A notable distinction emerges in the application of refinement to the detected base area, as illustrated in @fig:scores:founderror. 
     The application of refinement to the thin segment on the left would result in the erroneous filtration of that segment.
     While it demonstrates increased resilience against minor variations in the house outlines, it exhibits reduced robustness in other aspects.
@@ -494,7 +503,7 @@
     As illustrated by @fig:surfaces_pipeline, the surface steps from one of the image test runs are displayed.
     The detection of the house area is evident, as is the filtration of numerous small surfaces in the external environment.
     The necessity to overestimate the clipping percentage can be determined by the presence of clipped values throughout the house, suggesting a higher than necessary value, as actual information on the roof may be lost.
-    However, the algorithm appears to be functioning adequately during initial experimentation on a diverse set of houses.
+    However, the algorithm functions adequately well during initial experimentation on a diverse set of houses. 
 
     === Scoring System for Evaluation <section:scoring>
     In the preceding tests, the quality of the majority of surfaces could be adequately assessed by manual observation for initial parameter tuning and theory validation.
@@ -516,8 +525,10 @@
     The interpretation of surface derivatives as a point cloud renders them applicable to this algorithm.
 
     The algorithm's capacity to discern anomalies may be adequate; however, its precision is not sufficiently reliable for incorporation into the scoring system or for general evaluation purposes.
-    The implementation of the algorithm is contingent upon two parameters: the epsilon and the minimum sample number. These parameters delineate the requisite spatial density of a cluster.
-    Additional experimentation with the algorithms parameter may be feasible; however, preliminary tests have demonstrated that the quality of the algorithms is contingent on this parameter. Achieving satisfactory results, nevertheless, appears to be impracticable.
+    The implementation of the algorithm is contingent upon two parameters: epsilon and the minimum sample number. 
+    These parameters specify the necessary spatial density of a cluster.
+    It is conceivable that further experimentation with the algorithms parameter may yield favorable outcomes; nevertheless, preliminary tests have demonstrated a strong correlation between the quality of the algorithms and the values of this parameter. 
+    It appears that achieving satisfactory results is an unfeasible task.
     
     To illustrate the problematic application, @fig:dbscan presents illustrative results of the DBSCAN algorithm on three disparate surfaces, yielding suboptimal outcomes in each instance.
     Note that the label -1 is given to all points considered noise @dbscan2.
@@ -526,7 +537,7 @@
     Notably, it failed to recognize the two outer surfaces as coherent entities and erroneously merged the inner surface with the edges surrounding the other two.
     
     In contrast, the other two examples are each a single, coherent surface.
-    In @fig:dbscan:b, a perfectly normal surface only affected by minor noise inside the derivative values, the entire surface is identified as noise, with the actual noise for some reason being given multiple labels.
+    In @fig:dbscan:b, a perfectly normal surface affected by minor noise is shown, however, the entire surface is labeled as noise by the algorithm, with the actual noise being given labels.
     @fig:dbscan:c contains a significant amount of noise, resulting in no surface detection at all, labeling everything as noise.
 
     For purposes of illustration, consider the adjustment of parameters. 
@@ -546,7 +557,7 @@
         Much noise.
       ]), <fig:dbscan:c>,
       caption: [
-        Execution of DBSCAN on three different surfaces
+        Execution of the DBSCAN algorithm
       ],
       label: <fig:dbscan>,
     )
@@ -646,14 +657,19 @@
 
     @fig:plateau presents exemplary extracts from the graphs representing the algorithm's results.
     The first example illustrates a flawless surface, which is identified as such by the algorithm.
+    The three calculated scores are 98%, 97%, and 96%, respectively, for x, y, and magnitude direction.
+    In all three directions, there is a single plateau that extends across the majority of the surface.
     It is important to acknowledge that the graphs are not normalized, which results in an apparent unevenness that does not accurately reflect the underlying data.
     The values ranging from 80 to 100 are regarded as sufficiently proximate to be classified as a single, cohesive plateau.
 
-    The second example row demonstrates a surface that persists of two merged surfaces, which the algorithm detects in the x and magnitude directions. 
-    This is visually quite good and can be confirmed as two distinct plateaus in the data.
+    The second example row illustrates a surface that persists of two merged surfaces, which the algorithm detects in the x and magnitude directions. 
+    The surface score resulting from the individual scores of 0%, 93%, and 0% is 31%, which is indicative of poor quality.
+    One could argue for the invalidation of the entire score, but further analysis of this hypothesis will not be pursued.
+    The presence of two distinct plateaus in the data is also evident in the graphs.
 
-    The third row illustrates a regrettable scenario in which both the x and y directions exhibit a single dominant plateau, a phenomenon that is accurately reflected in the scores.
-    However, the magnitude direction indicates a single elevated jump in values, resulting in the identification of two plateaus rather than one. 
+    The third row illustrates a regretable scenario in which both the x and y directions exhibit a single dominant plateau. 
+    This is accurately reflected in the scores being 94%, 87%, and 0%, respectively.
+    The graph of the magnitude direction exhibits a pronounced jump in values, leading to the identification of two plateaus rather than one. 
     Consequently, the score is rendered null.
     This is unfortunate and likely indicative of the fragility of the magnitude values, which renders them unsuitable for use in the score calculation.
     However, given the algorithm's equitable allocation of values to all three directions, this issue is mitigated, as the remaining two directions retain the capacity to generate a satisfactory score.
@@ -702,7 +718,7 @@
     #heading(depth: 5, numbering: none, bookmarked: false)[Explanation]
     Following the individual scoring of the surfaces, the generated scores must be aggregated to create a final score that evaluates the segmentation of the roof in its entirety.
     The preliminary implementation of this process entails the combination of each individual surface score.
-    The surface's score is subject to manipulation by multiplication of two components: the result score of the plateau algorithm and the surface's squared size.
+    The surface's score is calculated by multiplying the result score of the plateau algorithm by the surface's squared size.
     As previously stated, the algorithm calculates this in order to assign greater rewards to surfaces of greater size in comparison to smaller surfaces.
     Therefore, a surface with a large surface area and optimal values will achieve a higher score than two smaller surfaces with perfect values.
     However, a small surface with imperfect values will likely demonstrate superior performance in comparison to a large surface characterized by numerous incoherent values.
@@ -728,7 +744,9 @@
 
     In this manner, the algorithm is able to detect missing house areas.
     Given that both scores are on a scale from 0 to 1, with 1 representing the optimal result, the final score can be calculated as a weighted sum of these two scores.
-    The determination was made that an equal weighting would be sufficient, as a lower weighing of the negative score could lead to the algorithm not detecting missing areas as well as it should and a higher value underfactorization of the actual segment quality.
+    A reduction in the negative score's weighting could potentially result in the algorithm's failure to detect missing areas.
+    An increase in its weighing may result in the underestimation of the true quality of the segment in question.
+    Therefore, the final score is calculated as the arithmetic mean of the two scores, with equal weight assigned to each.
 
     #heading(depth: 5, numbering: none, bookmarked: false)[Results]
     #subpar.grid(
