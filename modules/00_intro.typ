@@ -121,5 +121,9 @@
 
     Design and implement an automated training data generation workflow.
     Conduct real-time segmentation experiments on aerial imagery and document the practical challenges and solutions.
+
+    == Exploratory Strategy
+
+    // TODO
   ]
 }

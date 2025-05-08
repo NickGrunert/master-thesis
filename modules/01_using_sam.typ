@@ -136,7 +136,7 @@
       figure(image("../data/6/1/helper/image_4.png")),
       figure(image("../data/6/1/helper/image_5.png")),
       caption: [
-        Image for further analysis
+        Images to use in further analysis
       ],
       label: <fig:sam:images>,
     )
@@ -154,6 +154,7 @@
     Further elaboration on the generation of these surfaces can be found in @section:ndsm_analysis.
 
     The following strategies will be employed to break down any given surface to a set of points.
+    The implementation of each of these strategies is outlined in the appendix.
 
     #heading(depth: 5, numbering: none, bookmarked: false)[Random Strategy]
     The initial concept was to utilise any arbitrary point, randomly chosen within a specified surface. 
@@ -169,8 +170,26 @@
     Instead, a more deterministic approach was adopted in order to achieve enhanced results and facilitate the comparison of the various strategies.
 
     #heading(depth: 5, numbering: none, bookmarked: false)[Center Strategy]
+    The second strategy involves the selection of the centre point of the surface as the input point.
+    The centre point is defined as the point that is located at the centroid of the surface's geometry. 
+    Alternatively, it may be defined as the closest point to the centroid which also lies within the surface, sinc this is not guaranteed, for example, if another surface lies within the current one.
+    This methodology establishes a deterministic point extraction technique that exhibits no variability when compared with the random strategy.
+
+    It is hypothesised that points in closer proximity to the edge of the surface are more likely to result in erroneous segmentations.
+    Consequently, a failsafe mechanism will be implemented that will attempt to move any such point towards the nearest point that is not on the surface's edge.
+
+    In instances where the number of points exceeds one, the algorithm endeavours to distribute them proportionally.
+    It is acknowledged that this is not achieved in the most sophisticated manner; however, further improvement would only be implemented if a need emerged for it due to substandard quality.
+    Moreover, the hypothesis was formulated that, in place of employing the centroid by value weighing, the surface could be eroded until no points remained.
+    The last points removed would thus represent the most interior points of the surface.
+    Nevertheless, this approach was not pursued any further, as the hypothesis was only conceived at the end of the research process.
 
     #heading(depth: 5, numbering: none, bookmarked: false)[Combined Strategy]
+    The third strategy is an evolution of the Center Strategy.
+    The underlying principle is to create a specific number of centre points within a given surface.
+    In addition to the aforementioned points, this strategy also incorporates a certain number of negative points stemming from other surfaces.
+    In order to circumvent the introduction of randomness, the algorithm systematically selects a single negative centre point for each other surface, with the selection initiated from the largest surface.
+    A more sophisticated approach to the selection of negative points is possible, but at this stage the focus is on establishing the proof of concept that negative points may improve results.
 
     #heading(depth: 5, numbering: none, bookmarked: false)[Synopsis]
     The @fig:sam:strategy_example illustrates the three strategies that were employed to create input prompts.
@@ -265,6 +284,14 @@
       },
       label: <fig:sam:mask_all>,
     )
+
+    The Combined Point Strategy was found to be even more dependent on the random quality of the input mask.
+    For a number of houses, the impact of negative points was negligible.
+    In other cases, the negative points had a highly detrimental effect on the results.
+    However, these results are broadly in line with expectations.
+    The underlying principle of negative point is to provide indications to the SAM of regions within the image that fall outside the current surface.
+    In the event of the mask being segmented incorrectly, negative points selected in this manner may well be found in the real segment currently under investigation.
+    Consequently, the evaluation of the effectiveness of the proposed measures will be postponed.
 
     #heading(depth: 5, numbering: none, bookmarked: false)[Analysing the individual masks per segment]
     As illustrated by @fig:sam:mask_masks, the results for each input image are demonstrated using the Center Point Strategy, with two positive input points per surface.
