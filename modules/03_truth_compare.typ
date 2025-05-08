@@ -22,9 +22,7 @@
     Conducting a limited evaluation on a small number of hand-picked houses does not provide sufficient statistical evidence to draw definitive conclusions.
     However, given the favorable trade-off between objective evaluation and minimal time investment required, it is reasonable to infer that the algorithm will demonstrate comparable performance across other houses.
 
-
-
-    === Creating Ground Truth images
+    === Creating Ground Truth images <section:ground_truth>
 
     The evaluation will be based on a set of twenty ground truth images, which were derived from images corresponding to the 60th percentile of the entire image dataset sorted by roof area.
     This selection was made on the basis that these models adequately represent the data overall. 

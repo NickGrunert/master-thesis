@@ -8,7 +8,7 @@
 
     == Data Collection
     @fig:input:image_and_ndsm shows the surface tile which will be used, split into RGB image and an image which illustrates the nDSM data.
-    The RGB data is derived from DOP20 (Digital Orthophotos at 20 cm resolution), provided by the State Office for Geoinformation and Surveying of Lower Saxony (LGLN).
+    The RGB data is derived from aerial imigery, provided by the State Office for Geoinformation and Surveying of Lower Saxony (LGLN).
 
     #figure(
       image("../figures/input/image_and_ndsm.png"), 

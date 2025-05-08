@@ -386,9 +386,7 @@
 
     === Surface Growth <section:surface_growth>
 
-    // TODO
-
-    ==== Surface Growth
+    ==== Initial Creation of Surfaces
     The subsequent generation of surfaces is enabled by the utilization of the edges that have been computed in the edge detection pipeline.
     Initially, all edge pixels must be filtered out, leaving only non-edge pixels for consideration.
     The initial step involves the designation of one of these pixels as a surface. 

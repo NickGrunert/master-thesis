@@ -98,6 +98,14 @@
 
     == Motivation
 
+    // deep learning hat viele fortschritte und viele domains, räumlicher bereich fehlt noch research und trainingsdaten
+    // deep learning kann komplexe daten erkkennen -> viel potential 
+    // 
+    // viele anwendungen würden von LOD3 profitieren aber das sind halt sehr schiwerige model, segmentierung für sehr hohe level
+    // 
+    // foundation model wurden schon auf viel daten trainiert darum muss keine  basis erst trainiert werden, sam ist praktisch weil hints/prompts
+    // erstellung von prompts automatisieren
+    // 
     // TODO talk about LOD2
 
     == Research Questions

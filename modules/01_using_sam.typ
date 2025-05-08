@@ -146,7 +146,7 @@
       gutter: 2mm,
       figure(image("../data/6/1/sam/strategy_example.png")),
       caption: [
-        Input Prompts depending on Strategy and Parameter.
+        Input prompts example for strategies
       ],
       label: <fig:sam:strategy_example>,
     )
@@ -180,19 +180,22 @@
         Blue Channel Swapped.
       ]), <fig:sam:automatic:e>,
       caption: [
-        Segmentations using the Automatic Mask Generator.
+        Segmentations using the Automatic Mask Generator
       ],
       label: <fig:sam:automatic>,
     )
 
     === Input Prompting
-    The results that follow in @fig:sam:mask_all are the best results of prompting SAM with the mask as input.
-    The general shape of the roof is well captured, but the segmentations themselves are imperfect.
-    For some details and smaller surfaces it is clear that the model lacks precise additional input prompts for them.
-    Encapsulated segments such as chimneys and balconies are particularly affected.
+    The following results, presented in @fig:sam:mask_all, represent example outcomes achieved through prompting SAM with the mask as the input.
+    The second column shows the ground truth for visual confirmation of the expected result.
+    Further elaboration on this topic can be found in @section:ground_truth.
+    Whilst the general structure of the roof is adequately depicted, the individual segmentations are not without fault.
+    It is evident that the model is deficient in its provision of precise input prompts for smaller surfaces and details.
+    Segments of the building that are enclosed, such as chimneys and balconies, are particularly affected.
+    All segmentation that were created during testing, across all strategies and all input images, demonstrated these issues.
 
-    It also becomes clear that their quality is highly dependent on the input mask, which is at best of substandard quality and cannot be relied upon, as discussed in @section:input_data.
-    In some cases the correct segmentation seems to be a coincidence of randomly working input masks rather than a systematic functionality of the algorithms.
+    It is evident that the quality of the output is significantly influenced by the quality of the input mask. The input mask, which is of substandard quality, is incapable of providing reliable results, as discussed in @section:input_data.
+    In certain instances, the correct segmentation appears to be a coincidental outcome of randomly effective input masks, as opposed to a systematic functionality of the algorithms.
 
     #subpar.grid(
       columns: 4,
@@ -212,7 +215,7 @@
       figure(image("../data/6/19/mask.png", width: 100%), caption: [Mask]),
       figure(image("../data/6/19/sam/best/mask.png", width: 100%), caption: [Output]),
       caption: [
-        Using SAM with Input Prompts from the Mask.
+        Using SAM with input prompts from the mask
       ],
       show-sub-caption: (num, it) => {
         [#it.body]
@@ -220,15 +223,28 @@
       label: <fig:sam:mask_all>,
     )
 
+    #heading(depth: 5, numbering: none, bookmarked: false)[Analysing intermediate masks]
+    As illustrated by @fig:sam:mask_masks, the results for each input image are demonstrated using the Center Point Strategy, with two positive input points per surface.
+    The upper section of the figure illustrates the overall segmentation result.
+    In the section below, the performance of each individual mask by SAM is displayed, along with the score assigned by the model to that segmentation.
+    For the purpose of illustration, solely the rows with the four largest input segments are displayed.
+
+    It has been demonstrated that certain segments are capable of being effectively segmented by the use of specific input images. 
+    Conversely, SAM has been observed to be incapable of identifying the same segment when other input images are employed.
+    This is exemplified by the second row of masks, in which the derivative image is entirely incapable of identifying the segment.
+    In the final row of masks, the images employing RGB data incorporate an erroneous segment to the right.
+    However, the derivative image is able to clearly differentiate between the two with a high degree of certainty, as evidenced by the particularly high score of 0.937.
+    This suggests the potential for combining the masks in a manner that may yield a more effective segmentation.
 
     #subpar.grid(
       columns: 1,
       gutter: 2mm,
-      figure(image("../data/6/19/sam/mask.png")),
+      box(figure(image("../data/6/19/sam/mask/result.png")), clip: true, width: 100%, inset: (bottom: -0in)),
+      box(figure(image("../data/6/19/sam/mask/masks.png")), clip: true, width: 100%, inset: (bottom: -6.2in, top: -0.9in)),
       caption: [
-        Input Prompts depending on Strategy and Parameter.
+        Best mask per input image and input segment
       ],
-      label: <fig:sam:all_mask>,
+      label: <fig:sam:mask_masks>,
     )
   ]
 }
