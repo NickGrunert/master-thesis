@@ -209,34 +209,29 @@
       label: <fig:sam:strategy_example>,
     )
 
-
+    == Prompting Techniques and Results
 
     // TODO
 
-    == Results
-
     === Manual Prompting
 
+    // TODO
+
     === Automatik Mask Generator
+    One simple way of using SAM is by using the automatic mask generator provided by the SAM2 implementation.
+    This class lays a regular grid over the image and prompts the model with these points.
+    Afterwards, the results are subject to multiple post processing steps like non-maxmimum suppression and thresholding to create the final segmentation over the entire image @sam4.
+    This appraoch does not requier us to create reliable input prompts, but also disenables further control over the specific data used as input.
 
     #subpar.grid(
       columns: 2,
       gutter: 2mm,
-      figure(image("../data/6/1/sam/0.png"), caption: [
-        RGB Image.
-      ]), <fig:sam:automatic:a>,
-      figure(image("../data/6/1/sam/1.png"), caption: [
-        Derivative Image.
-      ]), <fig:sam:automatic:b>,
-      figure(image("../data/6/1/sam/2.png"), caption: [
-        Red Channel Swapped.
-      ]), <fig:sam:automatic:c>,
-      figure(image("../data/6/1/sam/3.png"), caption: [
-        Green Channel Swapped.
-      ]), <fig:sam:automatic:d>,
-      figure(image("../data/6/1/sam/4.png"), caption: [
-        Blue Channel Swapped.
-      ]), <fig:sam:automatic:e>,
+      figure(image("../data/6/1/sam/0.png")),
+      figure(image("../data/6/1/sam/1.png")),
+      figure(image("../data/6/1/sam/2.png")),
+      figure(image("../data/6/1/sam/3.png")),
+      figure(image("../data/6/1/sam/4.png")),
+      figure(image("../data/6/1/sam/5.png")),
       caption: [
         Segmentations using the Automatic Mask Generator
       ],
@@ -245,6 +240,17 @@
       },
       label: <fig:sam:automatic>,
     )
+
+    The @fig:sam:automatic illustrates the results of utilising the automatic mask generator on the established input images.
+    The results obtained are extremely encouraging, as they indicate with a high degree of certainty that SAM is capable of delivering the desired segmentations.
+    A substantial number of segments were detected, and the roof's overall shape is adequately captured.
+    Nevertheless, certain segments are absent, and even minor surfaces appear to be subject to a high degree of certainty according to the scoring system.
+
+    The utilisation of the generator is associated with a number of challenges.
+    The outcomes are contingent on the precise values of the algorithms' hyperparameters, including the threshold for non-maximum suppression and the minimum threshold for a mask's stability score.
+    In order to ascertain the most effective manner in which to utilise this method, it would first be necessary to research and experiment with the precise parametrization.
+    However, these endeavours will not be pursued further.
+    Instead, the subsequent phase of research will be dedicated to the development of custom input prompts, better designed for individual surfaces, with the objective of achieving image segmentation.
 
     === Input Prompting
     #heading(depth: 5, numbering: none, bookmarked: false)[Results]
