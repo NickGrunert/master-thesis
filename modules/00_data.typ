@@ -172,6 +172,8 @@
     Note that in the first step, the largest number of buildings was filtered out by confidence, as this contains the most information about actually usable buildings, or conversely, unusable buildings.
     The visualisation of the buildings removed in each step confirms that the filtering works well.
     Buildings removed by confidence are mainly complete misclassifications or very erroneous data.
+    Removal by no overlap is due to the same reasons or, more noticeably, to inconsistencies in the different datasets, presumably due to different timeframes of data collection.
+
     Buildings removed by maximum size are mainly large industrial buildings, whereas those removed by small size are huts or similar.
     Most of the small buildings were already filtered out before.
     Filtering by area percentage had the intended effect of filtering out, for example, long stretched conopies on the platform, or the station itself due to its odd shape resulting in a very large bounding box.
@@ -190,6 +192,8 @@
     The general distribution does not change, but the bias towards a predominant portion of the data being flat roofs is slightly reduced.
     Note that the two disappearing roof types are the GambrelHipRoof, which is a misclassification, and the Barrelroof, which is a small arched roof.
     The latter is a small loss of information as it is also part of a large building with a complex shape and many parts that are not very useful anyway.
+
+    // TODO say that removed images are in appendix?
 
     == Results
     The filtered houses are sorted by size.

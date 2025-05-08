@@ -4,14 +4,78 @@
 
 #heading(depth: 5, numbering: none, bookmarked: false)[Filtered Input Data]
 #subpar.grid(
-      columns: 2,
-      gutter: 0mm,
-      image("../figures/input/result.png"),
-      caption: [
-        100 images evenly sampled from the input data
-      ],
-      label: <fig:input:result>,
-    )
+  columns: 2,
+  gutter: 0mm,
+  image("../figures/input/result.png"),
+  caption: [
+    100 images evenly sampled from the input data
+  ],
+  label: <fig:input:result>,
+)
+#heading(depth: 5, numbering: none, bookmarked: false)[Filtered by area]
+#subpar.grid(
+  columns: 1,
+  gutter: 0mm,
+  image("../figures/input/removal/area1.png"),
+  image("../figures/input/removal/area2.png"),
+  caption: [
+    Input data removed by area
+  ],
+  label: <fig:remove:area>,
+)
+#heading(depth: 5, numbering: none, bookmarked: false)[Filtered by overlapping parts]
+#subpar.grid(
+  columns: 1,
+  gutter: 0mm,
+  image("../figures/input/removal/parts1.png"),
+  image("../figures/input/removal/parts2.png"),
+  image("../figures/input/removal/parts3.png"),
+  caption: [
+    Input data removed by overlapping parts
+  ],
+  label: <fig:remove:parts>,
+)
+
+#heading(depth: 5, numbering: none, bookmarked: false)[Filtered by confidence]
+#subpar.grid(
+  columns: 1,
+  gutter: 0mm,
+  image("../figures/input/removal/confidence1.png"),
+  image("../figures/input/removal/confidence2.png"),
+  image("../figures/input/removal/confidence3.png"),
+  caption: [
+    Input data removed by size
+  ],
+  label: <fig:remove:size>,
+)
+#heading(depth: 5, numbering: none, bookmarked: false)[Filtered by bounding box]
+#subpar.grid(
+  columns: 1,
+  gutter: 0mm,
+  image("../figures/input/removal/bbox1.png"),
+  image("../figures/input/removal/bbox2.png"),
+  caption: [
+    Input data removed by bounding box percentage
+  ],
+  label: <fig:remove:bbox>,
+)
+
+#heading(depth: 5, numbering: none, bookmarked: false)[Filtered by flat roof only]
+#subpar.grid(
+  columns: 1,
+  gutter: 0mm,
+  image("../figures/input/removal/flat1.png"),
+  image("../figures/input/removal/flat2.png"),
+  image("../figures/input/removal/flat3.png"),
+  image("../figures/input/removal/flat4.png"),
+  image("../figures/input/removal/flat5.png"),
+  image("../figures/input/removal/flat6.png"),
+  caption: [
+    Input data removed by flat roof only
+  ],
+  label: <fig:remove:flat>,
+)
+
 
 /*
 #heading(depth: 5, numbering: none, bookmarked: false)[Generated Segmentations]
