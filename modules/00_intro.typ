@@ -65,9 +65,10 @@
       Conventional CNNs have also been proposed as a means of prompt generation for #abr("SAM").
 
     // TODO ich versteh hier nix von
-    Novel Prompting Strategies: Researchers have explored the use of text prompts in conjunction with one-shot learning or employing segmentation outputs from other models as input prompts.
-    The aforementioned adaptations underscore the necessity of effective modification in the context of leveraging #abr("SAM") in remote sensing, particularly with regard to addressing its inherent limitations, such as the requirement for automated, domain-relevant prompting.
-    It is important to note that a considerable number of automated prompting strategies are contingent upon features derived from the image itself @intro15.
+    - Novel Prompting Strategies: 
+      Researchers have explored the use of text prompts in conjunction with one-shot learning or employing segmentation outputs from other models as input prompts.
+      The aforementioned adaptations underscore the necessity of effective modification in the context of leveraging #abr("SAM") in remote sensing, particularly with regard to addressing its inherent limitations, such as the requirement for automated, domain-relevant prompting.
+      It is important to note that a considerable number of automated prompting strategies are contingent upon features derived from the image itself @intro15.
 
     #heading(depth: 5, numbering: none, bookmarked: false)[Integrating Elevation Data with Foundational Models]
     While the value of elevation data is well-established for traditional CV and standard #abr("DL") segmentation models, its integration specifically with foundational models like #abr("SAM") is still an emerging area.
@@ -123,7 +124,7 @@
     Conduct real-time segmentation experiments on aerial imagery and document the practical challenges and solutions.
 
     == Exploratory Strategy
-
-    // TODO
+    The research approach adopted in this thesis is of an exploratory and iterative nature, with each stage of the research process building upon the results and insights of the preceding stage.
+    Rather than beginning with a fixed, end-to-end pipeline or a single hypothesis, the structure of the work reflects a step-by-step examination, with theoretical foundations, methods, and assumptions developed individually for each stage as new challenges and requirements arise.
   ]
 }

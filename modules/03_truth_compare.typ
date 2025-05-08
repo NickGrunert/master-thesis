@@ -2,7 +2,7 @@
 
 #let truth_compare(abr) = {
   text(lang:"en")[
-    == Objective Analysis of Score by Comparison with Truth Data <section:truth_compare>
+    == Objective Analysis by Ground Truth Comparison <section:truth_compare>
     It is essential to recall that the primary objective of the segmentation calculated here is to provide sufficiently accurate points within each segment to prompt #abr("SAM").
     Therefore, an incomplete segment will be reduced to a valid point within the real structure. 
     Conversely, an incorrect segment could lead to an invalid point outside the real structure.

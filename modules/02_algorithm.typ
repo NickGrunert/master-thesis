@@ -30,7 +30,7 @@
     
     Lastly, @section:ablation of this chapter will then return to said parameter and perform an ablation study on the actual effect of these, intended for the purpose of achieving a better understanding and filtering out those parameters with minor effect so that they will not be considered in further calculations on unseen data.
 
-    == Identification of Roof Structures through Analysis of nDSM Data <section:algorithm>
+    == Algorithmic Identification of Roof Structures <section:algorithm>
     In the following sections, the nDSM data will be utilized to calculate derivatives, process the data, and consequently detect edges inside the image.
     The derivatives are generally distinguished between x and y directions.
     The utilization of combined values, expressed as magnitudes, is not a viable approach. 
