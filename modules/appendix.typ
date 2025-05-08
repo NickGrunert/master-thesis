@@ -77,219 +77,6 @@
 )
 
 
-/*
-#heading(depth: 5, numbering: none, bookmarked: false)[Generated Segmentations]
-
-#subpar.grid(
-  columns: 1,
-  gutter: 1mm,
-  align: center,
-  figure(image("../data/6/12/v1/result.png", width: 100%)),
-  figure(image("../data/6/1/v1/result.png", width: 100%)),
-  outlined: false,
-)
-#subpar.grid(
-  columns: 1,
-  gutter: 1mm,
-  align: center,
-  figure(image("../data/6/7/v1/result.png", height: 33%)),
-  figure(image("../data/6/8/v1/result.png", height: 32%)),
-  figure(image("../data/6/10/v1/result.png", height: 32%)),
-  outlined: false,
-)
-#subpar.grid(
-  columns: 1,
-  gutter: 1mm,
-  align: center,
-  figure(image("../data/6/14/v1/result.png", height: 33%)),
-  figure(image("../data/6/11/v1/result.png", height: 32%)),
-  figure(image("../data/6/13/v1/result.png", height: 33%)),
-  outlined: false,
-)
-#subpar.grid(
-  columns: 1,
-  gutter: 1mm,
-  align: center,
-  figure(image("../data/6/16/v1/result.png", width: 95%)),
-  figure(image("../data/6/2/v1/result.png", width: 95%)),
-  figure(image("../data/6/0/v1/result.png", width: 95%)),
-  outlined: false,
-)
-#subpar.grid(
-  columns: 1,
-  gutter: 1mm,
-  align: center,
-  figure(image("../data/6/15/v1/result.png", width: 100%)),
-  box(figure(image("../data/6/9/v1/result.png")), clip: true, width: 100%, inset: (bottom: -0.4in, top: -0.2in)),
-  figure(image("../data/6/5/v1/result.png", width: 100%)),
-  outlined: false,
-)
-#subpar.grid(
-  columns: 1,
-  gutter: 1mm,
-  align: center,
-  figure(image("../data/6/17/v1/result.png", width: 100%)),
-  box(figure(image("../data/6/3/v1/result.png")), clip: true, width: 100%, inset: (bottom: -0.5in, top: -0.3in)),
-  figure(image("../data/6/18/v1/result.png", width: 100%)),
-  outlined: false,
-)
-#subpar.grid(
-  columns: 1,
-  gutter: 1mm,
-  align: center,
-  figure(image("../data/6/19/v1/result.png", width: 100%)),
-  box(figure(image("../data/6/1/v1/result.png")), clip: true, width: 100%, inset: (bottom: -0.5in, top: -0.3in)),
-  figure(image("../data/6/6/v1/result.png", width: 100%)),
-  numbering: (..nums) => [#counter(figure.where(outlined: true)).display((..num_figs)=>num_figs.pos().at(0))],
-  caption: [
-    All result segmentations.
-  ],
-)
-
-*/
-
-/*
-
-#heading(depth: 5, numbering: none, bookmarked: false)[Correlation Results]
-
-#subpar.grid(
-  columns: 5,
-  gutter: 4mm,
-  figure(image("../data/6/0/v1/correlation/metrics.png", height: 45%)),
-  figure(image("../data/6/1/v1/correlation/metrics.png", height: 45%)),
-  figure(image("../data/6/2/v1/correlation/metrics.png", height: 45%)),
-  figure(image("../data/6/3/v1/correlation/metrics.png", height: 45%)),
-  figure(image("../data/6/4/v1/correlation/metrics.png", height: 45%)),
-  figure(image("../data/6/5/v1/correlation/metrics.png", height: 45%)),
-  figure(image("../data/6/6/v1/correlation/metrics.png", height: 45%)),
-  figure(image("../data/6/7/v1/correlation/metrics.png", height: 45%)),
-  figure(image("../data/6/8/v1/correlation/metrics.png", height: 45%)),
-  figure(image("../data/6/9/v1/correlation/metrics.png", height: 45%)),
-  outlined: false,
-)
-#subpar.grid(
-  columns: 5,
-  gutter: 4mm,
-  figure(image("../data/6/10/v1/correlation/metrics.png", height: 45%)),
-  figure(image("../data/6/11/v1/correlation/metrics.png", height: 45%)),
-  figure(image("../data/6/12/v1/correlation/metrics.png", height: 45%)),
-  figure(image("../data/6/13/v1/correlation/metrics.png", height: 45%)),
-  figure(image("../data/6/14/v1/correlation/metrics.png", height: 45%)),
-  figure(image("../data/6/15/v1/correlation/metrics.png", height: 45%)),
-  figure(image("../data/6/16/v1/correlation/metrics.png", height: 45%)),
-  figure(image("../data/6/17/v1/correlation/metrics.png", height: 45%)),
-  figure(image("../data/6/18/v1/correlation/metrics.png", height: 45%)),
-  figure(image("../data/6/19/v1/correlation/metrics.png", height: 45%)),
-  numbering: (..nums) => [#counter(figure.where(outlined: true)).display((..num_figs)=>num_figs.pos().at(0))],
-  caption: [
-    All results for MAE, MSE, RMSE and R2.
-  ],
-)
-
-
-#subpar.grid(
-  columns: 5,
-  gutter: 4mm,
-  figure(image("../data/6/0/v1/correlation/pearson.png", height: 45%)),
-  figure(image("../data/6/1/v1/correlation/pearson.png", height: 45%)),
-  figure(image("../data/6/2/v1/correlation/pearson.png", height: 45%)),
-  figure(image("../data/6/3/v1/correlation/pearson.png", height: 45%)),
-  figure(image("../data/6/4/v1/correlation/pearson.png", height: 45%)),
-  figure(image("../data/6/5/v1/correlation/pearson.png", height: 45%)),
-  figure(image("../data/6/6/v1/correlation/pearson.png", height: 45%)),
-  figure(image("../data/6/7/v1/correlation/pearson.png", height: 45%)),
-  figure(image("../data/6/8/v1/correlation/pearson.png", height: 45%)),
-  figure(image("../data/6/9/v1/correlation/pearson.png", height: 45%)),
-  outlined: false,
-)
-#subpar.grid(
-  columns: 5,
-  gutter: 4mm,
-  figure(image("../data/6/10/v1/correlation/pearson.png", height: 45%)),
-  figure(image("../data/6/11/v1/correlation/pearson.png", height: 45%)),
-  figure(image("../data/6/12/v1/correlation/pearson.png", height: 45%)),
-  figure(image("../data/6/13/v1/correlation/pearson.png", height: 45%)),
-  figure(image("../data/6/14/v1/correlation/pearson.png", height: 45%)),
-  figure(image("../data/6/15/v1/correlation/pearson.png", height: 45%)),
-  figure(image("../data/6/16/v1/correlation/pearson.png", height: 45%)),
-  figure(image("../data/6/17/v1/correlation/pearson.png", height: 45%)),
-  figure(image("../data/6/18/v1/correlation/pearson.png", height: 45%)),
-  figure(image("../data/6/19/v1/correlation/pearson.png", height: 45%)),
-  numbering: (..nums) => [#counter(figure.where(outlined: true)).display((..num_figs)=>num_figs.pos().at(0))],
-  caption: [
-    All results for Pearson Metric.
-  ],
-)
-
-
-#subpar.grid(
-  columns: 5,
-  gutter: 4mm,
-  figure(image("../data/6/0/v1/correlation/regression.png", height: 45%)),
-  figure(image("../data/6/1/v1/correlation/regression.png", height: 45%)),
-  figure(image("../data/6/2/v1/correlation/regression.png", height: 45%)),
-  figure(image("../data/6/3/v1/correlation/regression.png", height: 45%)),
-  figure(image("../data/6/4/v1/correlation/regression.png", height: 45%)),
-  figure(image("../data/6/5/v1/correlation/regression.png", height: 45%)),
-  figure(image("../data/6/6/v1/correlation/regression.png", height: 45%)),
-  figure(image("../data/6/7/v1/correlation/regression.png", height: 45%)),
-  figure(image("../data/6/8/v1/correlation/regression.png", height: 45%)),
-  figure(image("../data/6/9/v1/correlation/regression.png", height: 45%)),
-  outlined: false,
-)
-#subpar.grid(
-  columns: 5,
-  gutter: 4mm,
-  figure(image("../data/6/10/v1/correlation/regression.png", height: 45%)),
-  figure(image("../data/6/11/v1/correlation/regression.png", height: 45%)),
-  figure(image("../data/6/12/v1/correlation/regression.png", height: 45%)),
-  figure(image("../data/6/13/v1/correlation/regression.png", height: 45%)),
-  figure(image("../data/6/14/v1/correlation/regression.png", height: 45%)),
-  figure(image("../data/6/15/v1/correlation/regression.png", height: 45%)),
-  figure(image("../data/6/16/v1/correlation/regression.png", height: 45%)),
-  figure(image("../data/6/17/v1/correlation/regression.png", height: 45%)),
-  figure(image("../data/6/18/v1/correlation/regression.png", height: 45%)),
-  figure(image("../data/6/19/v1/correlation/regression.png", height: 45%)),
-  numbering: (..nums) => [#counter(figure.where(outlined: true)).display((..num_figs)=>num_figs.pos().at(0))],
-  caption: [
-    All results for Linear Regression.
-  ],
-)
-
-#subpar.grid(
-  columns: 5,
-  gutter: 4mm,
-  figure(image("../data/6/0/v1/correlation/spearman.png", height: 45%)),
-  figure(image("../data/6/1/v1/correlation/spearman.png", height: 45%)),
-  figure(image("../data/6/2/v1/correlation/spearman.png", height: 45%)),
-  figure(image("../data/6/3/v1/correlation/spearman.png", height: 45%)),
-  figure(image("../data/6/4/v1/correlation/spearman.png", height: 45%)),
-  figure(image("../data/6/5/v1/correlation/spearman.png", height: 45%)),
-  figure(image("../data/6/6/v1/correlation/spearman.png", height: 45%)),
-  figure(image("../data/6/7/v1/correlation/spearman.png", height: 45%)),
-  figure(image("../data/6/8/v1/correlation/spearman.png", height: 45%)),
-  figure(image("../data/6/9/v1/correlation/spearman.png", height: 45%)),
-  outlined: false,
-)
-#subpar.grid(
-  columns: 5,
-  gutter: 4mm,
-  figure(image("../data/6/10/v1/correlation/spearman.png", height: 45%)),
-  figure(image("../data/6/11/v1/correlation/spearman.png", height: 45%)),
-  figure(image("../data/6/12/v1/correlation/spearman.png", height: 45%)),
-  figure(image("../data/6/13/v1/correlation/spearman.png", height: 45%)),
-  figure(image("../data/6/14/v1/correlation/spearman.png", height: 45%)),
-  figure(image("../data/6/15/v1/correlation/spearman.png", height: 45%)),
-  figure(image("../data/6/16/v1/correlation/spearman.png", height: 45%)),
-  figure(image("../data/6/17/v1/correlation/spearman.png", height: 45%)),
-  figure(image("../data/6/18/v1/correlation/spearman.png", height: 45%)),
-  figure(image("../data/6/19/v1/correlation/spearman.png", height: 45%)),
-  numbering: (..nums) => [#counter(figure.where(outlined: true)).display((..num_figs)=>num_figs.pos().at(0))],
-  caption: [
-    All results for the Spearman Metric.
-  ],
-)
-*/
 
 #pagebreak()
 #heading(depth: 5, numbering: none, bookmarked: false)[SAM Results]
@@ -399,13 +186,26 @@
   label: <fig:appendix:sam:results>,
 )
 
+#subpar.grid(
+  columns: 1,
+  gutter: 0mm,
+  box(figure(image("../data/6/1/sam/filtered/masks.png")), clip: true, width: 100%, inset: (bottom: -17.4in)),
+  outlined: false,
+)
+#subpar.grid(
+  columns: 1,
+  gutter: 0mm,
+  box(figure(image("../data/6/19/sam/filtered/masks.png")), clip: true, width: 100%, inset: (bottom: -20.4in)),
+  caption: [
+    SAM resulting best masks for each image and segment
+  ],
+  numbering: (..nums) => [#counter(figure.where(outlined: true)).display((..num_figs)=>num_figs.pos().at(0))],
+  label: <fig:sam:filtered:masks2>,
+)
 
 
 
 = Supplementary Material Source Code
-
-
-#pagebreak()
 #heading(depth: 5, numbering: none, bookmarked: false)[Strategy Base Class]
 ```python
 class Strategy:

@@ -141,6 +141,10 @@
       label: <fig:ablation:base_area>,
     )
 
+    // TODO
+
+    /*
+
     The ensuing two subsections will examine the two parameters that will be impacted by the adoption of this approach to base area detection: the clipping values and the canny values.
     This is due to the fact that the requirement for sufficient clipping to detect the house edges has been rendered obsolete.
     Consequently, it is now feasible to implement segmentations without the need for clipping, a capability that was previously unattainable.
@@ -183,6 +187,7 @@
         Statistics over canny values
       ],
       label: <fig:ablation:canny>,
+      */
     )
   ]
 }

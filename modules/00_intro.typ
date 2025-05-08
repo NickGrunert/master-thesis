@@ -97,7 +97,7 @@
     Specifically, it is notable for its ability to rewrite text in an academic style, thereby enhancing its quality, and conducting grammar checks.
     However, these texts were not simply adopted directly; rather, they underwent a thorough review process that often involved their rewriting, as their language was often considered overly sophisticated.
 
-    == Motivation
+    // == Motivation
 
     // deep learning hat viele fortschritte und viele domains, räumlicher bereich fehlt noch research und trainingsdaten
     // deep learning kann komplexe daten erkkennen -> viel potential 

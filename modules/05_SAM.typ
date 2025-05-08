@@ -48,7 +48,7 @@
     This is hypothesised to be due to the presence of additional fragments, which may have a less significant impact than the absence of specific surfaces, which may be critical.
     The subsequent section will present a detailed analysis of the outcomes, including the practical applications of SAM in this context.
 
-    == Results
+    == Analysis of the results
 
     This section presents the findings from the experiments that employed the aforementioned methods, utilizing input images and segmentation to generate the input prompts.
     The results of this study will be thoroughly analyzed and compared to ascertain the viability of the proposed solutions.
@@ -60,22 +60,25 @@
     #subpar.grid(
       columns: 4,
       gutter: 2mm,
-      figure(image("../data/6/19/sam/best/mask.png"), caption: [
+      figure(image("../data/6/19/sam/best/mask.png")), <fig:sam:results2:a>,
+      figure(image("../data/6/19/sam/best/generated.png")), <fig:sam:results2:b>,
+      figure(image("../data/6/19/sam/best/filtered.png")), <fig:sam:results2:c>,
+      figure(image("../data/6/19/sam/best/dilated.png")), <fig:sam:results2:d>,
+      figure(image("../data/6/1/sam/best/mask.png"), caption: [
         Mask
-      ]), <fig:sam:results2:a>,
-      figure(image("../data/6/19/sam/best/generated.png"), caption: [
+      ]),
+      figure(image("../data/6/1/sam/best/generated.png"), caption: [
         Generated
-      ]), <fig:sam:results2:b>,
-      figure(image("../data/6/19/sam/best/filtered.png"), caption: [
+      ]),
+      figure(image("../data/6/1/sam/best/filtered.png"), caption: [
         Filtered
-      ]), <fig:sam:results2:c>,
-      figure(image("../data/6/19/sam/best/dilated.png"), caption: [
+      ]),
+      figure(image("../data/6/1/sam/best/dilated.png"), caption: [
         Dilated
-      ]), <fig:sam:results2:d>,
-      figure(image("../data/6/1/sam/best/mask.png")),
-      figure(image("../data/6/1/sam/best/generated.png")),
-      figure(image("../data/6/1/sam/best/filtered.png")),
-      figure(image("../data/6/1/sam/best/dilated.png")),
+      ]),
+      show-sub-caption: (num, it) => {
+        [#it.body]
+      },
       caption: [
         Best SAM results for each input segmentation
       ],
@@ -182,5 +185,35 @@
     It has been proven that the mapping of score to ground score works.
     This is approved by the complete results of entire SAM algorithm executions, where the best results by score matches the best results by ground truth score.
     However, here, the visual confirmation is given that the effects of missing matches would preferebly be stronger, to better invalidate some results.
+
+    == Combining the best masks
+    The final analysis of this research will address the question of whether the optimal combination of masks can be determined to yield a superior outcome.
+    The @fig:sam:filtered:all comparison demonstrates the difference between the bests of the individual results and the combined best masks.
+    It should be noted that the creation of these was undertaken exclusively through the utilisation of the Center Point strategy, with a total of two points being employed.
+    The individual masks, which are assembled to create the final result, are presented in the appendix.
+    The combination of the masks is achieved by selecting the most suitable mask for each segment and then combining them to form a single segmentation.
+
+    #subpar.grid(
+      columns: 2,
+      gutter: 1mm,
+      figure(image("../data/6/1/sam/filtered/all.png")),
+      figure(image("../data/6/1/sam/filtered/combined_best.png")),
+      figure(image("../data/6/19/sam/filtered/all.png"), caption: [
+        Best Result
+      ]),
+      figure(image("../data/6/19/sam/filtered/combined_best.png"), caption: [
+        Combined Best Masks
+      ]),
+      show-sub-caption: (num, it) => {
+        [#it.body]
+      },
+      caption: [
+        Comparison between best result and combination of best masks
+      ],
+      label: <fig:sam:filtered:all>,
+    )
+
+    The quality of these results is very promising.
+    In particular, in the lower example, it can be seen that the individual surfaces are identified by individual executions on different input images, but that there is no single result that gives comparable performance.
   ]
 }
