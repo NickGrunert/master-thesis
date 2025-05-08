@@ -16,7 +16,9 @@
 
     #figure(
       image("../figures/ablation/time.png"), 
-      caption: [Bar plot over Execution Times],
+      caption: [
+        Bar plot over execution times
+      ],
     ) <fig:ablation:time>
 
     === Blurring Method
@@ -33,7 +35,7 @@
     #figure(
       image("../figures/ablation/blurring.png"), 
       caption: [
-        Statistics over Blurring Methods from Best Results
+        Statistics over blurring methods
       ],
     ) <fig:ablation:blurring>
 
@@ -89,11 +91,9 @@
     #figure(
       image("../figures/ablation/blurring_example.png"), 
       caption: [
-        Impact of Blurring on an example row and column
+        Impact of blurring on an example row and column
       ],
     ) <fig:ablation:blurring_statistic>
-
-
 
     === Derivative Method
     The use of each derivative method is evaluated in the same way as the blur method.
@@ -104,42 +104,65 @@
     Surprisingly, the Sobel and Scharr methods perform quite poorly.
     Again, since they are quite similar approaches, similar performance was to be expected.
 
+    In order to minimise the computational demands associated with determining the optimal parametrization for each individual building, the Scharr and Sliding methods are filtered out.
+    The Sobel and gradient methods are retained due to their capacity to yield distinct outcomes, thus rendering both potentially advantageous.
+    Furthermore, it should be noted that the aforementioned pair of methods are capable of substituting the removed methods, given their notable similarity.
+    This approach results in a reduction of the number of necessary calculations by 50%, while ensuring the maintenance of the overall quality of the results and only minor losses in quality.
+
     #figure(
       image("../figures/ablation/derivative.png"), 
       caption: [
-        Statistics over Derivative Methods from Best Results
+        Statistics over derivative methods
       ],
     ) <fig:ablation:derivative>
 
-    // TODO
-
     === Using SAM for Base Area Detection <section:replace_clipping_by_sam>
+    As was hypothesised in the preliminary study on the potential applications of the various input images, it was theorised that SAM could be utilised for base area detection.
+    In this instance, the hypothesis will be proven true and included in the algorithm.
+    Subsequent to the aforementioned change, the algorithm will no longer be dependent on the clipping percentage.
+
+    As demonstrated by @fig:ablation:base_area, the results of the SAM segmentation for three different houses are presented.
+    It is notable that the input prompts continue to originate from the mask of the original input data, as its replacement as a data source is not deemed necessary in this instance.
+    Furthermore, the substandard quality of the mask has a negligible impact on the quality of the results.
+
+    The bottom example in the figure demonstrates a scenario in which the SAM segmentation fails to detect the entirety of the base area of the building.
+    This issue is resolved through the implementation of a straightforward merging process of the detected base area with the mask utilised for its creation.
+    The mask's inability to define the base area is problematic; however, in this instance, it is sufficient to substitute for the absent elements in the segmentation.
 
     #subpar.grid(
       columns: 1,
       gutter: 1mm,
       figure(image("../data/6/1/sam/sam_mask.png")),
-      figure(image("../data/6/17/sam/sam_mask.png")),
-      figure(image("../data/6/18/sam/sam_mask.png")),
+      figure(image("../data/6/19/sam/sam_mask.png")),
+      figure(image("../data/6/3/sam/sam_mask.png")),
       caption: [
         Base Area Detection using SAM
       ],
       label: <fig:ablation:base_area>,
     )
 
+    The ensuing two subsections will examine the two parameters that will be impacted by the adoption of this approach to base area detection: the clipping values and the canny values.
+    This is due to the fact that the requirement for sufficient clipping to detect the house edges has been rendered obsolete.
+    Consequently, it is now feasible to implement segmentations without the need for clipping, a capability that was previously unattainable.
+    It is evident that the canny values are also impacted by this change, given their role in detecting the edges of the house. These values are contingent on clipping, which in turn affects the contrast of the value distribution.
+    In order to facilitate a more robust comparison, the ensuing results will differentiate between version 1 and version 2 of the algorithm.
+
     === Clipping Values <section:ablation:clipping>
     #subpar.grid(
       columns: 2,
       gutter: 1mm,
       figure(image("../data/6/clipping_percentage_counts.png"), caption: [
-        Before Base Area Detection Change.
+        v1
       ]), <fig:ablation:clipping:a>,
       figure(image("../data/6/v2/clipping_percentage_counts.png"), caption: [
-        After Base Area Detection Change.
+        v2
       ]), <fig:ablation:clipping:b>,
       caption: [
-        Statistics over Clipping Percentages from Best Results
+        Statistics over clipping percentages
       ],
+      show-sub-caption: (num, it) => {
+        [#it.body]
+      },
       label: <fig:ablation:clipping>,
     )
 
@@ -148,13 +171,16 @@
       columns: 2,
       gutter: 1mm,
       figure(image("../data/6/canny_value_counts.png"), caption: [
-        Before Base Area Detection Change.
+        v1
       ]), <fig:ablation:canny:a>,
       figure(image("../data/6/v2/canny_value_counts.png"), caption: [
-        After Base Area Detection Change.
+        v2
       ]), <fig:ablation:canny:b>,
+      show-sub-caption: (num, it) => {
+        [#it.body]
+      },
       caption: [
-        Statistics over Canny Values from Best Results
+        Statistics over canny values
       ],
       label: <fig:ablation:canny>,
     )

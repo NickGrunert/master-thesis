@@ -28,7 +28,7 @@
     The utilization of multiple data sources has become a prevalent approach to address the constraints imposed by a single data source. 
     Integration of information obtained from standard images with geometric information derived from elevation data has emerged as a common practice @intro7. 
     Elevation data, particularly the #abr("nDSM"), which represents height above ground, provides strong cues for distinguishing buildings from ground features and understanding their structure @intro9.
-    Common fusion strategies in #abr("DL") involve the incorporation of the nDSM or features derived from #abr("LiDAR") as additional input channels alongside RGB or multispectral bands @intro10.
+    Common fusion strategies in #abr("DL") involve the incorporation of the #abr("nDSM") or features derived from #abr("LiDAR") as additional input channels alongside RGB or multispectral bands @intro10.
     This enables networks to acquire knowledge collectively from spectral and geometric information, frequently resulting in enhanced segmentation accuracy, particularly for architectural structures such as buildings.
     Other approaches utilize elevation data in post-processing steps. 
     One such approach employs a #abr("CRF") @intro_bonus1 @intro_bonus2 to refine segmentation boundaries generated from image-based models.
@@ -110,15 +110,14 @@
     // TODO talk about LOD2
 
     == Research Questions
-
     How effective is the zero-shot learning capability of #abr("SAM") in accurately segmenting building roof details, particularly individual roof segments, without prior training?
     What improvements can be achieved by implementing a one-shot learning approach using input prompts for the segmentation of building roof details, or which method is best?
 
     How well does #abr("SAM") generalise to different roof materials and structures?
     Can we develop strategies to improve the adaptability of #abr("SAM") to different building types and reduce the need for fine tuning?
 
-    How can nDSM data be effectively incorporated into the #abr("SAM") segmentation process to improve the accuracy of building analysis tasks?
-    Can we develop a fusion mechanism that combines features from RGB and nDSM data to improve the segmentation of building components?
+    How can #abr("nDSM") data be effectively incorporated into the #abr("SAM") segmentation process to improve the accuracy of building analysis tasks?
+    Can we develop a fusion mechanism that combines features from RGB and #abr("nDSM") data to improve the segmentation of building components?
 
     Design and implement an automated training data generation workflow.
     Conduct real-time segmentation experiments on aerial imagery and document the practical challenges and solutions.

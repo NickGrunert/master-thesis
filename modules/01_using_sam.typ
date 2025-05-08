@@ -6,7 +6,7 @@
     In this chapter, we will initiate the experimental phase concerning the usability of SAM in the context of roof segmentation.
     The objective is to ascertain the necessary input data to facilitate effective segmentations and to determine the optimal utilization of SAM to achieve this objective.
 
-    == Images
+    == Images <section:sam:images>
     This section will shortly list the types of images that will be used in the evaluation.
     While other concepts were briefly explored, none of these approaches represented novel methodologies and were met with very limited success.
     The objective of this section is to identify promising candidates of images, data, or preprocessing steps that have the potential to serve as input data for the SAM model to subsequently generate segmentations displaying the roof shape.
@@ -140,7 +140,7 @@
       label: <fig:sam:images>,
     )
 
-    == Strategies for input prompt generation
+    == Strategies for input prompt generation <section:sam:strategies>
     The following discussion will address the methodology for prompting SAM.
     Firstly, it is important to note that prompting by bounding box will not be of assistance in this instance.
     The image has already been cropped to primarily depict the roof.

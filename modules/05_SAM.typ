@@ -3,31 +3,28 @@
 #let sam_inclusion() = {
   text(lang:"en")[
     = Including SAM into the algorithm
-    In this section, the Segment Anything Model (SAM) will be implemented on the provided dataset.
+    In this chapter, the Segment Anything Model (SAM) will be implemented on the provided dataset.
     Specifically, the process will be analogous to previous iterations, wherein it will be executed on the portion of the dataset that contains ground truth data.
     This approach facilitates the utilisation of preexisting algorithms for scoring and analysis, thereby enabling a comparative assessment on the performance of SAM.
-    
-    Due to the absence of empirical evidence regarding the efficacy of SAM in analyzing specific data and the necessary inputs for optimal performance, the subsequent section will generate diverse input images based on each house's data. 
-    This will facilitate the analysis of the impacts of varying data configurations.
 
-    Furthermore, an experiment will be conducted in which a variety of methods are utilized for the purpose of invoking the model.
-    This encompasses various configurations and quantities of input suggestion points for SAM, as well as the subsequent utilization of negative suggestions, which are incorporated for each surface from diverse surfaces in an attempt to enhance the model's performance.
+    The analysis will be based on the strategies and images established in @section:sam:strategies and @section:sam:images.
+    Increased reliability of the input prompts, available due to better input segmentations, will facilitate a more comprehensive and detailed analysis than was previously possible.
 
     == Filtering of generated Segmentations
+    The ensuing section will present an analysis of the generated segmentations.
+    The purpose of this analysis is to determine whether the segmentations can serve as adequate inputs for SAM in the subsequent sections.
+    The objective of this investigation is to establish input surfaces from which the discussed strategies can be applied to generate input prompts.
 
-    In this section, an analysis of the generated segmentations will be conducted. The objective of this analysis is to ascertain whether the segmentations can serve as adequate inputs for SAM in the subsequent sections.
-    The objective is to establish input surfaces from which the discussed strategies can be applied to generate input prompts.
-    
-    Firstly, the analysis will continue to utilize the input mask for the time being.
-    This comparison is intended to determine the potential for enhancement, as preliminary experimentation indicated that the mask's functionality is suboptimal.
+    Firstly, it is vital to note that the analysis will continue to utilise the input mask for the time being.
+    The objective of this comparison is to ascertain the potential for enhancement, as preliminary experimentation indicated that the mask's functionality is suboptimal.
     Consequently, the efficacy of the mask can be further assessed in this context, thereby serving as a pivotal point for comparative analysis of available alternatives.
 
     Secondly, the generated surfaces could be used as input without undergoing any refinement.
     However, due to the absence of refinement, these surfaces exhibit a high number of surfaces, resulting from the presence of numerous small fragments that infest areas with abnormalities, such as those observed around chimneys or other height variations, including ridges.
 
     Consequently, two distinct methods of filtering are proposed, both of which operate by filtering the surfaces by pixels adjacent to edges.
-    The first method, referred to as "filtering," involves the removal of all directly adjacent pixels. 
-    The second method, referred to as "dilation," involves the application of a 3x3 kernel for erosion, followed by the re-adding of the removed pixels via dilation @MorphologicalOperator. 
+    The initial method, designated as 'filtering', entails the elimination of all directly adjacent pixels.
+    The second method, termed 'dilation', involves the application of a 3x3 kernel for erosion, followed by the re-adding of the removed pixels via dilation @MorphologicalOperator.
     This process effectively removes all surfaces that do not survive the initial erosion step.
     Nevertheless, the erosion and dilation process exhibits a more aggressive approach, also filtering over edge connections.
 
@@ -44,11 +41,11 @@
     )
 
     The individual potential images for prompt generation are depicted in @fig:sam:dilution.
-    The results obtained all demonstrate the potential for utilization.
-    The reduction in the number of surfaces is clearly visible, with the filtering process being evidently more conservative.
-    However, it is visible that certain small, but right, surfaces are filtered out subsequent to dilation.
-    The results obtained led to the formulation of the theory that suggests the dilation process may not yield optimal solutions. 
-    This is due to the hypothesis that the presence of additional fragments may have a less significant impact than the absence of specific surfaces, which may be critical.
+    The results obtained demonstrate the potential for utilisation.
+    The reduction in the number of surfaces is clearly visible, with the filtering process being evidently more conservative than the dilation process.
+    However, it is evident that certain small, but important, surfaces are filtered out when using dilation.
+    The findings of the study indicated the formulation of a theory proposing that the dilation process may not result in optimal solutions.
+    This is hypothesised to be due to the presence of additional fragments, which may have a less significant impact than the absence of specific surfaces, which may be critical.
     The subsequent section will present a detailed analysis of the outcomes, including the practical applications of SAM in this context.
 
     == Results
