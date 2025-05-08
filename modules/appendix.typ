@@ -2,6 +2,17 @@
 
 = Supplementary Material Images
 
+#heading(depth: 5, numbering: none, bookmarked: false)[Filtered Input Data]
+#subpar.grid(
+      columns: 2,
+      gutter: 0mm,
+      image("../figures/input/result.png"),
+      caption: [
+        100 images evenly sampled from the input data
+      ],
+      label: <fig:input:result>,
+    )
+
 /*
 #heading(depth: 5, numbering: none, bookmarked: false)[Generated Segmentations]
 

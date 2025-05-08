@@ -1,11 +1,8 @@
-//#import "../templates/terms.typ": abr
-
 #let intro(abr) = {
   text(lang:"en")[
     = Introduction
 
-
-
+    // TODO ?
 
     == Related Work
     #heading(depth: 5, numbering: none, bookmarked: false)[Evolution of Roof Segmentation Techniques]
@@ -44,10 +41,6 @@
     #abr("SAM") has been trained on a dataset comprising over one billion masks and has been developed as a promptable segmentation system.
     Given a prompt such as input points or bounding boxes, #abr("SAM") can segment any object in an image, even those unseen during training, demonstrating impressive zero-shot performance. 
     It's architecture involves three components: a lightweight prompt encoder, a heavy #abr("ViT") for image encoding, and a fast mask decoder @intro_bonus3.
-
-
-
-
 
     #heading(depth: 5, numbering: none, bookmarked: false)[#abr("SAM") in Remote Sensing: Adaptations and Challenges]
     The potential zero-shot capabilities of #abr("SAM") when working in data-scarce domains, such as remote sensing, has generated considerable interest.
@@ -108,20 +101,17 @@
     // TODO talk about LOD2
 
     == Research Questions
-    
-    Domain Adaptation and Generalization
-    How can SAM be adapted to different types of aerial imagery (e.g., varying resolutions, sensor types, geographic locations)? How well does SAM generalize to different roof materials, and roof structures? Can we develop strategies to improve SAM's adaptability to diverse building types and reduce the need for fine- tuning?
 
-    One-Shot Learning for Building Analysis
-    How effective is SAM's zero-shot learning capability in accurately segmenting building roof details (roof segments, roof building parts, etc.) without prior training data?
-    What improvements can be achieved by implementing a one-shot learning approach using text prompts or single-point prompts for building roof detail segmentation?
-    Develop a methodology for implementing one-shot learning in SAM using text prompts and single-point prompts.
+    How effective is the zero-shot learning capability of #abr("SAM") in accurately segmenting building roof details, particularly individual roof segments, without prior training?
+    What improvements can be achieved by implementing a one-shot learning approach using input prompts for the segmentation of building roof details, or which method is best?
 
-    Incorporating nDSM Data
-    How can nDSM data be effectively incorporated into SAM's segmentation process to improve the accuracy of building analysis tasks? Can we develop a fusion mechanism that combines features from RGB and nDSM data to enhance the segmentation of building components?
+    How well does #abr("SAM") generalise to different roof materials and structures?
+    Can we develop strategies to improve the adaptability of #abr("SAM") to different building types and reduce the need for fine tuning?
 
-    Workflow Implementation:
-    Design and implement an automated workflow for generating training data using SAM’s segmentation capabilities.
-    Conduct real-time segmentation experiments on large-scale aerial imagery datasets and document the practical challenges and solutions.
+    How can nDSM data be effectively incorporated into the #abr("SAM") segmentation process to improve the accuracy of building analysis tasks?
+    Can we develop a fusion mechanism that combines features from RGB and nDSM data to improve the segmentation of building components?
+
+    Design and implement an automated training data generation workflow.
+    Conduct real-time segmentation experiments on aerial imagery and document the practical challenges and solutions.
   ]
 }
