@@ -3,27 +3,10 @@
 #let data() = {
   text(lang:"en")[
     = Input Data Analysis
-
-    == Normalized Digital Surface Model (nDSM)
-    The nDSM is derived by subtracting the Digital Elevation Model (DEM) from the Digital Surface Model (DSM), both of which are generated using LiDAR point cloud data @ndsm5.
-    The Digital Elevation Model (DEM) is a representation of the earth's bare surface, while the Digital Surface Model (DSM) encompasses the earth's surface and all objects on it, such as buildings and vegetation.
-    It is important to note the existence of the Digital Terrain Model (DTM), which is occasionally used interchangeably with the Digital Elevation Model (DEM), but can also incorporate additional features beyond those of the DEM @ndsm4.
-    The extraction of building structures is heavily reliant on the utilization of DSM data, as it contains pivotal information regarding the height of buildings and other objects on the surface @extractUAV.
-
-    The extraction of structures from nDSM data constitutes a pivotal task in the fields of remote sensing and geospatial analysis. 
-    This process is exemplified in the context of 3D building reconstruction @ndsm3.
-    However, the nDSM data is vulnerable to noise and artifacts.
-    Given that the nDSM is derived from the DSM and DEM, inaccuracies in both data sources, such as interpolation artifacts or missing data, can compromise the integrity of the nDSM.
-    A multitude of potential error sources have been identified, including the DSM and DEM being recorded not at the same time, the utilization of disparate sensors, and inherent inaccuracies in these sensors.
-    Additionally, the integrity of nDSM data may be compromised by the presence of temporary objects which are in the LiDAR data @ndsm1 or residual noise stemming from algorithmic inaccuracies @ndsm2.
-
-    In light of the aforementioned limitations on the quality of the nDSM data, it is necessary to exercise caution in the subsequent evaluation of this research and to be aware of them or eventually handle them.
-
-    == Data Collection
-
     The input data for this research needs to be collected, described and analysed.
     The aim is to identify existing data and make an initial assessment of whether and how it can be used for the research.
 
+    == Data Collection
     @fig:input:image_and_ndsm shows the surface tile which will be used, split into RGB image and an image which illustrates the nDSM data.
     The RGB data is derived from DOP20 (Digital Orthophotos at 20 cm resolution), provided by the State Office for Geoinformation and Surveying of Lower Saxony (LGLN).
 
@@ -192,14 +175,13 @@
     The general distribution does not change, but the bias towards a predominant portion of the data being flat roofs is slightly reduced.
     Note that the two disappearing roof types are the GambrelHipRoof, which is a misclassification, and the Barrelroof, which is a small arched roof.
     The latter is a small loss of information as it is also part of a large building with a complex shape and many parts that are not very useful anyway.
+    
+    Example images of buildings and the reason for their removal are shown in the appendix.
 
-    // TODO say that removed images are in appendix?
-
-    == Results
-    The filtered houses are sorted by size.
+    == Entry data
     The algorithms and methods used in this research are subject to plausibility checks.
     As the current dataset was far too large to analyse in its entirety, a smaller selection was required.
-    This selection consists mainly of the first 20 houses at the 60th percentile of area from the dataset, with some other houses used occasionally, especially in initial experiments to create baseline assumptions.
+    This selection consists mainly of the first 20 houses at the 60th percentile sorted by area from the dataset, with some other houses used occasionally, especially in initial experiments to create baseline assumptions.
 
     The input data is processed so that the following algorithms receive an RGB image of the house, the nDSM data within this area frame, and the building parts as an image mask.
     Note that this mask may not reflect the structure of the building well, but can be used as a rough estimate of the building boundaries and as a basis for later analysis.

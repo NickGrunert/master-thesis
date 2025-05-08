@@ -27,6 +27,12 @@
   "DSM": (
     long: "Digital Surface Model",
   ),
+  "DEM": (
+    long: "Digital Elevation Model",
+  ),
+  "DTM": (
+    long: "Digital Terrain Model",
+  ),
   "nDSM": (
     long: "normalized Digital Surface Model",
   ),

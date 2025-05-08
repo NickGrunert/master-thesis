@@ -2,7 +2,7 @@
 
 #let sam() = {
   text(lang:"en")[
-    = Segment Anything Model (SAM)
+    = Using SAM for zero-shot segmentation
     In this chapter, we will initiate the experimental phase concerning the usability of SAM in the context of roof segmentation.
     The objective is to ascertain the necessary input data to facilitate effective segmentations and to determine the optimal utilization of SAM to achieve this objective.
 
@@ -64,14 +64,9 @@
     However, the value graph distinctly demonstrates the potential for differentiating between the roof and the ground.
     As this topic has not been the primary focus of the present discussion, further examination of it will be reserved for a later in @section:replace_clipping_by_sam.
 
-
-
-
-
-
-
-
     #heading(depth: 5, numbering: none, bookmarked: false)[Custom Derivative Image]
+    // TODO
+
     ```python
     def get_color(x, y):
       magnitude = np.sqrt(x**2 + y**2)
@@ -111,9 +106,7 @@
 
 
 
-    == Input Prompting
-
-
+    == Strategies for Input Prompt generation
 
     #heading(depth: 5, numbering: none, bookmarked: false)[Random Strategy]
 
@@ -134,10 +127,13 @@
 
 
 
+    // TODO
 
     == Results
 
+    === Manual Prompting
 
+    === Automatik Mask Generator
 
     #heading(depth: 5, numbering: none, bookmarked: false)[Automatic Mask Generator]
     #subpar.grid(
@@ -163,6 +159,8 @@
       ],
       label: <fig:sam:automatic>,
     )
+
+    === Input Prompting
 
     #heading(depth: 5, numbering: none, bookmarked: false)[Input Prompting]
     #subpar.grid(

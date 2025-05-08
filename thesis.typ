@@ -32,8 +32,9 @@
 #import "metadata.typ": details
 #import "modules/00_intro.typ": intro
 #import "modules/00_data.typ": data
-#import "modules/02_algorithm.typ": ndsm_analysis
+#import "modules/01_basics.typ": basics
 #import "modules/01_using_sam.typ": sam
+#import "modules/02_algorithm.typ": ndsm_analysis
 #import "modules/03_truth_compare.typ": truth_compare
 #import "modules/04_ablation.typ": ablation
 #import "modules/05_SAM.typ": sam_inclusion
@@ -43,10 +44,10 @@
 
 // 0
 #intro(abr)
-
 #data()
 
 // 1
+#basics(abr)
 #sam()
 
 // 2
