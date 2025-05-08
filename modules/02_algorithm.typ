@@ -2,7 +2,7 @@
 
 #let ndsm_analysis() = {
   text(lang:"en")[
-    = Creation of reliable Input Prompts
+    = Creation of reliable Input Prompts <section:ndsm_analysis>
     As a need for more reliable input prompts emerged, this section will discuss the process of programming a custom pipeline to create segmentations.
     These segmentations are to be more trustworthy for prompting SAM, and therefore should result in overall better outputs.
     This will serve the purpose of truly being able to identify whether SAM is capable of solving the given problem or if even after having improved the input data given to it still fails to satisfy requirements.

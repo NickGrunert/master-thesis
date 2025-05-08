@@ -119,18 +119,22 @@
     However, utilising the full range of methodologies available for combining the derivative image and the original three channels of the RGB data, it is possible to create three distinct images.
     It is hypothesised that each of these will hold some spatial information as well as colour information, which may be promising in augmenting the input data for SAM.
 
-    #heading(depth: 5, numbering: none, bookmarked: false)[Results]
+    #heading(depth: 5, numbering: none, bookmarked: false)[Synopsis]
+    As demonstrated in the @fig:sam:images, a selection of images for each house has been selected for use in the evaluation.
+    The initial hypothesis is that the RGB image and the RGB image with shadow removal will yield similar results, with the original image performing slightly worse.
+    It is hypothesised that the derivative image will demonstrate the strongest overall performance, given its possession of the most valuable height information.
+    The quality of the images, in which the colour channels are substituted for derivative information, is yet to be determined through experimental investigation.
+    The current hypothesis is that none of the three images will always perform optimally, but that there will be situations where individuals from these three will not be usable, while the others yield satisfactory results.
 
-    // TODO
-    
     #subpar.grid(
-      columns: 5,
+      columns: 3,
       gutter: 2mm,
-      box(figure(image("../data/6/1/sam/0.png")), clip: true, width: 100%, inset: (right: -1.2in, top: -0.15in)),
-      box(figure(image("../data/6/1/sam/1.png")), clip: true, width: 100%, inset: (right: -1.2in, top: -0.15in)),
-      box(figure(image("../data/6/1/sam/2.png")), clip: true, width: 100%, inset: (right: -1.2in, top: -0.15in)),
-      box(figure(image("../data/6/1/sam/3.png")), clip: true, width: 100%, inset: (right: -1.2in, top: -0.15in)),
-      box(figure(image("../data/6/1/sam/4.png")), clip: true, width: 100%, inset: (right: -1.2in, top: -0.15in)),
+      figure(image("../data/6/1/helper/image_0.png")),
+      figure(image("../data/6/1/helper/image_1.png")),
+      figure(image("../data/6/1/helper/image_2.png")),
+      figure(image("../data/6/1/helper/image_3.png")),
+      figure(image("../data/6/1/helper/image_4.png")),
+      figure(image("../data/6/1/helper/image_5.png")),
       caption: [
         Image for further analysis
       ],
@@ -141,7 +145,19 @@
 
 
 
-    == Strategies for Input Prompt generation
+    == Strategies for input prompt generation
+    The following discussion will address the methodology for prompting SAM.
+    Firstly, it is important to note that prompting by bounding box will not be of assistance in this instance.
+    The image has already been cropped to primarily depict the roof.
+    In the event of the bounding box provided to SAM being a bounding box around individual segments, it would be necessary to have the same segments that are being attempted to be calculated. This would also be an ineffective process.
+    The utilisation of this method would facilitate the enhancement of segmentation, particularly in scenarios where accurate estimates of the segment and its boundaries have been previously determined.
+    However, this topic will not be pursued further in this discussion.
+
+    Instead, this evaluation will formulate strategies for input point prompting, since for this purpose, a rough estimate on the surface will suffice to ascertain that it is a single point definitively inside the correct segment.
+    This approach provides a significant advantage by eliminating the need to identify initial segments of moderate quality, particularly with regard to completeness. Instead, it focuses on locating segments that, in theory, do not span multiple true segments and persist, ideally capturing most of the useful points for SAM.
+    Further elaboration on the generation of these surfaces can be found in @section:ndsm_analysis.
+
+    The following strategies will be employed to break down any given surface to a set of points.
 
     #heading(depth: 5, numbering: none, bookmarked: false)[Random Strategy]
 

@@ -2,7 +2,7 @@
 
 #let basics(abr) = {
   text(lang:"en")[
-    = Basics
+    = Fundamental Concepts
 
     == Normalized Digital Surface Model (nDSM)
     The #abr("nDSM") is derived by subtracting the #abr("DEM") from the #abr("DSM"), both of which are generated using LiDAR point cloud data @ndsm5.
