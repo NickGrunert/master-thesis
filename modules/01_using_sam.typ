@@ -106,14 +106,23 @@
     ```
 
     #heading(depth: 5, numbering: none, bookmarked: false)[Color Channel Swaps]
-    While the original RGB data fails due to missing height information, the derived image may fail due to inaccuracies in the height data.
-    Some edges between segments may actually be better represented visually by the original RGB values.
-    For example, two segments with similar derivatives next to each other that are actually at two different heights may be difficult to identify using only the derived image.
-    In RGB data, however, such edges are often very visible due to shadows or other colour changes.
+    The original RGB data is rendered incomplete due to an absence of height information, and the derived image may itself be compromised by inaccuracies in the height data.
+    It can be argued that certain segments may be more effectively represented visually by the original RGB values.
+    For instance, two segments with analogous derivatives that are adjacent to each other yet situated at different heights may prove challenging to discern through the utilisation of solely the derived image.
+    In the context of RGB data, however, such transitions are frequently pronounced due to the presence of shadows or other chromatic variations.
 
-    To find a solution in merging the colour channel information with the spatial data of the derivative image, we will try to swap the colour channels of the original RGB data with the derivative image.
+    In order to identify a solution that involves the merging of the colour channel information with the spatial data of the derivative image, it is proposed that the colour channels of the original RGB data be swapped with the derivative's magnitude.
+    It should be noted that preliminary experiments were conducted in which two colour channels were substituted for the derivatives in the x and y directions.
+    Initial testing demonstrated an inability to convey any useful information to SAM.
+    Furthermore, a similar outcome was observed in images of a greyscale.
+
+    However, utilising the full range of methodologies available for combining the derivative image and the original three channels of the RGB data, it is possible to create three distinct images.
+    It is hypothesised that each of these will hold some spatial information as well as colour information, which may be promising in augmenting the input data for SAM.
 
     #heading(depth: 5, numbering: none, bookmarked: false)[Results]
+
+    // TODO
+    
     #subpar.grid(
       columns: 5,
       gutter: 2mm,
@@ -182,10 +191,14 @@
       caption: [
         Segmentations using the Automatic Mask Generator
       ],
+      show-sub-caption: (num, it) => {
+        [#it.body]
+      },
       label: <fig:sam:automatic>,
     )
 
     === Input Prompting
+    #heading(depth: 5, numbering: none, bookmarked: false)[Results]
     The following results, presented in @fig:sam:mask_all, represent example outcomes achieved through prompting SAM with the mask as the input.
     The second column shows the ground truth for visual confirmation of the expected result.
     Further elaboration on this topic can be found in @section:ground_truth.
@@ -223,7 +236,7 @@
       label: <fig:sam:mask_all>,
     )
 
-    #heading(depth: 5, numbering: none, bookmarked: false)[Analysing intermediate masks]
+    #heading(depth: 5, numbering: none, bookmarked: false)[Analysing the individual masks per segment]
     As illustrated by @fig:sam:mask_masks, the results for each input image are demonstrated using the Center Point Strategy, with two positive input points per surface.
     The upper section of the figure illustrates the overall segmentation result.
     In the section below, the performance of each individual mask by SAM is displayed, along with the score assigned by the model to that segmentation.
@@ -246,5 +259,14 @@
       ],
       label: <fig:sam:mask_masks>,
     )
+
+    #heading(depth: 5, numbering: none, bookmarked: false)[Premediary Conclusion]
+    The preliminary findings suggest that the utilisation of SAM for the purpose of generating high-quality segmentations is a promising avenue for exploration.
+    A more in-depth analysis of the results is required in order to ascertain the most effective input data and input strategy.
+    Prior to this, however, it will be necessary to replace the mask's utilisation for input prompt generation.
+    It is essential to establish a robust methodology for generating reliable prompts from the input data, with a objective of enhancing the segmentations.
+    The subsequent chapter will thus be dedicated to the analysis of the input data from an algorithmic perspective.
+    The objective is to devise prompts that accurately reflect the real data. 
+    In the process, an objective method of evaluating segment quality is to be developed, since the confidence scores provided by SAM are not reliable indicators of the ground truth.
   ]
 }
