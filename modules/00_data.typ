@@ -2,7 +2,7 @@
 
 #let data() = {
   text(lang:"en")[
-    = Input Data Analysis
+    = Input Data Analysis <section:input_data>
     The input data for this research needs to be collected, described and analysed.
     The aim is to identify existing data and make an initial assessment of whether and how it can be used for the research.
 

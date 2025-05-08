@@ -44,10 +44,10 @@
 
 // 0
 #intro(abr)
+#basics(abr)
 #data()
 
 // 1
-#basics(abr)
 #sam()
 
 // 2
@@ -64,6 +64,5 @@
 
 // 6
 #conclusion()
-
 
 #pagebreak()

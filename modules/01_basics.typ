@@ -20,6 +20,25 @@
     In light of the aforementioned limitations on the quality of the #abr("nDSM") data, it is necessary to exercise caution in the subsequent evaluation of this research and to be aware of them or eventually handle them.
 
     == Segment Anything Model (SAM)
-    // TODO
+    Having zero-shot capabilities means that the model can perform tasks without prior training on specific examples of those tasks.
+    In this way, #abr("SAM") is able to adapt to new tasks and data, making it a versatile and powerful tool for any image segmentation operation @sam3.
+    #abr("SAM") is able to create detailed segmentation masks to precisely outline objects in the image, unlike original object detection models that only draw rectangles around them.
+    Such segmentation masks follow the exact shape of objects, providing a more accurate understanding of the shape, size and position of the object in question @sam1.
+    
+    The model has three core components:
+    First, #abr("SAM") uses a #abr("ViT") architecture to encode the input image.
+    This model is the backbone of the entire algorithm and is available in several different variants, each representing a trade-off between complexity and performance.
+    The second component is a prompt encoder, which is able to analyse different types of input prompts given to #abr("SAM") to guide the segmentation process.
+    Finally, the model returns segmentation masks that must be decoded by a lightweight mask decoder.
+    In terms of performance, @sam2 is considered to be competitive with, or even superior to, fully supervised models.
+    
+    Specifically, this research will use the #abr("SAM")2 model, which is an evolution of the original model in that it can segment video, but also has improved performance on image data.
+    However, as this work does not have data such as time series, video analysis will not be relevant here.
+    The memory attention mechanic of the improved model will simply not be relevant to this research, as images can be viewed as a single-frame video @sam4.
+
+    The core mechanic of #abr("SAM") is the ability to prompt the model with a variety of different types of prompts, most prominently as points or bounding boxes.
+    These define the area of interest for the model, and #abr("SAM") will then segment the image based on these prompts.
+    With input points, the model also provides the ability to define what can be called positive and negative points.
+    A positive point is a point inside the object of interest, while a negative point annotates background outside the object of interest.
   ]
 }
