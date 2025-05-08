@@ -140,10 +140,6 @@
       ],
       label: <fig:sam:images>,
     )
-      
-
-
-
 
     == Strategies for input prompt generation
     The following discussion will address the methodology for prompting SAM.
@@ -160,12 +156,30 @@
     The following strategies will be employed to break down any given surface to a set of points.
 
     #heading(depth: 5, numbering: none, bookmarked: false)[Random Strategy]
+    The initial concept was to utilise any arbitrary point, randomly chosen within a specified surface. 
+    Alternatively, an enhancement was proposed that would not be confined to a single point, but would be capable of defining multiple points.
+    This random strategy is elementary and served well for preliminary experiments; however, it was also quickly discarded.
+    The underlying reason for this phenomenon is that the generation of random points can result in a disproportionately high degree of variability in the results.
+    It is important to note that the configuration of points can yield significantly better results than another.
+    It would be possible to employ countermeasures in response to this issue. 
+    These could include the repeated execution of the process, with all available results subjected to thorough analysis, or the implementation of a sophisticated approach to ensure that the points are distributed in a uniform manner.
+    A statistical analysis could be conducted to ascertain the probability of the results being statistically significant, or to determine the likelihood of the result being correct at least a certain percentage of the time, or at least correct to a certain degree.
+
+    However, this was deemed to lack plausibility and constructiveness.
+    Instead, a more deterministic approach was adopted in order to achieve enhanced results and facilitate the comparison of the various strategies.
 
     #heading(depth: 5, numbering: none, bookmarked: false)[Center Strategy]
 
     #heading(depth: 5, numbering: none, bookmarked: false)[Combined Strategy]
 
-    #heading(depth: 5, numbering: none, bookmarked: false)[Results]
+    #heading(depth: 5, numbering: none, bookmarked: false)[Synopsis]
+    The @fig:sam:strategy_example illustrates the three strategies that were employed to create input prompts.
+    The segmentation employed for the purpose of visualisation in this instance is derived from a later iteration of the segmentation process.
+    Nevertheless, it serves to demonstrate how the different strategies, with different configurations, distribute points across the surface.
+    In this particular system, points that are utilised for the purpose of positive inputs are denoted with a green colour. 
+    Conversely, negative points, which are incorporated within the Combined Strategy, are represented by being coloured red.
+    It is observable, that the distribution of points is subject to significant variation when utilising the Random Point Strategy.
+
     #subpar.grid(
       columns: 1,
       gutter: 2mm,
