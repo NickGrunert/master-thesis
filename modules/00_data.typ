@@ -60,30 +60,30 @@
     In the first case, if such data were already available in good quality, this research would not be necessary, as we are researching ways to create such data.
 
     == Filtering
-    The data from the established sources need to be filtered in order to improve reliability and overall quality.
-    A training set of subpar quality will be detrimental for later analysis by machine learning algorithms @dataQuality3.
-    Models must first learn on a correct set of data, to learn the correct features and to be able to generalize.
-    With that, they will later be able to identify errors in test data, however, having errorneous training data will lead to a decrease in model performance @dataQuality4.
-    Filtering to create high quality data will generally increase the performance in contrast to using an unfiltered large dataset @smallData2.
-    A small high quality dataset is expected to outperform a large, low quality dataset @smallData1.
-    Therefore, this section will describe the filtering process by statistical analysis.
+    Data from the established sources needs to be filtered to improve reliability and overall quality.
+    A training set of poor quality is detrimental to later analysis by machine learning algorithms @dataQuality3.
+    Models must first work with or be trained on a correct data set in order to learn the correct features and generalise.
+    This will later allow them to detect errors in test data, but erroneous training data is expected to reduce model performance @dataQuality4.
+    Filtering to produce high quality data will generally improve performance compared to using an unfiltered large dataset @smallData2.
+    A small set of high quality data will outperform a large low quality data set @smallData1.
+    Therefore, this section describes the filtering process using statistical analysis.
 
-    In the beginning, this simply entails removal of duplicates and filtering of buildings which are either completely outside the tile's area or even partly overlapping the bounds set.
-    This way, a list of buildings emerges, which are unique and completely within the tile's area, not cut off.
+    Initially, this is simply a matter of removing duplicates and filtering out buildings that are either completely outside the area of the tile, or that even partially overlap its boundaries.
+    The result is a list of buildings that are unique and completely within the tile's area, not cut off.
 
-    An axis aligned bounding box is calculated for each building, which is to serve as the image crop for later use.
-    Additionaly to the buildings area itself, the area of the bounding box is calculated.
-    Buildings of too high size will be filtered out, as they fall into the category of being unnecessarily complex.
+    For each building, an axis aligned bounding box is calculated, which is used as the image bounds later on.
+    The area of the bounding box is calculated in addition to the area of the building itself.
+    Buildings that are too large are filtered out, as they fall into the category of being unnecessarily complex.
 
-    Using the bounding box, the ratio of the building area to the bounding box area can be calculated.
+    The bounding box can be used to calculate the ratio of the building area to the bounding box area.
     This is a measure of how well the building fits into the bounding box.
-    Houses which are very stretched or of irregular shape will have a low ratio, while houses which are more conventional will have a higher ratio.
-    Note that a squared house can have a ration as low as 50 percent due to geometrical rotation not aligning with the axis.
+    Houses that are very stretched or have an irregular shape will have a low ratio, while houses that are more conventional will have a higher ratio.
+    Note that a square house can have a ratio as low as 50% due to geometric rotation towards the axis.
 
-    While the building parts themselves are of subpar quality in measuring the actual shape of the building, their number may serve as an indicator of the complexity of the building.
-    Instead of using the segmentation data, which directly maps to the building parts, overlap between the building detection data with the roof data segments is calculated.
-    This is done to align the building used for bounding box creation with the roof data, since there is no guarantee that the building detection data and the segmentation data are aligned.
-    Especially row houses will be affected by this, since the segmentation splits singular houses inside the row, while the geometry used for the bounding box uses the entire row.
+    While the building parts themselves are of poor quality in measuring the actual shape of the building, their number can be used as an indicator of the complexity of the building.
+    Rather than using the segmentation data that is directly mapped to the building parts, the overlap between the building detection data and the roof data segments is calculated.
+    This is done to align the building used to create the bounding box with the roof data, as there is no guarantee that the building detection data and the segmentation data are aligned.
+    Row houses are particularly affected, as the segmentation splits individual houses within the row, while the geometry used for the bounding box uses the whole row.
 
     #subpar.grid(
       columns: (3fr, 1fr),
@@ -96,20 +96,20 @@
       label: <fig:input:heatmaps>,
     )
 
-    @fig:input:heatmaps shows the geometries in question colored as a heatmap for the building area, the bounding box area, the ration between the two and the number of building parts.
-    An excessively large area generally menas unneccessary complexity.
-    A big bounding box itself is not problematic, since a big building conversly has a big bounding box.
-    However, the third row showing the ratio between them showcases problematic buildings, as buildings with a low ratio are generally not desirable, because they do not serve as good examples.
+    @fig:input:heatmaps shows the geometries in question coloured as a heatmap for the building area, the bounding box area, the ratio between the two and the number of building parts.
+    An area that is too large generally means unnecessary complexity.
+    A large bounding box itself is not a problem, as a large building will have a large bounding box.
+    However, the third row, showing the ratio between them, shows problematic buildings, as buildings with a low ratio are generally undesirable, as they do not serve as good examples.
 
-    Most buildings appear to not have a high amount of building parts.
-    However, some of them exceed the scale, having up to almost 250 building parts.
-    Closer analysis reveals that this is a general sign of the building containing a lot of rounded segments, since those are split into many individual triangular segments inside the geometries.
+    Most buildings do not appear to have a large number of parts.
+    However, some of them exceed the scale, with up to almost 250 parts.
+    Closer analysis reveals that this is a general sign that the building contains many rounded segments, as these are broken down into many individual triangular segments within the geometries.
 
     Next, @fig:input:statistics lays down the statistics over the identified relevant data, showing the distribution as bar plots as well as line plots with median and mean values.
-    Note that the graphs are cutting off 7%, 11% and 12% for overlapping building parts, area and bounding box area respectively in order for better visualisation.
-    Particularly notable are the differences between median and mean.
-    Normally, the assumption could be made that the data should roughly be normally distributed.
-    The discrepancy here stems from errors inside the data, which affects all of these graphs, since they are not independent of each other.
+    Note that the plots do not show 7%, 11% and 12% of the values for overlapping building parts, area and bounding box area respectively for better visualisation.
+    The differences between median and mean are particularly striking.
+    Normally one would expect the data to be approximately normally distributed.
+    The discrepancy here is due to errors in the data, which affect all of these graphs as they are not independent of each other.
 
     #subpar.grid(
       columns: 2,
@@ -124,9 +124,9 @@
       label: <fig:input:statistics>,
     )
 
-    The high peaks at very low building area, distribution of confidence ranging as low as 50% and buildings without overlapping building parts are attributable to incorrectly identified buildings.
-    @fig:input:area_correlation shows the direct correlation between building area and algorithm's confidence, as well as building area and bounding box area.
-    
+    The high peaks at very small building areas, the distribution of confidence values down to 50% and buildings without overlapping building parts are due to incorrectly identified buildings.
+    @fig:input:area_correlation shows the direct correlation between building area and algorithm confidence, as well as building area and bounding box area.
+
     #subpar.grid(
       columns: 2,
       gutter: 0mm,
@@ -138,27 +138,27 @@
       label: <fig:input:area_correlation>,
     )
 
-    The correlation between area and bounding box area is visibly well.
-    Nonetheless, there are clearly buildings which serve as outliers in the fact of having very large bounding boxes .
-    In the graphs, the values which are chosen as filtering cut-offs are visualized as lines.
-    For the correlation between area and bounding box area, 30% seemed a good trade-off between not filtering to many buildings and filtering out the worst offenders.
-    It can be visually confirmed that most of the buildings are not belowe this threshold, indicating that the filtering is not too strict.
+    The correlation between area and bounding box area is clearly good.
+    However, there are clearly buildings that act as outliers by having very large bounding boxes.
+    In the graphs, the values chosen as filter cut-offs are visualised as lines.
+    For the correlation between area and bounding box area, 30% seemed to be a good compromise between not filtering too many buildings and filtering out the worst offenders.
+    It can be visually confirmed that most buildings are not below this threshold, indicating that the filtering is not too strict.
 
-    For correlation of area and confidence, the thresholds were decided to be 50 m² and 90%.
-    However, 50 may chosen a bit low.
-    At this value, most irregularities and errors are filtered out, the buildings close to this threshold however are mostly of very simple shape, for example shacks or garages with one singular roof.
-    Nonetheless, filtering by this value removes the errorneous spike of buildings size close to zero, which was shown in @fig:input:statistics.
-    The confidence threshold of 90% was chosen after visual confirmation of the data showing a clear increase in correctly defined data points.
+    For the correlation of area and confidence, thresholds of 50 m² and 90% were chosen.
+    However, 50 may be a little low.
+    At this value most irregularities and errors are filtered out, but the buildings close to this threshold are mostly of very simple shape, for example huts or garages with a single roof.
+    Nevertheless, filtering by this value removes the anomalous spike in the size of buildings close to zero that was shown in @fig:input:statistics.
+    The 90% confidence level was chosen after visual confirmation of the data, which shows a clear increase in correctly defined data points above this threshold.
 
-    Filtering of building parts will be done by removing all buildings with no overlapping building parts.
-    While most of these will be filtered out already by confidence, it will be done regardless, since there is no guarantee for this.
-    Also, as mentioned, the maximum number of allowed building is set to 100.
-    This allows for filtering of some extensively complex buildings, while still mentaining some examples for shapes like spire roofs.
+    The filtering of building parts is done by removing all buildings without overlapping building parts.
+    While most of these will already be filtered out by confidence, it will still be done as there is no guarantee.
+    Also, as mentioned above, the maximum number of building parts allowed is set to 100.
+    This allows some very complex buildings to be filtered out, while still allowing some examples of shapes such as spire roofs.
 
-    Whilest the specific data of the about the type of roofs and roof segments may not very accurately reflect the truth, it still may serve as an indicator of the type of roof.
-    Therefore, the consequent filtering step will filter out all buildings, in which all segments are marked as flat roofs.
-    This is done because the original distribution shown in @fig:input:types demonstrates the previlance of those types of roofs in the data.
-    Flat roofs are generally condsidered simple, and also having a more diversified, non biased distribution of overall data is desired to improve its general quality as input data for machine learning @dataQuality2.
+    Although the specific data on roof types and roof segments may not reflect the truth very accurately, they can still serve as an indicator of roof type.
+    Therefore, the subsequent filtering step will filter out all buildings where all segments are marked as flat roofs.
+    This is done because the original distribution shown in @fig:input:types shows the prevalence of these roof types in the data.
+    Flat roofs are generally considered to be simple, and a more diversified, unbiased distribution of the overall data is also desired to improve its overall quality as input data for machine learning @dataQuality2.
     
     ```
     Buildings before filtering:                     2444
@@ -169,7 +169,7 @@
     Buildings after filtering by only flat roofs:   1258
     ```
 
-    Notice that the highest number of buildings was filtered out by confidence in the first step, since this holds the most information about actually viable buildings, or conversly about unusable buildings.
+    Note that in the first step, the largest number of buildings was filtered out by confidence, as this contains the most information about actually usable buildings, or conversely, unusable buildings.
 
     // TODO
 
