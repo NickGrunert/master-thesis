@@ -192,18 +192,32 @@
     The latter is a small loss of information as it is also part of a large building with a complex shape and many parts that are not very useful anyway.
 
     == Results
-    
-    
+    The filtered houses are sorted by size.
+    The algorithms and methods used in this research are subject to plausibility checks.
+    As the current dataset was far too large to analyse in its entirety, a smaller selection was required.
+    This selection consists mainly of the first 20 houses at the 60th percentile of area from the dataset, with some other houses used occasionally, especially in initial experiments to create baseline assumptions.
 
-    // TODO
+    The input data is processed so that the following algorithms receive an RGB image of the house, the nDSM data within this area frame, and the building parts as an image mask.
+    Note that this mask may not reflect the structure of the building well, but can be used as a rough estimate of the building boundaries and as a basis for later analysis.
+    Its exact use will be explained later.
 
-    #stack(
-      image("../figures/prompts/example_entry_1.png", width: 100%),
-      h(4cm),
-    )
-    #stack(
-      image("../figures/prompts/example_entry_2.png", width: 100%),
-      h(4cm),
+    @fig:input:result_example shows two examples of the processed dataset.
+    Note that the masks shown are not the final product, as they will be pre-processed to exclude building parts that do not belong to the current building in question.
+    The second entry shows such an invalid overlap in the lower left corner, which will be filtered out before further use.
+
+    The nDSM image is displayed using a terrain colour map for visual clarity, as the raw nDSM data in a spectrum from white to black does not have enough contrast to show clear detail.
+
+    #subpar.grid(
+      columns: (2fr, 1fr),
+      gutter: 0mm,
+      box(figure(image("../figures/prompts/example_entry_1.png")), clip: true, width: 100%, inset: (right: -200%)),
+      box(figure(image("../figures/prompts/example_entry_1.png")), clip: true, width: 100%, inset: (left: -500%)),
+      box(figure(image("../figures/prompts/example_entry_2.png")), clip: true, width: 100%, inset: (right: -200%)),
+      box(figure(image("../figures/prompts/example_entry_2.png")), clip: true, width: 100%, inset: (left: -500%)),
+      caption: [
+        Example entry data sets
+      ],
+      label: <fig:input:result_example>,
     )
   ]
 }
