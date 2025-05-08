@@ -5,8 +5,8 @@
     = Including SAM into the algorithm
     In this section, the Segment Anything Model (SAM) will be implemented on the provided dataset.
     Specifically, the process will be analogous to previous iterations, wherein it will be executed on the portion of the dataset that contains ground truth data.
-    This approach enables the utilization of preexisting algorithms for scoring and analysis, facilitating a comparative assessment of the performance of SAM.
-
+    This approach facilitates the utilisation of preexisting algorithms for scoring and analysis, thereby enabling a comparative assessment on the performance of SAM.
+    
     Due to the absence of empirical evidence regarding the efficacy of SAM in analyzing specific data and the necessary inputs for optimal performance, the subsequent section will generate diverse input images based on each house's data. 
     This will facilitate the analysis of the impacts of varying data configurations.
 

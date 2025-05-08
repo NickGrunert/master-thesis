@@ -4,11 +4,13 @@
   text(lang:"en")[
     = Creation of reliable Input Prompts <section:ndsm_analysis>
     As a need for more reliable input prompts emerged, this section will discuss the process of programming a custom pipeline to create segmentations.
-    These segmentations are to be more trustworthy for prompting SAM, and therefore should result in overall better outputs.
-    This will serve the purpose of truly being able to identify whether SAM is capable of solving the given problem or if even after having improved the input data given to it still fails to satisfy requirements.
-    This means that this section works based on the hypothesis that correct input points lead to better segmentations by SAM.
-    This not only includes better segmentations in terms of structural correctness, as that was not a given when using the input mask, but especially includes a more correct number of input points.
-    This should in theory then solve the problem that small surfaces were not able to be predicted since there was no prompt given for them.
+    It is proposed that these segmentations will prove more reliable in prompting SAM, and therefore should result in superior overall outputs.
+    This will provide a foundation for further analysis to ascertain whether SAM is capable of solving the given problem of complex building roof segmentation when given improved input prompts.
+
+    The basis of this section is the hypothesis that the correct input points result in improved segmentations by SAM.
+    This encompasses enhanced segmentations in terms of structural integrity, a consideration that was not previously a given when utilising the input mask.
+    It is essential that each segment is more accurate, and the total number of segmentations should increase to a minimum of the number of segments in the original image.
+    It is hypothesised that this will resolve the issue of surfaces of a smaller size not being able to be predicted, as the absence of an individual prompt for them was the issue.
 
     The following oberservations and assumptions are made in this section:
     - In comparison to the nDSM data, the original RGB pictures contain almost no relevant information.
@@ -22,7 +24,7 @@
 
     The present chapter is composed of three sections.
     @section:algorithm will encompass a comprehensive discussion of the algorithmic components that facilitate the generation of custom segmentation for any given house.
-    In this section, the discussion will center on the introduction of select hyperparameters that have demonstrated potential in facilitating the algorithm's adaptability to variable scenarios.
+    In this section, the discussion will center on the introduction of hyperparameters that have demonstrated potential in facilitating the algorithm's adaptability to variable scenarios.
     Therefore, the section introduces a scoring algorithm that aims to evaluate the quality of a given segmentation. This evaluation process serves to determine whether parameter adjustment is necessary.
 
     Consequently, @section:truth_compare will generate some ground truth examples to ascertain the system's reliability and the effectiveness of the scoring system.
@@ -53,22 +55,21 @@
     This will be the range $[-255, 255]$ at first, to represent positive and negative derivatives, and later $[0, 255]$ to be in valid range for the Canny Edge Detection algorithm.
     This creates better comparability between different input data and will serve to increase the contrast of the values.
 
-    This process of normalization may result in a particular side effect.
+    This process of normalisation may result in a particular side effect.
     Given the absence of assurance that the quantity of positive values is equivalent to the quantity of negative values, the algorithm may potentially displace the neutral value for flat surfaces away from zero.
     This phenomenon can be illustrated by examining @fig:algorithm:zero_moving, in which the neutral value is shifted to the right.
     As the contrast of the data is enhanced, the perceptibility of the effect increases. 
     This phenomenon is illustrated on the right side of the figure, where the red coloration of the flat ground is more pronounced in comparison to the left side.
-    To address this issue, the algorithm would need to implement a complete separation of positive and negative values during each normalization.
-    However, this effect has only been observed on rare occasions, and even in cases where it has been observed, its impact on the algorithm has not been definitively negative.
+    To address this issue, the algorithm would need to implement a complete separation of positive and negative values during each normalisation.
+    However, this effect has only been observed on rare occasions, and even in cases where it has been observed, its impact on the algorithm is not proven to be negative.
     The effect of this appears to be primarily visual, as the algorithm does not take into account the location of the zero value within the value spectrum.
-    In the event that the absolute value of the derivatives were to be utilized in subsequent analyses, this would indeed need to be solved in the future.
 
     #subpar.grid(
       columns: 2,
       gutter: 2mm,
       box(figure(image("../data/6/5/v2/edges.png")), clip: true, width: 100%, inset: (bottom: -1.0in, left: -1.5in, right: -3.8in)),
       caption: [
-        Visualization of normalization moving the zero value
+        Visualization of normalisation moving the zero value
       ],
       label: <fig:algorithm:zero_moving>,
     )
@@ -129,7 +130,7 @@
     def edge_detection(...):
       derivative = params.derivative
 
-      # Initial normalization
+      # Initial normalisation
       n = cv2.normalize(entry['ndsm'], None, 0, 255, cv2.NORM_MINMAX)
 
       ####### STEP 1 : DERIVATIVE
@@ -164,7 +165,8 @@
     At the very least, the visual appeal of the intermediate derivative image is greatly improved, making most values and edges more distinguishable.
     The strong effect of this can be seen in @fig:algorithm:log, where not only a visual distinction is possible only after scaling, but also the distribution plot clearly reflecting better utilization of the value spectrum.
 
-    This is due to the analysis of the derivative data, which shows that even after normalization, the derivative data consists of mostly dark values clustered around zero, since there are some extreme outliers in the data, creating a highly uneven distribution of values.
+    The analysis of the derivative data indicates that, subsequent to normalisation, the majority of the data is comprised of values predominantly concentrated around zero. 
+    This is attributable to the presence of extreme outliers within the dataset, resulting in a substantially uneven distribution of values.
     It is shown that such distorted data can be made more robust for analysis by applying the logarithm to it @log1.
     General image analysis seems to be improved by such transformations @log2.
 
@@ -187,7 +189,7 @@
     #heading(depth: 5, numbering: none, bookmarked: false)[Implementation]
     The following implementation stores the sign of each value first, because the logarithm is not defined for negative values.
     Therefore, after applying the logarithm to the absolute derivative values, they are normalized and multiplied by the original sign.
-    In this way, the logarithm can be applied while preserving the original sign of the derivative values, i.e. without losing the differentiability of the derivative direction.
+    In this way, the logarithm can be applied while preserving the original sign of the derivative values, i.e. without losing the differentiability between positive and negative values.
 
     ```python
     def edge_detection(...):
@@ -214,17 +216,18 @@
     #heading(depth: 5, numbering: none, bookmarked: false)[Theory]
     A visual analysis of the individual steps during the initial setup of this pipeline has revealed some statistical constants across the different data sets.
     This includes the observation that the edge surrounding the house consistently exhibits the most extreme derivative values.
-    Despite the potential presence of high-order derivatives aside from these, the following observation holds: the precise difference between such extreme derivatives is inconsequential. 
-    Consequently, the clipping of those values followed by normalization positively enhances the contrast of the image, thereby facilitating the evaluation process for the algorithm without the loss of crucial information.
+    The following hypothesis is formulated: the precise difference between such extreme derivatives is inconsequential.
+    Consequently, the clipping of those values followed by normalisation has been shown to positively enhance the contrast of the image, thereby facilitating the evaluation process for the algorithm without the loss of crucial information (Smith, 2019).
+    The validity of this hypothesis will be demonstrated in the @section:ablation:clipping, in which it will be demonstrated that clipping can indeed be beneficial.
 
     In this context, setting the clipping percentage to 10 percent entails the reduction of the highest and lowest 10 percent values.
-    It is evident that, given the normalization of the values preceding this step, the derivative values between $[-255, 255]$, in this example, will be set to $[-230, 230]$. Consequently, all values that fall outside this range will be set to the new extrema.
+    It is evident that, given the normalisation of the values preceding this step, the derivative values between $[-255, 255]$, in this example, will be set to $[-230, 230]$. Consequently, all values that fall outside this range will be set to the new extrema.
 
     The hypothesis was formulated that interpreting the actually clipped values as edges and subsequently executing the surface generation steps on them could function as a mask for base area detection, as will be discussed in @section:surfaces:filtering.
     The direct effect of this is shown in @fig:algorithm:clipping, which shows the difference between applying 0 and 7 percent clipping.
     While no clipping shows very low distinguishable values, the shape of the roof becomes visible after the clipping is applied.
     Inside the value graph, the hills representing the individual segments become visible.
-    It should be noted that in the example shown no normalization was applied, but the general effect is not affected by this.
+    It should be noted that in the example shown no normalisation was applied, but the general effect is not affected by this.
     Said theory of base area detection can also be seen in the visualization of the clipped values in the bottom column of the graphs.
 
     #subpar.grid(
@@ -278,16 +281,16 @@
     Overall, the derivative is very noisy due to inconsistencies in the input height information.
     To address this issue, the algorithm will use Gaussian smoothing for noise reduction.
     A two-dimensional kernel approximating a Gaussian distribution is used to apply a convolution to the image, thereby blurring the image @Gauss1.
+    Note that due to the small size of the image, this blurring leads to a loss of detail, which results in a loss of detail and, consequently, may result in an inability to detect thin roof parts.
+    The position of blurring inside the overarching edge detection pipeline was determined after a series of preliminary experiments.
+    For instance, the application of blurring to the raw nDSM data demonstrated a comparatively diminished level of overall success.
 
     The implementation of this introduces the parameters of kernel size and sigma value @Gauss2.
     The sigma value defines the standard deviation of the Gaussian function, which in turn determines the amount of blur applied to the image.
     However, the influence of these parameters will not be explored extensively, and only 3x3 and 5x5 kernels will be tested, as well as whether noise reduction has the desired positive influence.
-    The sigma values are not explicitly set, so the algorithm automatically calculates them to be $≈0.8$ and $≈1.1$ for 3x3 and 5x5 kernels respectively.
-    @formula:gaussian_kernel shows the mathematically correct Gaussian 3x3 kernel using the given parameter.
+    The sigma values are not explicitly set, so the algorithm automatically calculates them to be $#sym.sigma ≈0.8$ and $#sym.sigma≈1.1$ for 3x3 and 5x5 kernels respectively.
+    @formula:gaussian_kernel shows the mathematically correct Gaussian 3x3 kernel.
     It is noteworthy that the OpenCV kernel deviates marginally at the four edge values due to the implementation of corrections, which results in a kernel sum that approaches closer to 1 to reduce errors.
-
-    The position in the overall edge detection pipeline, just before Canny Edge Detection is applied, after the derivatives have been computed and clipped, was determined after a series of preliminary experiments that proved less successful than placing it here.
-    Note that due to the small size of the image, this blurring leads to a loss of detail, which results in a loss of detail and, consequently, may result in an inability to detect thin roof parts.
 
     #heading(depth: 5, numbering: none, bookmarked: false)[Implementation]
     ```python
@@ -322,10 +325,10 @@
     The usage of the Canny algorithm enables the flexible adaptation of the system to the unique characteristics and requirements of each individual house.
     The underlying rationale for this phenomenon stems from the implementation of a complex calculation method that utilizes two parameters, lower and upper thresholding, to filter out edges based on gradient magnitude @Canny2.
 
-    It should be noted that alternative edge-detection algorithms could have been considered.
+    It should be noted that alternative edge-detection algorithms could be considered.
     Algorithms of a simpler nature are based on the gradient value between the x and y directions of the image.
     Nonetheless, such filters—for instance, the Sobel filter—are often found to be inadequate, particularly in noisy environments @Sobel2.
-    A substantial number of comparisons between Sobel and Canny detection have been documented.
+    A substantial number of comparisons between Sobel and Canny detection exist.
     The Sobel filter's most notable strength is its simplicity, which is advantageous in applications where rapid execution is paramount @Sobel1.
     However, the temporal efficiency of the process is not a primary concern; instead, the emphasis is placed on the quality of the results obtained.
     Canny's superior performance is attributable to its capacity for enhanced parameter tuning, a feature that is particularly advantageous in achieving more precise edge detection @Sobel3.
@@ -334,7 +337,7 @@
     There have been suggestions of dynamically calculating the threshold values based on the gradient's median value @Canny3. 
     However, this was not implemented due to initial tests not yielding promising results.
     Conversely, the algorithm will utilize dynamic percentage thresholds.
-    It is important to acknowledge that this approach will essentially replicate the utilization of absolute values directly, as the data undergoes normalization to fall within the range of 0 to 255 prior to the application of the Canny algorithm.
+    It is important to acknowledge that this approach will essentially replicate the utilization of absolute values directly, as the data undergoes normalisation to fall within the range of 0 to 255 prior to the application of the Canny algorithm.
 
     #heading(depth: 5, numbering: none, bookmarked: false)[Implementation]
     The Canny algorithm is restricted to positive integer inputs.
@@ -483,7 +486,7 @@
 
     In the final algorithm for this section, the base area filtering will be executed prior to separation and re-linking, as the filtration of surfaces before these steps exerts a significant influence on the resulting execution time.
     Given the potential abundance of small surfaces in the external environment, the efficiency of the algorithm is contingent upon the optimization of its calculation process.
-    Furthermore, preliminary experimentation has demonstrated that employing the refinement steps intended for normal surfaces on the base area surfaces can neither be called definitely positive nor negative.
+    Furthermore, preliminary experimentation has demonstrated that employing the refinement steps intended for normal surfaces on the base area surfaces has positive effects as well as negative ones.
     A notable distinction emerges in the application of refinement to the detected base area, as illustrated in @fig:scores:founderror. 
     The application of refinement to the thin segment on the left would result in the erroneous filtration of that segment.
     While it demonstrates increased resilience against minor variations in the house outlines, it exhibits reduced robustness in other aspects.

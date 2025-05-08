@@ -17,7 +17,7 @@
 
     For instance, the presence of shadows within the data can result in severe misclassifications, as the model may lack the capacity to differentiate between the shadow and the object.
     It has been observed that, due to geometric constraints, the majority of surfaces are either wholly shaded or wholly illuminated; however, this is not guaranteed.
-    In the context of color channel manipulation, particularly in the red, green, and blue channels, the presence of shadows can result in strongly divergent values across all three channels. 
+    The presence of shadows can result in strongly divergent values across all colour channels. 
     This phenomenon hinders the effectiveness of an algorithm in identifying similarities between segments that are not shaded and those that are shaded.
 
     Shadows are a prominent feature of the input data, attributable to the geographical location of Germany, which results in a sun position that casts shadows on a significant proportion of residential structures.
@@ -36,7 +36,6 @@
     )
 
     As demonstrated by @fig:sam:shadows, a clear distinction emerges between the original image and the shadow removed image.
-    The efficacy of the shadow removal algorithm is questionable. 
     It is evident that the algorithm modifies the overall coloration of the image. 
     This modification may be advantageous in that it prevents the algorithm from being distracted by color changes across a coherent surface.
     The presence of discernible boundaries within the color channels is indicative of a failure to effectively differentiate between surfaces.
@@ -58,8 +57,8 @@
       label: <fig:sam:images:ndsm>,
     )
 
-    However, the utilization of nDSM data as SAM input appears to be unfeasible in a direct manner.
-    This thesis is the result of a thorough analysis of @fig:sam:images:ndsm.
+    However, the utilization of nDSM data as SAM input appears to be not possible in a direct manner.
+    This hypothesis is the result of a thorough analysis of @fig:sam:images:ndsm.
     This phenomenon is evidenced by the minimal contrast present in the image, indicative of its limited information content.
     However, the value graph distinctly demonstrates the potential for differentiating between the roof and the ground.
     As this topic has not been the primary focus of the present discussion, further examination of it will be reserved for a later in @section:replace_clipping_by_sam.
@@ -307,10 +306,11 @@
 
     It has been demonstrated that certain segments are capable of being effectively segmented by the use of specific input images. 
     Conversely, SAM has been observed to be incapable of identifying the same segment when other input images are employed.
-    This is exemplified by the second row of masks, in which the derivative image is entirely incapable of identifying the segment.
-    In the final row of masks, the images employing RGB data incorporate an erroneous segment to the right.
+    This is exemplified by the second row of masks, where SAM is incapable of identifying the segment on the derivative imag.
+    In the final row of masks, the results run on the images employing RGB data incorporate an erroneous segment to the right.
     However, the derivative image is able to clearly differentiate between the two with a high degree of certainty, as evidenced by the particularly high score of 0.937.
-    This suggests the potential for combining the masks in a manner that may yield a more effective segmentation.
+    This finding indicates the possibility of combining the masks in a manner that may yield a more effective segmentation.
+    The evaluation of this suggestion is to be postponed until a later point in the research process.
 
     #subpar.grid(
       columns: 1,

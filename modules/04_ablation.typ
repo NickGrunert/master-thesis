@@ -127,7 +127,7 @@
       label: <fig:ablation:base_area>,
     )
 
-    === Clipping Values
+    === Clipping Values <section:ablation:clipping>
     #subpar.grid(
       columns: 2,
       gutter: 1mm,
