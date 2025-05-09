@@ -33,7 +33,7 @@
     This model is the backbone of the entire algorithm and is available in several different variants, each representing a trade-off between complexity and performance.
     The second component is a prompt encoder, which is able to analyse different types of input prompts given to #abr("SAM") to guide the segmentation process.
     Finally, the model returns segmentation masks that must be decoded by a lightweight mask decoder.
-    In terms of performance, @sam2 is considered to be competitive with, or even superior to, fully supervised models.
+    In terms of performance, @sam is considered to be competitive with, or even superior to, fully supervised models.
     
     Specifically, this research will use the #abr("SAM")2 model, which is an evolution of the original model in that it can segment video, but also has improved performance on image data.
     However, as this work does not have data such as time series, video analysis will not be relevant here.

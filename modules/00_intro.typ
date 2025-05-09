@@ -28,7 +28,7 @@
     The utilisation of multiple data sources has become a prevalent approach to address the constraints imposed by a single data source. 
     Integration of information obtained from standard images with geometric information derived from elevation data has emerged as a common practice @intro7. 
     Elevation data, particularly the #abr("nDSM"), which represents height above ground, provides strong cues for distinguishing buildings from ground features and understanding their structure @intro9.
-    Common fusion strategies in #abr("DL") involve the incorporation of the #abr("nDSM") or features derived from #abr("LiDAR") as additional input channels alongside #abr("RGB") or multispectral bands @intro10.
+    Common fusion strategies in #abr("DL") involve the incorporation of the #abr("nDSM") or features derived from #abr("LiDAR") as additional input channels alongside #abr("RGB") or multispectral bands @sam.
     This enables networks to acquire knowledge collectively from spectral and geometric information, frequently resulting in enhanced segmentation accuracy, particularly for architectural structures such as buildings.
     Other approaches utilise elevation data in post-processing steps. 
     One such approach employs a #abr("CRF") @intro_bonus1 @intro_bonus2 to refine segmentation boundaries generated from image-based models.
@@ -37,7 +37,7 @@
     #heading(depth: 5, numbering: none, bookmarked: false)[Foundational Models: The Segment Anything Model (SAM)]
     Recent advancements in #abr("AI") have resulted in the development of large "foundational models" that are trained on massive datasets. 
     These models are designed to generalise, and they have been shown to exhibit remarkable generalisation capabilities @intro11. 
-    A prominent example is the #abr("SAM") from Meta AI @intro10. 
+    A prominent example is the #abr("SAM") from Meta AI @sam. 
     #abr("SAM") has been trained on a dataset comprising over one billion masks and has been developed as a promptable segmentation system.
     Given a prompt such as input points or bounding boxes, #abr("SAM") can segment any object in an image, even those unseen during training, demonstrating impressive zero-shot performance. 
     It's architecture involves three components: a lightweight prompt encoder, a heavy #abr("ViT") for image encoding, and a fast mask decoder @intro_bonus3.
