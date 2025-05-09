@@ -319,7 +319,6 @@
     ```
 
     ==== Canny Edge Detection <section:canny>
-
     #heading(depth: 5, numbering: none, bookmarked: false)[Theory]
     The concluding step of this section involves the implementation of the Canny Edge Detection algorithm @Canny1.
     The usage of the Canny algorithm enables the flexible adaptation of the system to the unique characteristics and requirements of each individual house.
@@ -370,7 +369,6 @@
     ```
     
     ==== Results <section:edges:results>
-
     #figure(
       image("../figures/edge detection/pipeline1.png", width: 100%),
       caption: [
@@ -454,7 +452,7 @@
         Re-linking.
       ]), <fig:surface_separation:c>,
       caption: [
-        Steps of the Surface Generation
+        Steps of the surface generation
       ],
       show-sub-caption: (num, it) => {
         [#it.body]
@@ -497,7 +495,7 @@
     #figure(
       image("../data/6/1/v1/surfaces.png", width: 100%),
       caption: [
-        Intermediary steps of the Surface Generation
+        Intermediary steps of the surface generation
       ],
     ) <fig:surfaces_pipeline>
 
@@ -506,7 +504,7 @@
     The necessity to overestimate the clipping percentage can be determined by the presence of clipped values throughout the house, suggesting a higher than necessary value, as actual information on the roof may be lost.
     However, the algorithm functions adequately well during initial experimentation on a diverse set of houses. 
 
-    === Scoring System for Evaluation <section:scoring>
+    === Scoring System <section:scoring>
     In the preceding tests, the quality of the majority of surfaces could be adequately assessed by manual observation for initial parameter tuning and theory validation.
     However, as the general structure was being established, a greater necessity for objective evaluation criteria emerged.
     The methodology under consideration should possess the capacity to evaluate the quality of surfaces based on the following criteria:
@@ -651,7 +649,7 @@
       box(figure(image("../data/6/4/v1/plateau.png")), clip: true, width: 100%, inset: (bottom: -9.9in, top: -2.5in)),
       box(figure(image("../data/6/4/v1/plateau.png")), clip: true, width: 100%, inset: (bottom: -12.35in)),
       caption: [
-        Results of the Plateau Algorithm
+        Results of the plateau algorithm
       ],
       label: <fig:plateau>,
     )
@@ -682,7 +680,7 @@
       figure(image("../figures/scoring_algorithm/surface_scoring/6.png")),
       figure(image("../figures/scoring_algorithm/surface_scoring/5.png")),
       caption: [
-        Plateau Algorithm on a Spire Roof
+        Plateau algorithm on a spire roof
       ],
       label: <fig:scores2>,
     )

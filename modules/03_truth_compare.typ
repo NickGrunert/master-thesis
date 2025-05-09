@@ -2,7 +2,7 @@
 
 #let truth_compare(abr) = {
   text(lang:"en")[
-    == Objective Analysis by Ground Truth Comparison <section:truth_compare>
+    == Evaluation Against Ground Truth <section:truth_compare>
     It is essential to recall that the primary objective of the segmentation calculated here is to provide sufficiently accurate points within each segment to prompt #abr("SAM").
     Therefore, an incomplete segment will be reduced to a valid point within the real structure. 
     Conversely, an incorrect segment could lead to an invalid point outside the real structure.
@@ -22,8 +22,7 @@
     Conducting a limited evaluation on a small number of hand-picked houses does not provide sufficient statistical evidence to draw definitive conclusions.
     However, given the favorable trade-off between objective evaluation and minimal time investment required, it is reasonable to infer that the algorithm will demonstrate comparable performance across other houses.
 
-    === Creating Ground Truth images <section:ground_truth>
-
+    === Ground Truth Creation <section:ground_truth>
     The evaluation will be based on a set of twenty ground truth images, which were derived from images corresponding to the 60th percentile of the entire image dataset sorted by roof area.
     This selection was made on the basis that these models adequately represent the data overall. 
     They are sufficiently small to be processed in a reasonable timeframe while still exhibiting sufficient complexity.
@@ -69,7 +68,7 @@
       figure(image("../data/6/19/helper/derivative.png", height: 18.5%)),
       figure(image("../data/6/19/truth.png", height: 18.5%)),
       caption: [
-        Images with their respective Derivative Image and Ground Truth.
+        Images with their respective derivative image and ground truth
       ],
       label: <fig:truth_compare:truth_example>,
     )
@@ -79,7 +78,7 @@
     Minor discrepancies in the outputted truth score do not invalidate the algorithm.
 
 
-    === Segmentation Evaluation
+    === Evaluation of Individual Segmentations
     The evaluation of the segmentation is a critical step in the assessment of the performance of the algorithm.
     Therefore, the subsequent section will provide a detailed exposition of the methodology that was employed to evaluate the segmentation.
     Each subsection will be devoted to either a discussion of a specific component of the resulting algorithm or an analysis of an enhancement to one of these components.
@@ -243,7 +242,7 @@
       figure(image("../figures/truth_compare/completeness/4.png")), <fig:truth_compare:completeness:c>,
       figure(image("../figures/truth_compare/completeness/10.png")), <fig:truth_compare:completeness:d>,
       caption: [
-        Different n-to-1 relations from generated Segments to Ground Truth.
+        Different n-to-1 relations from generated segments to ground truth
       ],
       label: <fig:truth_compare:completeness>,
     )
@@ -326,7 +325,7 @@
       figure(image("../figures/truth_compare/hungarian/error2.png")),
       figure(image("../figures/truth_compare/hungarian/error3.png")),
       caption: [
-        Mismatch in Precision between old and new Scoring.
+        Mismatch in precision between old and new scoring
       ],
       label: <fig:truth_compare:hungarian_error>,
     )
@@ -349,7 +348,7 @@
 
     #figure(
       image("../figures/truth_compare/hungarian/hungary_compare.png"), caption: [
-      New visual representation of matching the segments.
+      New visual representation of matching the segments
     ]) <fig:truth_compare:hungarian_compare>
 
     The statistics presented in @fig:truth_compare:hungarian_statistics illustrate the disparities between the two implementations with respect to performance metrics.
@@ -375,7 +374,7 @@
         Relative Time Saved by using the new Implementation.
       ]), <fig:truth_compare:hungarian_statistics:b>,
       caption: [
-        Comparison between the original algorithm and the #abr("HMA") for scoring.
+        Comparison between the original algorithm and the #abr("HMA") for scoring
       ],
       label: <fig:truth_compare:hungarian_statistics>,
     )
@@ -438,8 +437,7 @@
 
 
 
-    === Metrics
-
+    === Metric-Based Evaluation
     Originally, this section first presented all theoretical explanations, before combining their respective experimentation results together to create a final evaluation.
     However, this approach was deemed impractical, as each approach was thoroughly considered and evaluated before conducting a comprehensive analysis of the results.
     Each subsequent approach has been developed by incorporating the lessons learned from the results of the previous approaches and striving to improve upon them.
@@ -464,7 +462,7 @@
         Example C.
       ]), <fig:truth_compare:examples:c>,
       caption: [
-        Three examples houses for the metrics to be applied to.
+        Three examples houses for the metrics to be applied to
       ],
       label: <fig:truth_compare:examples>,
     )
@@ -574,7 +572,7 @@
         Example C.
       ]), <fig:truth_compare:metrics:c>,
       caption: [
-        Example results for using #abr("MAE"), #abr("MSE"), #abr("RMSE") and R2 Score.
+        Example results for using #abr("MAE"), #abr("MSE"), #abr("RMSE") and R2 score
       ],
       label: <fig:truth_compare:metrics>,
     )
@@ -649,7 +647,7 @@
         Example C.
       ]), <fig:truth_compare:pearson:c>,
       caption: [
-        Example results for Pearson Coefficient.
+        Example results for pearson coefficient
       ],
       label: <fig:truth_compare:pearson>,
     )
@@ -759,7 +757,7 @@
         Example C.
       ]), <fig:truth_compare:correlation:c>,
       caption: [
-        Example results for using the LinearRegressor.
+        Example results for using linear regression
       ],
       label: <fig:truth_compare:correlation>,
     )
@@ -814,13 +812,12 @@
         Example C.
       ]), <fig:truth_compare:spearman:c>,
       caption: [
-        Example results for Spearman Correlation.
+        Example results for spearman correlation
       ],
       label: <fig:truth_compare:spearman>,
     )
 
-    === Final Analysis
-    
+    === Overall Assessment
     As previously stated, this section will employ the Pearson and Spearman coefficients to analyze the provided data.
     The scope of this initiative will expand beyond the initial three examples provided by @fig:truth_compare:examples, encompassing all twenty examples that include ground truth segmentations.
     While neither coefficient necessitates normalization in theory, for enhanced comparability between different entries, they are nevertheless normalized.
@@ -843,7 +840,9 @@
 
     #figure(
       image("../figures/truth_compare/final_results/all_data.png"), 
-      caption: [Normalized Point Clouds with Pearson and Spearman Coefficients.],
+      caption: [
+        Normalized point clouds with pearson and spearman coefficients
+      ],
     )<fig:truth_compare:final>
 
     Two datasets demonstrate only a relatively minor correlation, while one exhibits no correlation.
@@ -864,7 +863,9 @@
 
     #figure(
       image("../figures/truth_compare/final_results/combined_all_data.png"), 
-      caption: [Graph of all normalized data points merged.],
+      caption: [
+        Graph of the merged, normalized data points
+      ],
     )<fig:truth_compare:final_all>
 
     Given that all individual sets have undergone normalization, @fig:truth_compare:final_all shows them after they have been combined into a single, comprehensive dataset for the calculation of metrics.
