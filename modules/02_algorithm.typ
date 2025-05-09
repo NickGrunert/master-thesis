@@ -348,6 +348,7 @@
     The threshold values are designated as the lower and upper percentiles of the normalised image.
     While they are set at equal intervals in this instance for the sake of simplicity, they can be adjusted to allow for uneven percentiles in the future, should preliminary results prove unsatisfactory.
     For instance, setting the percentage to 35 will result in a threshold of $[89, 179]$, a representation that nearly perfectly aligns with the novel approach of setting the upper threshold at double the lower threshold.
+    #pagebreak()
 
     ```python
     def edge_detection(...):
@@ -591,6 +592,7 @@
     This excludes all filtering and optimisation steps, such as the initial sorting of derivative values.
     Additionally, this does not address the method by which the surfaces are subsequently integrated to generate the segmentation score in its entirety.
 
+    #pagebreak()
     ```python
     def scoring(...):
       relevance = params.minimum_plateau_relevance
@@ -641,6 +643,13 @@
     ```
 
     #heading(depth: 5, numbering: none, bookmarked: false)[Results]
+    @fig:plateau presents exemplary extracts from the graphs representing the algorithm's results.
+    In the first row, an example is illustrated which shows a flawless surface, which is identified as such by the algorithm.
+    The three calculated scores are 98%, 97%, and 96%, respectively, for x, y, and magnitude direction.
+    In all three directions, there is a single plateau that extends across the majority of the surface.
+    It is important to acknowledge that the graphs are not normalised, which results in an apparent unevenness that does not accurately reflect the underlying data.
+    The values ranging from 80 to 100 are regarded as sufficiently proximate to be classified as a single, cohesive plateau.
+
     #subpar.grid(
       columns: 1,
       gutter: 1mm,
@@ -652,13 +661,6 @@
       ],
       label: <fig:plateau>,
     )
-
-    @fig:plateau presents exemplary extracts from the graphs representing the algorithm's results.
-    In the first row, an example is illustrated which shows a flawless surface, which is identified as such by the algorithm.
-    The three calculated scores are 98%, 97%, and 96%, respectively, for x, y, and magnitude direction.
-    In all three directions, there is a single plateau that extends across the majority of the surface.
-    It is important to acknowledge that the graphs are not normalised, which results in an apparent unevenness that does not accurately reflect the underlying data.
-    The values ranging from 80 to 100 are regarded as sufficiently proximate to be classified as a single, cohesive plateau.
 
     The second example row illustrates a surface that persists of two merged surfaces, which the algorithm detects in the x and magnitude directions. 
     The surface score resulting from the individual scores of 0%, 93%, and 0% is 31%, which is indicative of poor quality.
@@ -771,8 +773,6 @@
     Consequently, the segmentation on the right, which is visibly suboptimal, exhibits an analogous positive score despite the discernible noise edges that divide large surfaces into multiple smaller ones.
     
     @fig:scores:squareornot also demonstrates the operational dynamics of the negative score, whereby the score undergoes a reduction in proportion to the extent of clipping, as an increasing number of segments are systematically filtered out.
-    In addition, the absolute values of positive scores are not directly comparable between the two approaches. 
-    This is due to the fact that the squared scores exhibit a greater range of values, given that the denominator in the calculation increases.
-    However, the impact of the negative score on the resulting score becomes evident, as it offers a more accurate reflection of the quality of the segmentation compared to the previous example before its implementation.
+    The impact of the negative score on the result score is evident, as it offers a more accurate reflection of the quality of the segmentation compared to the previous example before its implementation.
   ]
 }

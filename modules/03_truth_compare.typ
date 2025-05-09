@@ -185,13 +185,8 @@
     In essence, it penalises #abr("FP") to a greater extent than #abr("FN") when calculating the score.
 
     #heading(depth: 5, numbering: none, bookmarked: false)[Code Snippet]
-    The optimal solution is the implementation of a precise one-to-one mapping between segments, as this would be the anticipated outcome of a flawless algorithm.
-    The subsequent code explores the potentiality of associating numerous segments with a singular ground truth segment, which is delineated by the max_surfaces parameter.
-
     For each predicted surface, the algorithm identifies the ground truth segment with the highest #abr("IoU") value.
-    Consequently, the ground truth segment is iterated in the inverse manner, collecting all their matches and taking the best matches by score.
     The system under consideration enables the matching of multiple segments to a single ground truth segment.
-    Conversely, it does not permit any surfaces to be matched to more than one ground truth segment.
     The calculation of #abr("TP"), #abr("FP"), and #abr("FN") values is contingent upon the aforementioned matching of the algorithm.
 
     ```python
@@ -321,6 +316,17 @@
     The scoring function remains relatively stable.
     The calculation of precision and recall remains unchanged; however, the calculation of #abr("TP"), #abr("FP"), and #abr("FN") is now performed using the matches from the #abr("HMA") directly as well as the unmatched segments.
 
+    However, a notable distinction between the two implementations lies in the methodology employed for handling unmatched segments.
+    As illustrated by the implementation in @fig:truth_compare:hungarian_error, there is a discrepancy in the calculation of scores between the approaches.
+    While the two approaches are similar in general, the new implementation utilises unmatched segments to calculate #abr("FP") and #abr("FN"), a feature not present in the older approach.
+    Initially, an unmatched predicted surface was excluded from the #abr("FP") calculation due to the negligible impact of oversegmentation on the algorithm's performance.
+    The algorithm would only need to address the issue of undersegmentation, as this would result in fewer prompts than the number of truth surfaces.
+    In the subsequent implementation using the #abr("HMA"), however, this concept is no longer utilised due to reevaluation of the approach.
+    The objective is to ascertain the validity of the concept in relation to the ground truth. 
+    Consequently, the penalisation of erroneous surfaces in terms of undersegmentation is required to ensure the integrity of this endeavor.
+    In the alternative, the score of segmentations could be overestimated to a considerable degree.
+
+
     #subpar.grid(
       columns: 1,
       gutter: 2mm,
@@ -332,16 +338,6 @@
       ],
       label: <fig:truth_compare:hungarian_error>,
     )
-
-    However, a notable distinction between the two implementations lies in the methodology employed for handling unmatched segments.
-    As illustrated by the implementation in @fig:truth_compare:hungarian_error, there is a discrepancy in the calculation of scores between the approaches.
-    While the two approaches are similar in general, the new implementation utilises unmatched segments to calculate #abr("FP") and #abr("FN"), a feature not present in the older approach.
-    Initially, an unmatched predicted surface was excluded from the #abr("FP") calculation due to the negligible impact of oversegmentation on the algorithm's performance.
-    The algorithm would only need to address the issue of undersegmentation, as this would result in fewer prompts than the number of truth surfaces.
-    In the subsequent implementation using the #abr("HMA"), however, this concept is no longer utilised due to reevaluation of the approach.
-    The objective is to ascertain the validity of the concept in relation to the ground truth. 
-    Consequently, the penalisation of erroneous surfaces in terms of undersegmentation is required to ensure the integrity of this endeavor.
-    In the alternative, the score of segmentations could be overestimated to a considerable degree.
 
     As demonstrated by @fig:truth_compare:hungarian_compare, a new visualisation method has been developed for the purpose of illustrating the handling of segments.
     The absence of matches for two ground truth segments is readily apparent.
@@ -371,10 +367,10 @@
       columns: 2,
       gutter: 2mm,
       figure(image("../figures/truth_compare/hungarian/error_statistic.png"), caption: [
-        Percentual Error between the two Calculations.
+        Percentual score difference
       ]), <fig:truth_compare:hungarian_statistics:a>,
       figure(image("../figures/truth_compare/hungarian/hungarian_diff.png"), caption: [
-        Relative Time Saved by using the new Implementation.
+        Relative time saved
       ]), <fig:truth_compare:hungarian_statistics:b>,
       caption: [
         Comparison between the original algorithm and the #abr("HMA") for scoring
@@ -405,6 +401,7 @@
       return matches, unmatched1, unmatched2
     ```
 
+    #pagebreak()
     #heading(depth: 5, numbering: none, bookmarked: false)[Updated Scoring Code]
     ```python
     def score(prediction, truth, beta=0.5):
@@ -529,6 +526,17 @@
     This phenomenon can be attributed to the inherent limitations of the data, which is constrained within the range of 0 to 1. 
     Consequently, the utilisation of the #abr("MAE") as a standalone metric is sufficient for data analysis in this context, as the impact of the #abr("RMSE") on outliers is deemed negligible.
 
+    The R2 score's open range of $(-infinity, 1]$ complicates analysis.
+    Interpreting the R2 score poses a significant challenge, as it would necessitate the creation of a valid interpretation of the relationship between the score's magnitude and the performance of the algorithm.
+    An evaluation indicates that the values predominantly manifest a negative tendency, with most instances exhibiting lower magnitudes. 
+    However, it is noteworthy that some instances display significantly higher magnitudes.
+    This observation strongly suggests that the algorithmic correlation does not align much with the suppositions made in this particular section.
+    However, the fundamental principle of the R2 score and the assessment of the congruence between the data and a linear model remains an essential property of the algorithm, a consideration that will be pertinent to the subsequent steps.
+    
+    The R2 score demonstrated by @fig:truth_compare:metrics:a is notably negative, suggesting a complete absence of correlation between the algorithm and the ground truth data.
+    However, an examination of the data suggests an alternative conclusion, indicating a linear relationship that is simply tilted, rather than originating from the origin (0, 0), as the R2 score implemented here assumes.
+
+
     #subpar.grid(
       columns: 4,
       gutter: 2mm,
@@ -547,17 +555,7 @@
       label: <fig:truth_compare:metrics>,
     )
 
-    The R2 score's open range of $(-infinity, 1]$ complicates analysis.
-    Interpreting the R2 score poses a significant challenge, as it would necessitate the creation of a valid interpretation of the relationship between the score's magnitude and the performance of the algorithm.
-    An evaluation indicates that the values predominantly manifest a negative tendency, with most instances exhibiting lower magnitudes. 
-    However, it is noteworthy that some instances display significantly higher magnitudes.
-    This observation strongly suggests that the algorithmic correlation does not align much with the suppositions made in this particular section.
-    However, the fundamental principle of the R2 score and the assessment of the congruence between the data and a linear model remains an essential property of the algorithm, a consideration that will be pertinent to the subsequent steps.
-    
-    The R2 score demonstrated by @fig:truth_compare:metrics:a is notably negative, suggesting a complete absence of correlation between the algorithm and the ground truth data.
-    However, an examination of the data suggests an alternative conclusion, indicating a linear relationship that is simply tilted, rather than originating from the origin (0, 0), as the R2 score implemented here assumes.
-
-    In direct comparison, the @fig:truth_compare:metrics:c metric reveals a strong correlation with the ground truth data, as evidenced by it's calculated R2 score.
+    @fig:truth_compare:metrics:c reveals a strong correlation with the ground truth data, as evidenced by it's calculated R2 score.
     This observation indicates that the linear relationship between the scores and truth scores is more skewed towards the origin in comparison to the scenario depicted before, but does not generally depict a better linear relationship between the data itself.
 
     @fig:truth_compare:metrics:b offers yet another perspective.
@@ -611,6 +609,7 @@
     print(f"Pearson: {r:.3f}")
     ```
 
+    #pagebreak()
     #heading(depth: 5, numbering: none, bookmarked: false)[Results]
     @fig:truth_compare:pearson presents three distinct calculations of the Pearson coefficient on the example images.
     The findings demonstrate a notable degree of concordance, with several outcomes exhibiting a strong positive correlation approaching 1, a value that would be optimal for the algorithm.
@@ -785,13 +784,27 @@
     print(f"Spearman: {r:.3f}")
     ```
 
+    #pagebreak()
     #heading(depth: 5, numbering: none, bookmarked: false)[Results]
     The findings of this experiment are illustrated in @fig:truth_compare:spearman and appear to be promising.
     As demonstrated by the Spearman coefficient, @fig:truth_compare:spearman:a and @fig:truth_compare:spearman:c exhibit a high or very high positive correlation with the ground truth data.
     The results of @fig:truth_compare:spearman:b are not as favorable, rather indicating no or a very weak correlation.
 
-    A comparative analysis of the data reveals that it is generally comparable to the results obtained from the Pearson coefficient. However, a closer inspection of the data reveals no significant differences between the two methods, at least based on the examples that have been presented.
-    Consequently, the final evaluation will be conducted using both the Spearman and the Pearson coefficient, as they are both valid metrics for measuring the correlation between two datasets and may therefore both bring valuable insights.
+    The Spearman rank correlation coefficient is a valuable non-parametric measure of monotonic relationships between two variables. 
+    However, it has been observed to be misleading when the data points are densely clustered within a narrow value range.
+    The scores are typically confined to the interval $[0, 1]$, though in practice, most values may be concentrated within a small subinterval.
+
+    In circumstances where such clustering occurs, rank distinctions become minimal or ambiguous, thereby reducing the meaningful variability that Spearman relies on to detect correlation.
+    This is essentially what transpired in @fig:truth_compare:spearman:b, particularly when comparing solely the values generated using Scharr.
+    Consequently, even in the presence of a genuine underlying trend, the coefficient may exhibit a low or unstable correlation. 
+    This is attributable to the fact that the input lacks sufficient spread to clearly express monotonic relationships.
+    This effect is especially pronounced when absolute differences in segmentation quality are subtle and fail to translate into distinct ranks.
+
+    Therefore, it is imperative to exercise caution when interpreting Spearman coefficients in such circumstances.
+    A comparative analysis of the data reveals that it is generally comparable to the results obtained from the Pearson coefficient.
+    A thorough examination of the data reveals no substantial disparities between the two methods, at least based on the examples that have been presented.
+    Consequently, the final evaluation will be conducted using both the Spearman and the Pearson coefficients. 
+    These are two valid metrics for measuring the correlation between two datasets, and therefore both may be used to provide valuable insights.
 
     #subpar.grid(
       columns: 3,
