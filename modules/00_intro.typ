@@ -108,6 +108,7 @@
     // erstellung von prompts automatisieren
     // 
     // TODO talk about LOD2
+    // 
 
     == Research Questions
     The central ambition of this thesis is to develop and validate a methodology for the automated generation of geometric prompts derived from nDSM data.
