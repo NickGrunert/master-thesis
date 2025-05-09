@@ -110,19 +110,23 @@
     // TODO talk about LOD2
 
     == Research Questions
-    How effective is the zero-shot learning capability of #abr("SAM") in accurately segmenting building roof details, particularly individual roof segments, without prior training?
-    What improvements can be achieved by implementing a one-shot learning approach using input prompts for the segmentation of building roof details, or which method is best?
+    The central ambition of this thesis is to develop and validate a methodology for the automated generation of geometric prompts derived from nDSM data.
+    The objective of this is to analyse and enhance the performance of SAM for the purpose of fine-grained building roof segmentation.
+    The following specific research objectives have been identified for the pursuit of this goal:
+    
+    - Investigate and adapt computer vision techniques for extracting salient geometric features suitable for prompt generation.
+      Explore a range of algorithms, including edge detection and segmentation techniques in order to identify and refine methods that can reliably extract features representing "fine granular roof segments". 
+      These features are to be translated into effective point-based prompts for SAM.
 
-    How well does #abr("SAM") generalise to different roof materials and structures?
-    Can we develop strategies to improve the adaptability of #abr("SAM") to different building types and reduce the need for fine tuning?
+    - The development and implementation of an automated pipelines for the generation of geometric prompts.
+      In accordance with the techniques identified in the initial objective, the research will concentrate on the creation of robust and automated workflows for the purpose of transforming raw data into a set of prompts.
+      This objective encompasses the establishment of suitable metrics and procedures for the evaluation of quality.
+      Said evaluation is vital for understanding the characteristics of the generated prompts and for refining the generation process itself.
 
-    How can #abr("nDSM") data be effectively incorporated into the #abr("SAM") segmentation process to improve the accuracy of building analysis tasks?
-    Can we develop a fusion mechanism that combines features from RGB and #abr("nDSM") data to improve the segmentation of building components?
-
-    Design and implement an automated training data generation workflow.
-    Conduct real-time segmentation experiments on aerial imagery and document the practical challenges and solutions.
-
-    == Exploratory Strategy
+    - To systematically evaluate the performance of SAM when guided by geometric prompts for the task of detailed building roof segmentation in aerial images. 
+      This empirical evaluation will involve applying the generated prompts to SAM and assessing the accuracy, completeness, and geometric fidelity of the resulting roof segmentations. 
+      Performance will be compared against SAM with less informed prompts, manual prompts, or automated prompting strategies, to quantify the benefits of the proposed approach.
+    
     The research approach adopted in this thesis is of an exploratory and iterative nature, with each stage of the research process building upon the results and insights of the preceding stage.
     Rather than beginning with a fixed, end-to-end pipeline or a single hypothesis, the structure of the work reflects a step-by-step examination, with theoretical foundations, methods, and assumptions developed individually for each stage as new challenges and requirements arise.
   ]

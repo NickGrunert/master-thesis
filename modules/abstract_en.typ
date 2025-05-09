@@ -10,24 +10,18 @@
   )
   
   text(lang:"en")[
-    The utilization of deep learning models in the analysis of geospatial data has witnessed significant advancements over the past decade. 
-    These advancements have had a profound impact on various fields, including environmental monitoring, disaster management, urban planning, and cadastre. 
-    By leveraging deep learning techniques, researchers and practitioners can extract, analyze, and interpret vast amounts of spatial data, leading to more accurate and timely insights.
-
-    Deep learning techniques are currently employed for the purpose of building extraction in aerial images using semantic segmentation or instance segmentation techniques @abstract1.
-    However, fine-grained analyses, such as building part instance segmentation, roof plane segmentation, or other semantic attributes of building roofs like material coverage, are hindered by the lack of training data. 
-    Notwithstanding the critical importance of this information for the development of AI-based applications, such as 3D building reconstruction or solar potential analysis, the data scarcity remains a significant barrier.
-
-    The Segment Anything Model (SAM) @sam has exhibited noteworthy zero-shot generalization capabilities across a range of image datasets. 
-    This model has the capacity to segment objects without the necessity of specific training, rendering it a promising instrument for remote sensing applications. 
-    Nevertheless, further investigation is necessary to ascertain the performance of the system in the remote sensing domain @abstract2, particularly in complex scenes and with varying image resolutions.
-
-    The objective of this research is to address the aforementioned gap by adapting and evaluating the SAM for fine-grained building analysis tasks in aerial imagery or multimodal data combining aerial images with data from normalized Digital Surface Models (nDSM).
-    nDSM data provides elevation information, which can be crucial, especially for distinguishing intraclass objects such as individual roof segments.
-    Recent research has explored and demonstrated the potential of applying SAM to remote sensing applications @abstract3.
-    However, its performance on fine-grained building analysis tasks, especially when using nDSM data, remains under-explored.
-    The correct usage of SAM, the selection of appropriate parameters, and the evaluation of its performance on fine-grained building analysis tasks are critical aspects that need to be addressed.
-    In order to ascertain the validity of using SAM in such tasks, an analysis will need to be conducted to evaluate which input data may serve best in achieving this objective.
+    // @abstract2 @abstract3
+    Deep learning has become a cornerstone technology for the analysis of vast quantities of image data prevalent in modern applications. This is largely due to the capacity of these models to autonomously learn intricate and hierarchical features directly from raw data.
+    It is clear that a multitude of applications within the domain of remote sensing are set to benefit considerably from these sophisticated analytical capabilities.
+    Nevertheless, a prevailing and critical hindrance obstructing the general adoption and performance of deep learning in this domain is the significant scarcity of adequately labelled training data.
+    The advent of visual foundational models, such as Meta's Segment Anything Model (SAM) @sam, which was trained on an exceptionally large and diverse dataset, signifies a promising opportunity to alleviate the stringent requirements for extensive, specialised training datasets.
+    
+    The objective of this thesis is to address the challenge of adapting foundational models for specific, fine-grained remote sensing tasks.
+    The primary objective of this research endeavour is the development and evaluation of a novel methodology that utilises the rich geometric information inherent in Digital Surface Models (DSMs) of building roofs.
+    The information is utilised to automatically generate precise geometric prompts. These prompts are specifically designed for the detailed analysis of building roof structures in aerial imagery using SAM.
+    In order to achieve this objective, a range of computer vision techniques are being investigated with a view to ascertaining their efficacy in generating prompts, which are frequently in the form of points denoting roof segments of a fine granular nature.
+    The research systematically tests different automated prompt generation techniques, assesses their intrinsic quality, and subsequently conducts comprehensive experiments to demonstrate the performance of these geometrically-informed prompting strategies when applied to SAM for roof analysis using DSM-derived data.
+    This work contributes a new pathway for enhancing detailed urban feature extraction by synergistically combining foundational models with auxiliary geospatial data, thereby mitigating data scarcity challenges in remote sensing.
   ]
   
   v(1fr)
