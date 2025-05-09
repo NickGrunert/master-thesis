@@ -40,5 +40,14 @@
     Furthermore, the observed benefits of combining masks generated from multiple input images hold considerable promise.
     It is indicated that a decision-based system could be utilised to combine different prompting strategies.
     It is recommended that future research endeavours focus on the optimisation of the utilisation of the complementary strengths of diverse images and prompt types.
+
+    It is suggested that a future direction for research in this field might be to develop a classification system for roof types based on the segmentations generated in this study.
+    Whilst the original input data encompassed a broad spectrum of buildings and roof structures, the associated classifications were frequently unreliable or inconsistent, and did not accurately reflect the actual geometric characteristics.
+    Nevertheless, the segmentations produced by the developed pipeline and SAM offer a more sophisticated representation of roof geometry, which could serve as a more reliable foundation for the classification of roof types.
+
+    A systematic evaluation of performance across a broader range of roof structures remains largely unexplored; further research is required in this area.
+    The primary focus of this thesis was conventional roof shapes and flat roofs, with a particular emphasis on smaller segments.
+    Geometries of a more unusual character, such as rounded roofs, have not been the subject of detailed study, yet these may present unique challenges and insights.
+    A targeted investigation into the extent to which the algorithms under discussion are able to handle such variations could reveal significant limitations or adaptations required for broader applicability.
   ]
 }
