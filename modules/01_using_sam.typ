@@ -4,7 +4,7 @@
   text(lang:"en")[
     = Using SAM for zero-shot segmentation
     In this chapter, we will initiate the experimental phase concerning the usability of #abr("SAM") in the context of roof segmentation.
-    The objective is to ascertain the necessary input data to facilitate effective segmentations and to determine the optimal utilization of #abr("SAM") to achieve this objective.
+    The objective is to ascertain the necessary input data to facilitate effective segmentations and to determine the optimal utilisation of #abr("SAM") to achieve this objective.
 
     == Images <section:sam:images>
     This section will shortly list the types of images that will be used in the evaluation.
@@ -13,7 +13,7 @@
 
     #heading(depth: 5, numbering: none, bookmarked: false)[RGB Image]
     One of the images that can be used is the original #abr("RGB") image itself.
-    However, it should be noted that the utilization of #abr("RGB")  data does not provide additional height information and presents certain challenges.
+    However, it should be noted that the utilisation of #abr("RGB")  data does not provide additional height information and presents certain challenges.
 
     For instance, the presence of shadows within the data can result in severe misclassifications, as the model may lack the capacity to differentiate between the shadow and the object.
     It has been observed that, due to geometric constraints, the majority of surfaces are either wholly shaded or wholly illuminated; however, this is not guaranteed.
@@ -21,7 +21,7 @@
     This phenomenon hinders the effectiveness of an algorithm in identifying similarities between segments that are not shaded and those that are shaded.
 
     Shadows are a prominent feature of the input data, attributable to the geographical location of Germany, which results in a sun position that casts shadows on a significant proportion of residential structures.
-    In order to enhance the utilization of the raw #abr("RGB") data, an algorithm for shadow removal is implemented. 
+    In order to enhance the utilisation of the raw #abr("RGB") data, an algorithm for shadow removal is implemented. 
     This algorithm utilises Gaussian kernels to identify and eliminate shadowed regions @shadows1 @shadows2 @shadows3.
 
     #subpar.grid(
@@ -43,8 +43,7 @@
     The objective of these experiments is to ascertain whether the shadow removal algorithm can enhance the segmentation results of the #abr("SAM") model.
 
     #heading(depth: 5, numbering: none, bookmarked: false)[nDSM Image]
-    Due to the fact that the #abr("RGB")  data contains a substantial amount of information that is either not beneficial or even detrimental when provided to #abr("SAM"), we will try to enhance the input data by using the nDSM data.
-    The nDSM data contains the height information of the current image frame.
+    Due to the fact that the #abr("RGB") data contains a substantial amount of information that is either not beneficial or even detrimental when provided to #abr("SAM"), we will try to enhance the input data by using the #abr("nDSM") data, which contains the height information of the current image frame.
     The incorporation of this data is expected to result in enhanced quality, as it is considered to be valuable information regarding the surface structure.
 
     #subpar.grid(
@@ -57,14 +56,14 @@
       label: <fig:sam:images:ndsm>,
     )
 
-    However, the utilization of nDSM data as #abr("SAM") input appears to be not possible in a direct manner.
+    However, the utilisation of #abr("nDSM") data as #abr("SAM") input appears to be not possible in a direct manner.
     This hypothesis is the result of a thorough analysis of @fig:sam:images:ndsm.
     This phenomenon is evidenced by the minimal contrast present in the image, indicative of its limited information content.
     However, the value graph distinctly demonstrates the potential for differentiating between the roof and the ground.
     As this topic has not been the primary focus of the present discussion, further examination of it will be reserved for a later in @section:replace_clipping_by_sam.
 
     #heading(depth: 5, numbering: none, bookmarked: false)[Custom Derivative Image]
-    Since the nDSM data cannot be used directly, the aim here is to create a custom image that visually represents the derivative, so that it can be used as input for #abr("SAM").
+    Since the #abr("nDSM") data cannot be used directly, the aim here is to create a custom image that visually represents the derivative, so that it can be used as input for #abr("SAM").
     #abr("SAM") originally tries to find good matching segments across the given red, green and blue channels.
     The task is to find a good mapping from the original derivative data to the red, green and blue channels.
 
@@ -246,8 +245,8 @@
     Nevertheless, certain segments are absent, and even minor surfaces appear to be subject to a high degree of certainty according to the scoring system.
 
     The utilisation of the generator is associated with a number of challenges.
-    The outcomes are contingent on the precise values of the algorithms' hyperparameters, including the threshold for non-maximum suppression and the minimum threshold for a mask's stability score.
-    In order to ascertain the most effective manner in which to utilise this method, it would first be necessary to research and experiment with the precise parametrization.
+    The outcomes are contingent on the precise values of the algorithm's hyperparameters, including the threshold for non-maximum suppression and the minimum threshold for a mask's stability score.
+    In order to ascertain the most effective manner in which to utilise this method, it would first be necessary to research and experiment with the precise parametrisation.
     However, these endeavours will not be pursued further.
     Instead, the subsequent phase of research will be dedicated to the development of custom input prompts, better designed for individual surfaces, with the objective of achieving image segmentation.
 

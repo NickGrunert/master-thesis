@@ -51,18 +51,18 @@
 #sam(abr)
 
 // 2
-#ndsm_analysis()
+#ndsm_analysis(abr)
 
 // 3
 #truth_compare(abr)
 
 // 4
-#ablation()
+#ablation(abr)
 
 // 5
-#sam_inclusion()
+#sam_inclusion(abr)
 
 // 6
 #conclusion()
 
-#pagebreak()
+//#pagebreak()

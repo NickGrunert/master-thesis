@@ -1,18 +1,18 @@
 #import "@preview/subpar:0.2.0"
 
-#let sam_inclusion() = {
+#let sam_inclusion(abr) = {
   text(lang:"en")[
-    = Including SAM into the algorithm
-    In this chapter, the Segment Anything Model (SAM) will be implemented on the provided dataset.
+    = Including #abr("SAM") into the algorithm
+    In this chapter, #abr("SAM") will be implemented on the provided dataset.
     Specifically, the process will be analogous to previous iterations, wherein it will be executed on the portion of the dataset that contains ground truth data.
-    This approach facilitates the utilisation of preexisting algorithms for scoring and analysis, thereby enabling a comparative assessment on the performance of SAM.
+    This approach facilitates the utilisation of preexisting algorithms for scoring and analysis, thereby enabling a comparative assessment on the performance of #abr("SAM").
 
     The analysis will be based on the strategies and images established in @section:sam:strategies and @section:sam:images.
     Increased reliability of the input prompts, available due to better input segmentations, will facilitate a more comprehensive and detailed analysis than was previously possible.
 
     == Filtering of generated Segmentations
     The ensuing section will present an analysis of the generated segmentations.
-    The purpose of this analysis is to determine whether the segmentations can serve as adequate inputs for SAM in the subsequent sections.
+    The purpose of this analysis is to determine whether the segmentations can serve as adequate inputs for #abr("SAM") in the subsequent sections.
     The objective of this investigation is to establish input surfaces from which the discussed strategies can be applied to generate input prompts.
 
     Firstly, it is vital to note that the analysis will continue to utilise the input mask for the time being.
@@ -46,12 +46,12 @@
     However, it is evident that certain small, but important, surfaces are filtered out when using dilation.
     The findings of the study indicated the formulation of a theory proposing that the dilation process may not result in optimal solutions.
     This is hypothesised to be due to the presence of additional fragments, which may have a less significant impact than the absence of specific surfaces, which may be critical.
-    The subsequent section will present a detailed analysis of the outcomes, including the practical applications of SAM in this context.
+    The subsequent section will present a detailed analysis of the outcomes, including the practical applications of #abr("SAM") in this context.
 
     == Analysis of the results
 
-    This section presents the findings from the experiments that employed the aforementioned methods, utilizing input images and segmentation to generate the input prompts.
-    The results of this study will be thoroughly analyzed and compared to ascertain the viability of the proposed solutions.
+    This section presents the findings from the experiments that employed the aforementioned methods, utilising input images and segmentation to generate the input prompts.
+    The results of this study will be thoroughly analysed and compared to ascertain the viability of the proposed solutions.
     Eliminating experimental inputs that demonstrate inefficient is of the utmost importance for enhancing the calculation time necessary to generate results for analysis.
     This also includes improvements to the algorithm, which become apparent through this analysis.
     The result of this process will be a final algorithm capable of generating the optimal segmentation for the specified dataset with minimal computational effort. 
@@ -80,7 +80,7 @@
         [#it.body]
       },
       caption: [
-        Best SAM results for each input segmentation
+        Best #abr("SAM") results for each input segmentation
       ],
       label: <fig:sam:results2>,
     )
@@ -145,24 +145,24 @@
       label: <tab:sam:strategy>
     )
 
-    It has been demonstrated that utilizing solely the positive center points appears to be the optimal strategy, with the employment of two or four points demonstrating a higher degree of proficiency.
+    It has been demonstrated that utilising solely the positive center points appears to be the optimal strategy, with the employment of two or four points demonstrating a higher degree of proficiency.
     A number of additional observations can be made.
-    The utilization of negative points was suboptimal, as the process of determining the most suitable surfaces from which to derive negative points was not executed in a dynamic manner.
+    The utilisation of negative points was suboptimal, as the process of determining the most suitable surfaces from which to derive negative points was not executed in a dynamic manner.
     For instance, in place of merely selecting the largest other surfaces, it would be more advantageous to discern merged surfaces from the simple Center Strategy results and re-run the algorithm with those surfaces incorporated as negatives.
     This conclusion was derived from meticulous observation of the result segmentations, which exhibited such discrepancies even when employing the negative points in their present calculation method.
     
-    Furthermore, an absence of direct correlation is observed between the results obtained from any Center Strategy and the Combined Strategy, given the utilization of an equivalent number of input points.
+    Furthermore, an absence of direct correlation is observed between the results obtained from any Center Strategy and the Combined Strategy, given the utilisation of an equivalent number of input points.
     A reasonable expectation would have been that the results would demonstrate some degree of similarity.
     However, this expectation was not met, which renders a direct comparison between the effectiveness of the two strategies unfeasible.
 
-    @fig:sam:problem illustrates a magnitude of problem that came up when running SAM.
+    @fig:sam:problem illustrates a magnitude of problem that came up when running #abr("SAM").
     First, the truth score was calculated the same way it was done in @section:truth_compare, which has not proven unsuccessful, but could be improved upon.
     The algorithm still favors correctness of the surfaces, but since we are no longer evaluating it's effectiveness in producing input prompts, but the actual surfaces themselves, the set bias no longer makes sense.
     The other way arround, favouring completeness would make sense now, since it better encapsulates the wanted correlation between ground truth and the generated surfaces.
 
     Secondly, the derivative data is still riddled with problemns stemming from noise and miscalculations from the height information.
     The small windows on the most top have a substantially wrong influence on the derivative.
-    In this case, the RGB data outperforms, the execution on the derivative image, since such noise is not present, or in the case of the colour swapped image less previlant enough to result in a smooth, correct surface.
+    In this case, the #abr("RGB") data outperforms, the execution on the derivative image, since such noise is not present, or in the case of the colour swapped image less previlant enough to result in a smooth, correct surface.
     On the other hand, the example also shows pretty well that it cuts the big surface to the right in half, since there is a clear visual line between the segments.
     It could be argued that this is not of high importance, since the two individual surfaces can still be used to later generate the accurate structure of the house pretty well, or could be algorithmically merged.
 
@@ -171,19 +171,19 @@
       gutter: 0mm,
       figure(image("../figures/sam/problem.png")),
       caption: [
-        Excerpt from SAM results
+        Excerpt from #abr("SAM") results
       ],
       label: <fig:sam:problem>,
     )
 
-    Also, the RGB data serves in actually recognizing some edges between segments of equal derivative.
+    Also, the #abr("RGB") data serves in actually recognising some edges between segments of equal derivative.
     This can be visually confirmed on the bottom right of the example house.
-    Given the equivalence of the derivatives, it is apparent that the vast majority of experiments exclusively utilising data derived from the nDSM are incapable of identifying the edge.
-    However, the incorporation of the RGB data has been demonstrated to resolve this issue, as the colour-swapped image and the RGB image itself are able to recognise this edge.
+    Given the equivalence of the derivatives, it is apparent that the vast majority of experiments exclusively utilising data derived from the #abr("nDSM") are incapable of identifying the edge.
+    However, the incorporation of the #abr("RGB") data has been demonstrated to resolve this issue, as the colour-swapped image and the #abr("RGB") image itself are able to recognise this edge.
 
     Additionaly, it has become more apparent that the truth comparison should have a higher bias against segmentations which do not find generated segments for any ground truth segment.
     It has been proven that the mapping of score to ground score works.
-    This is approved by the complete results of entire SAM algorithm executions, where the best results by score matches the best results by ground truth score.
+    This is approved by the complete results of entire #abr("SAM") algorithm executions, where the best results by score matches the best results by ground truth score.
     However, here, the visual confirmation is given that the effects of missing matches would preferebly be stronger, to better invalidate some results.
 
     == Combining the best masks

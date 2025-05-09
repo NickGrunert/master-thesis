@@ -1,26 +1,26 @@
 #import "@preview/subpar:0.2.0"
 
-#let ndsm_analysis() = {
+#let ndsm_analysis(abr) = {
   text(lang:"en")[
     = Creation of reliable Input Prompts <section:ndsm_analysis>
     As a need for more reliable input prompts emerged, this section will discuss the process of programming a custom pipeline to create segmentations.
-    It is proposed that these segmentations will prove more reliable in prompting SAM, and therefore should result in superior overall outputs.
-    This will provide a foundation for further analysis to ascertain whether SAM is capable of solving the given problem of complex building roof segmentation when given improved input prompts.
+    It is proposed that these segmentations will prove more reliable in prompting #abr("SAM"), and therefore should result in superior overall outputs.
+    This will provide a foundation for further analysis to ascertain whether #abr("SAM") is capable of solving the given problem of complex building roof segmentation when given improved input prompts.
 
-    The basis of this section is the hypothesis that the correct input points result in improved segmentations by SAM.
+    The basis of this section is the hypothesis that the correct input points result in improved segmentations by #abr("SAM").
     This encompasses enhanced segmentations in terms of structural integrity, a consideration that was not previously a given when utilising the input mask.
     It is essential that each segment is more accurate, and the total number of segmentations should increase to a minimum of the number of segments in the original image.
     It is hypothesised that this will resolve the issue of surfaces of a smaller size not being able to be predicted, as the absence of an individual prompt for them was the issue.
 
     The following oberservations and assumptions are made in this section:
-    - In comparison to the nDSM data, the original RGB pictures contain almost no relevant information.
-      The nDSM data containing the buildings house data is fully capable of serving the relevant information which a segmentation algorithm needs for successful identification of the roof's structure.
-      The following sections will therefore not make use of the RGB data but solely focus on height information.
-    - Using the nDSM data however entails having the need to be able to handle its multiple flaws.
+    - In comparison to the #abr("nDSM") data, the original #abr("RGB") pictures contain almost no relevant information.
+      The #abr("nDSM") data containing the buildings house data is fully capable of serving the relevant information which a segmentation algorithm needs for successful identification of the roof's structure.
+      The following sections will therefore not make use of the #abr("RGB") data but solely focus on height information.
+    - Using the #abr("nDSM") data however entails having the need to be able to handle its multiple flaws.
       For example, most surfaces will not have perfectly smooth derivative data due to seemingly random instabilities inside the given data.
       The height values of a structurally normal  roof segment should in theory be piecewise representable as a continuous function, meaning that the derivative values should be similar or rather constant across the whole surface, which is however disrupted by such abnormalities.
       Therefore, the algorithm will be forced to handle such errors and ensure they do not invalidate its output.
-      Invalidation hereby means that such occurrences do not lead to major miscategorizations of segments.
+      Invalidation hereby means that such occurrences do not lead to major miscategorisations of segments.
 
     The present chapter is composed of three sections.
     @section:algorithm will encompass a comprehensive discussion of the algorithmic components that facilitate the generation of custom segmentation for any given house.
@@ -33,15 +33,15 @@
     Lastly, @section:ablation of this chapter will then return to said parameter and perform an ablation study on the actual effect of these, intended for the purpose of achieving a better understanding and filtering out those parameters with minor effect so that they will not be considered in further calculations on unseen data.
 
     == Algorithmic Identification of Roof Structures <section:algorithm>
-    In the following sections, the nDSM data will be utilised to calculate derivatives, process the data, and consequently detect edges inside the image.
+    In the following sections, the #abr("nDSM") data will be utilised to calculate derivatives, process the data, and consequently detect edges inside the image.
     The derivatives are generally distinguished between x and y directions.
-    The utilization of combined values, expressed as magnitudes, is not a viable approach. 
+    The utilisation of combined values, expressed as magnitudes, is not a viable approach. 
     In the context of mathematics, the operation of multiplying "x" by "-y" is equivalent to the inverse operation of multiplying "-x" by "y."
     However, in practical applications, it is essential to differentiate between these two cases.
     This predicament stems from the problem of opposing roofs having mirrored signs, which is most problematic on axis-aligned houses, where the resulting magnitude of opposing roofs can be identical.
     Consequently, the algorithm may interpret these surfaces as identical, despite substantial disparities in their individual x and y values.
 
-    - Initially, derivatives are constructed using appropriate algorithms to generate data that is more conducive to analysis than the raw nDSM data.
+    - Initially, derivatives are constructed using appropriate algorithms to generate data that is more conducive to analysis than the raw #abr("nDSM") data.
       In this case, the derivatives will be separated into two distinct components: x and y directions. 
       Each of these components will be managed independently.
     - Subsequently, the algorithm implements a series of transformations, including logarithmic scaling, clipping, and Gaussian blurring. 
@@ -69,7 +69,7 @@
       gutter: 2mm,
       box(figure(image("../data/6/5/v2/edges.png")), clip: true, width: 100%, inset: (bottom: -1.0in, left: -1.5in, right: -3.8in)),
       caption: [
-        Visualization of normalisation moving the zero value
+        Visualisation of normalisation moving the zero value
       ],
       label: <fig:algorithm:zero_moving>,
     )
@@ -163,7 +163,7 @@
     It is generally accepted that higher contrast is beneficial for visual confirmation. 
     Additionally, it is presumed that higher contrast enhances the overall performance of the algorithm.
     At the very least, the visual appeal of the intermediate derivative image is greatly improved, making most values and edges more distinguishable.
-    The strong effect of this can be seen in @fig:algorithm:log, where not only a visual distinction is possible only after scaling, but also the distribution plot clearly reflecting better utilization of the value spectrum.
+    The strong effect of this can be seen in @fig:algorithm:log, where not only a visual distinction is possible only after scaling, but also the distribution plot clearly reflecting better utilisation of the value spectrum.
 
     The analysis of the derivative data indicates that, subsequent to normalisation, the majority of the data is comprised of values predominantly concentrated around zero. 
     This is attributable to the presence of extreme outliers within the dataset, resulting in a substantially uneven distribution of values.
@@ -228,7 +228,7 @@
     While no clipping shows very low distinguishable values, the shape of the roof becomes visible after the clipping is applied.
     Inside the value graph, the hills representing the individual segments become visible.
     It should be noted that in the example shown no normalisation was applied, but the general effect is not affected by this.
-    Said theory of base area detection can also be seen in the visualization of the clipped values in the bottom column of the graphs.
+    Said theory of base area detection can also be seen in the visualisation of the clipped values in the bottom column of the graphs.
 
     #subpar.grid(
       columns: 2,
@@ -283,7 +283,7 @@
     A two-dimensional kernel approximating a Gaussian distribution is used to apply a convolution to the image, thereby blurring the image @Gauss1.
     Note that due to the small size of the image, this blurring leads to a loss of detail, which results in a loss of detail and, consequently, may result in an inability to detect thin roof parts.
     The position of blurring inside the overarching edge detection pipeline was determined after a series of preliminary experiments.
-    For instance, the application of blurring to the raw nDSM data demonstrated a comparatively diminished level of overall success.
+    For instance, the application of blurring to the raw #abr("nDSM") data demonstrated a comparatively diminished level of overall success.
 
     The implementation of this introduces the parameters of kernel size and sigma value @Gauss2.
     The sigma value defines the standard deviation of the Gaussian function, which in turn determines the amount of blur applied to the image.
@@ -336,7 +336,7 @@
     There have been suggestions of dynamically calculating the threshold values based on the gradient's median value @Canny3. 
     However, this was not implemented due to initial tests not yielding promising results.
     Conversely, the algorithm will utilise dynamic percentage thresholds.
-    It is important to acknowledge that this approach will essentially replicate the utilization of absolute values directly, as the data undergoes normalisation to fall within the range of 0 to 255 prior to the application of the Canny algorithm.
+    It is important to acknowledge that this approach will essentially replicate the utilisation of absolute values directly, as the data undergoes normalisation to fall within the range of 0 to 255 prior to the application of the Canny algorithm.
 
     #heading(depth: 5, numbering: none, bookmarked: false)[Implementation]
     The Canny algorithm is restricted to positive integer inputs.
@@ -388,14 +388,14 @@
     === Surface Growth <section:surface_growth>
 
     ==== Initial Creation of Surfaces
-    The subsequent generation of surfaces is enabled by the utilization of the edges that have been computed in the edge detection pipeline.
+    The subsequent generation of surfaces is enabled by the utilisation of the edges that have been computed in the edge detection pipeline.
     Initially, all edge pixels must be filtered out, leaving only non-edge pixels for consideration.
     The initial step involves the designation of one of these pixels as a surface. 
     Subsequently, an iterative process is employed to append all adjacent pixels from the list of non-edges.
     This process is repeated until no connected pixels remain, at which point the current surface has grown to occupy the entirety of its available space.
     In the event that there are non-edge pixels remaining that have not yet been assigned to any surface, it is necessary to assign one of them as a new surface and to begin appending all adjacent pixels once more.
     This process is repeated until all pixels of the image are assigned.
-    There is no need for parameterization, nor are there any edge cases that must be considered.
+    There is no need for parameterisation, nor are there any edge cases that must be considered.
 
     ==== Separation and Relinking
     Next, the algorithm takes the generated surfaces and splits them on pixels that do not belong to edges but are adjacent to an edge, before attempting to reconnect such separated surfaces if their mean derivative is similar enough.
@@ -406,7 +406,7 @@
     In summary, regardless of the minimal size of the erosion kernel, it inevitably proved to be excessively radical, resulting in a significant number of pixels and especially entire surfaces being lost.
     Given the small image size, too many components of the roof, small or thin sections, were being filtered out during the process.
     Therefore, this approach was found to be unsatisfactory, since detection of all components is a requirement. 
-    Consequently, the current method of pixel categorization was developed, as it enables greater control over the behavior of the pixels.
+    Consequently, the current method of pixel categorisation was developed, as it enables greater control over the behavior of the pixels.
     
     In this step, surfaces that are only connected through thin parts are subdivided into multiple smaller surfaces.
     In such instances, the algorithm will attempt to reconnect the resulting sub-components.
@@ -420,7 +420,7 @@
     The threshold value is established as absolute, given the substantiated finding that percentage-based thresholds induce a false bias against flat roof structures and excessively prompt the algorithm to merge high derivative surfaces.
 
     The linking step implements a failsafe that verifies spatial connectivity following the merging of two surfaces. This is due to the fact that a simple combination of derivatives does not guarantee this, particularly when larger surfaces are fragmented into numerous components.
-    This issue primarily originates from improper parameterization in the Canny algorithm outlined in @section:canny. 
+    This issue primarily originates from improper parameterisation in the Canny algorithm outlined in @section:canny. 
     This challenge was addressed regardless.
 
     This step, in general, only serves as a minor improvement and does not alter the outcome of the algorithm in a significant way.
@@ -483,14 +483,14 @@
     )
 
     In the final algorithm for this section, the base area filtering will be executed prior to separation and re-linking, as the filtration of surfaces before these steps exerts a significant influence on the resulting execution time.
-    Given the potential abundance of small surfaces in the external environment, the efficiency of the algorithm is contingent upon the optimization of its calculation process.
+    Given the potential abundance of small surfaces in the external environment, the efficiency of the algorithm is contingent upon the optimisation of its calculation process.
     Furthermore, preliminary experimentation has demonstrated that employing the refinement steps intended for normal surfaces on the base area surfaces has positive effects as well as negative ones.
     A notable distinction emerges in the application of refinement to the detected base area, as illustrated in @fig:scores:founderror. 
     The application of refinement to the thin segment on the left would result in the erroneous filtration of that segment.
     While it demonstrates increased resilience against minor variations in the house outlines, it exhibits reduced robustness in other aspects.
     The prevailing assumption was that if an insufficient amount of clipping for detecting the building's outline was applied, remediation was possible by simply increasing the clipping percentage.
     While this approach is not without its limitations, as it likely results in more clipping than necessary and is not entirely robust, these aspects will not be addressed in this work.
-    This is partially due to the fact that the base area detection will be addressed in @section:replace_clipping_by_sam, which will replace this specific part of the algorithm by using SAM on the nDSM data to find the base area.
+    This is partially due to the fact that the base area detection will be addressed in @section:replace_clipping_by_sam, which will replace this specific part of the algorithm by using #abr("SAM") on the #abr("nDSM") data to find the base area.
 
     #figure(
       image("../data/6/1/v1/surfaces.png", width: 100%),
@@ -518,7 +518,7 @@
       It is imperative that the augmentation of score through the implementation of this reward does not violate the established first criteria of coherence.
     
     ==== Experimental Usage of DBSCAN
-    An initial attempt was made to utilise the Density-Based Spatial Clustering of Applications with Noise (DBSCAN) algorithm @dbscan1.
+    An initial attempt was made to utilise the #abr("DBSCAN") algorithm @dbscan1.
     This algorithm is employed to detect coherent clusters in data, a common task in machine learning.
     The interpretation of surface derivatives as a point cloud renders them applicable to this algorithm, in that the derivative values should exhibit a certain degree of spatial coherence.
 
@@ -528,7 +528,7 @@
     It is conceivable that further experimentation with the algorithms parameter may yield favorable outcomes; nevertheless, preliminary tests have demonstrated a strong correlation between the quality of the algorithms and the values of this parameter. 
     It appears that achieving satisfactory results is an unfeasible task.
     
-    @fig:dbscan presents illustrative results of the DBSCAN algorithm on three disparate surfaces, yielding suboptimal outcomes in each instance.
+    @fig:dbscan presents illustrative results of the #abr("DBSCAN") algorithm on three disparate surfaces, yielding suboptimal outcomes in each instance.
     Note that the label -1 is given to all points considered noise @dbscan2.
     The surface utilised in @fig:dbscan:a is comprised of three surfaces that have been erroneously merged.
     Nonetheless, the algorithm proved incapable of identifying this particular instance and instead labeled 17 different surfaces. 
@@ -555,12 +555,12 @@
         Much noise.
       ]), <fig:dbscan:c>,
       caption: [
-        Execution of the DBSCAN algorithm
+        Execution of #abr("DBSCAN")
       ],
       label: <fig:dbscan>,
     )
 
-    The necessity of precise parametrization in each instance constitutes a significant challenge, as this section aims to assess the validity of any surface with a high degree of success.
+    The necessity of precise parametrisation in each instance constitutes a significant challenge, as this section aims to assess the validity of any surface with a high degree of success.
     Consequently, as this approach necessitates an evaluation of the scoring parameter, its applicability in this context is considered limited.
     While the method could potentially be applied for surface evaluation or even segmentation in general, it will not be pursued further in this study.
 
@@ -570,7 +570,7 @@
     This algorithm functions independently of the specific input data, thereby eliminating the need for adjustments.
     This process is achieved through the analysis of the derivatives of each surface in all directions, including the x, y, and magnitude values.
     In each of these directions, the algorithm seeks to identify regions exhibiting approximately constant or close values. 
-    These regions will henceforth be designated as plateaus, as visualizing the data reveals the ideal representation of a perfect surface.
+    These regions will henceforth be designated as plateaus, as visualising the data reveals the ideal representation of a perfect surface.
     The final result will be a score between 0 and 1 for each surface, which itself is an equal-valued combination of the three directions.
 
     A failsafe has been incorporated to address the issue of surfaces exhibiting characteristics indicative of undersegmentation, such as the presence of multiple plateaus indicating a merge of at least two surfaces into a single one.
@@ -588,7 +588,7 @@
 
     #heading(depth: 5, numbering: none, bookmarked: false)[Implementation]
     The following implementation illustrates the calculation of individual scores for each surface in relation to the derivative values and their interpretation.
-    This excludes all filtering and optimization steps, such as the initial sorting of derivative values.
+    This excludes all filtering and optimisation steps, such as the initial sorting of derivative values.
     Additionally, this does not address the method by which the surfaces are subsequently integrated to generate the segmentation score in its entirety.
 
     ```python
@@ -694,7 +694,7 @@
     The data indicates that, in these cases, the magnitude value is significantly impactful. 
     On a spire or rounded surfaces in general, the multiplication of the x and y directions generates a coherent plateau which is mathematically provable.
 
-    Presently, the equitable distribution of points among the three directions results in the algorithm's minimal penalization of the two plateaus in the x direction, despite the fact that, in certain instances, this may serve as sufficient evidence of an erroneous surface segmentation.
+    Presently, the equitable distribution of points among the three directions results in the algorithm's minimal penalisation of the two plateaus in the x direction, despite the fact that, in certain instances, this may serve as sufficient evidence of an erroneous surface segmentation.
     It may be necessary to consider the implementation of a more stringent penalty for instances where values are absent. However, it is important to note that imposing a penalty of zero for the entire surface area may prove to be overly severe.
     
     ==== Segmentation Scoring
@@ -736,9 +736,9 @@
     As illustrated, this effect occurs when the clipping value is increased because the current algorithm is unaffected by a reduction in overall surface area.
 
     A segmentation that results in the complete removal of a surface should cause the score of the algorithm to be reduced, as this process decreases the percentage of the base area that is covered.
-    For this purpose, a negative score has been introduced in addition to the positive score. This negative score is denoted by $#sym.Phi _"neg"$.
+    For this purpose, in addition to the positive score a negative score has been introduced, denoted by $#sym.Phi _"neg"$.
     The base area is currently derived from the input data, but it has the potential to be calculated dynamically if a more robust method for base area detection is identified.
-    While the mask contained within the input data may be unsuitable for more specific analysis due to missing quality, the area covered by the house is adequate for utilization in this algorithm.
+    While the mask contained within the input data may be unsuitable for more specific analysis due to missing quality, the area covered by the house is adequate for utilisation in this algorithm.
 
     In this manner, the algorithm is able to detect missing house areas.
     Given that both scores are on a scale from 0 to 1, with 1 representing the optimal result, the final score can be calculated as a weighted sum of these two scores.
@@ -763,7 +763,7 @@
     )
 
     @fig:scores:squareornot shows the results for the segmentation scoring.
-    Two examples are provided to illustrate the distinction between utilizing the square of the surface area and using the surface area directly, without any bias toward larger surfaces.
+    Two examples are provided to illustrate the distinction between utilising the square of the surface area and using the surface area directly, without any bias toward larger surfaces.
     Upon examination of the positive score, it becomes evident that the intended effect is indeed being achieved. 
     As illustrated in @fig:scores:squareornot:a, the larger surface is given greater value than the smaller one.
     @fig:scores:squareornot:b prioritises smaller surfaces over larger segments. 

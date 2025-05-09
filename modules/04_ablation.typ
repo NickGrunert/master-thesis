@@ -1,6 +1,6 @@
 #import "@preview/subpar:0.2.0"
 
-#let ablation() = {
+#let ablation(abr) = {
   text(lang:"en")[
     == Ablation Study and Algorithm Improvement <section:ablation>
     This section describes the ablation study performed to evaluate the impact of different hyperparameters on the performance of the proposed algorithm.
@@ -24,7 +24,7 @@
     === Blurring Method
     As mentioned, the blurring method is used to smooth the image and reduce noise.
     The choice of blurring method has a significant impact on the quality of the resulting segmentations.
-    Therefore, this subsection compares and analyzes the performance of different blurring methods.
+    Therefore, this subsection compares and analyses the performance of different blurring methods.
 
     @fig:ablation:blurring shows the extracted blurring methods from each of the calculated best results for each house.
     It is quite obvious that blurring with a 5x5 kernel gives the best overall results.
@@ -104,7 +104,7 @@
     Surprisingly, the Sobel and Scharr methods perform quite poorly.
     Again, since they are quite similar approaches, similar performance was to be expected.
 
-    In order to minimise the computational demands associated with determining the optimal parametrization for each individual building, the Scharr and Sliding methods are filtered out.
+    In order to minimise the computational demands associated with determining the optimal parametrisation for each individual building, the Scharr and Sliding methods are filtered out.
     The Sobel and gradient methods are retained due to their capacity to yield distinct outcomes, thus rendering both potentially advantageous.
     Furthermore, it should be noted that the aforementioned pair of methods are capable of substituting the removed methods, given their notable similarity.
     This approach results in a reduction of the number of necessary calculations by 50%, while ensuring the maintenance of the overall quality of the results and only minor losses in quality.
@@ -116,16 +116,16 @@
       ],
     ) <fig:ablation:derivative>
 
-    === Using SAM for Base Area Detection <section:replace_clipping_by_sam>
-    As was hypothesised in the preliminary study on the potential applications of the various input images, it was theorised that SAM could be utilised for base area detection.
+    === Using #abr("SAM") for Base Area Detection <section:replace_clipping_by_sam>
+    As was hypothesised in the preliminary study on the potential applications of the various input images, it was theorised that #abr("SAM") could be utilised for base area detection.
     In this instance, the hypothesis will be proven true and included in the algorithm.
     Subsequent to the aforementioned change, the algorithm will no longer be dependent on the clipping percentage.
 
-    As demonstrated by @fig:ablation:base_area, the results of the SAM segmentation for three different houses are presented.
+    As demonstrated by @fig:ablation:base_area, the results of the #abr("SAM") segmentation for three different houses are presented.
     It is notable that the input prompts continue to originate from the mask of the original input data, as its replacement as a data source is not deemed necessary in this instance.
     Furthermore, the substandard quality of the mask has a negligible impact on the quality of the results.
 
-    The bottom example in the figure demonstrates a scenario in which the SAM segmentation fails to detect the entirety of the base area of the building.
+    The bottom example in the figure demonstrates a scenario in which the #abr("SAM") segmentation fails to detect the entirety of the base area of the building.
     This issue is resolved through the implementation of a straightforward merging process of the detected base area with the mask utilised for its creation.
     The mask's inability to define the base area is problematic; however, in this instance, it is sufficient to substitute for the absent elements in the segmentation.
 
@@ -136,7 +136,7 @@
       figure(image("../data/6/19/sam/sam_mask.png")),
       figure(image("../data/6/3/sam/sam_mask.png")),
       caption: [
-        Base Area Detection using SAM
+        Base Area Detection using #abr("SAM")
       ],
       label: <fig:ablation:base_area>,
     )
