@@ -209,11 +209,17 @@
 
     == Prompting Techniques and Results
 
-    // TODO
+    === Manual Prompting
+    In order to develop a more complete understanding of the capabilities and limitations of #abr("SAM"), an initial experiment was conducted using manual prompting with input points.
+    There are a number of tools available online that can facilitate this kind of interaction. 
+    These tools enable users to supply positive and negative points, thus guiding #abr("SAM") in generating segmentations.
+    In addition to employing pre-existing tools, a small custom interface was developed for the purpose of manually annotating images with point-based prompts, incorporating both positive and negative input prompts.
+    This configuration facilitated more rigorous experimentation and direct engagement with the model.
 
-    // === Manual Prompting
-
-    // TODO
+    However, the results indicated a substantial limitation: the quality of individual segmentations frequently fell short of the requirements for high-precision tasks.
+    Masks frequently necessitated substantial manual refinement and correction.
+    The manual effort required to achieve satisfactory results was found to be greater than the practical benefit in most cases.
+    This emphasised the necessity for more automated or structured approaches to prompting in order to generate masks that are consistently useful, particularly for complex scenes or high-level semantic segmentation.
 
     === Automatik Mask Generator
     One simple way of using #abr("SAM") is by using the automatic mask generator provided by the #abr("SAM")2 implementation.
@@ -221,15 +227,20 @@
     Afterwards, the results are subject to multiple post processing steps like non-maxmimum suppression and thresholding to create the final segmentation over the entire image @sam4.
     This appraoch does not requier us to create reliable input prompts, but also disenables further control over the specific data used as input.
 
+    The @fig:sam:automatic illustrates the results of utilising the automatic mask generator on the established input images.
+    The results obtained are extremely encouraging, as they indicate with a high degree of certainty that #abr("SAM") is capable of delivering the desired segmentations.
+    A substantial number of segments were detected, and the roof's overall shape is adequately captured.
+    Nevertheless, certain segments are absent, and even minor surfaces appear to be subject to a high degree of certainty according to the scoring system.
+
     #subpar.grid(
       columns: 2,
       gutter: 2mm,
-      figure(image("../data/6/1/sam/0.png")),
-      figure(image("../data/6/1/sam/1.png")),
-      figure(image("../data/6/1/sam/2.png")),
-      figure(image("../data/6/1/sam/3.png")),
-      figure(image("../data/6/1/sam/4.png")),
-      figure(image("../data/6/1/sam/5.png")),
+      box(figure(image("../data/6/1/sam/0.png")), clip: true, width: 100%, inset: (bottom: -0.2in, top: -0.2in)),
+      box(figure(image("../data/6/1/sam/1.png")), clip: true, width: 100%, inset: (bottom: -0.2in, top: -0.2in)),
+      box(figure(image("../data/6/1/sam/2.png")), clip: true, width: 100%, inset: (bottom: -0.2in, top: -0.2in)),
+      box(figure(image("../data/6/1/sam/3.png")), clip: true, width: 100%, inset: (bottom: -0.2in, top: -0.2in)),
+      box(figure(image("../data/6/1/sam/4.png")), clip: true, width: 100%, inset: (bottom: -0.2in, top: -0.2in)),
+      box(figure(image("../data/6/1/sam/5.png")), clip: true, width: 100%, inset: (bottom: -0.2in, top: -0.2in)),
       caption: [
         Segmentations using the Automatic Mask Generator
       ],
@@ -238,11 +249,6 @@
       },
       label: <fig:sam:automatic>,
     )
-
-    The @fig:sam:automatic illustrates the results of utilising the automatic mask generator on the established input images.
-    The results obtained are extremely encouraging, as they indicate with a high degree of certainty that #abr("SAM") is capable of delivering the desired segmentations.
-    A substantial number of segments were detected, and the roof's overall shape is adequately captured.
-    Nevertheless, certain segments are absent, and even minor surfaces appear to be subject to a high degree of certainty according to the scoring system.
 
     The utilisation of the generator is associated with a number of challenges.
     The outcomes are contingent on the precise values of the algorithm's hyperparameters, including the threshold for non-maximum suppression and the minimum threshold for a mask's stability score.

@@ -74,6 +74,9 @@
     However, some of them exceed the scale, with up to almost 250 parts.
     Closer analysis reveals that this is a general sign that the building contains many rounded segments, as these are broken down into many individual triangular segments within the geometries.
 
+    @fig:input:heatmaps displays the geometries in question as a heatmap. The building area is shown in the first heatmap, the bounding box area is displayed in the second, the ratio between the two is shown in the third and the number of building parts is shown in the fourth row.
+    The presence of an excessively large area is often indicative of unnecessary complexity.
+
     #subpar.grid(
       columns: (3fr, 1fr),
       gutter: 2mm,
@@ -85,17 +88,8 @@
       label: <fig:input:heatmaps>,
     )
 
-    @fig:input:heatmaps displays the geometries in question as a heatmap. The building area is shown in the first heatmap, the bounding box area is displayed in the second, the ratio between the two is shown in the third and the number of building parts is shown in the fourth row.
-    The presence of an excessively large area is often indicative of unnecessary complexity.
-
     The presence of a large bounding box in and of itself does not pose a problem; a large building will naturally have a large bounding box.
     However, the ratio between these two metrics has been demonstrated to serve as an indicator of potentially problematic buildings, as structures with a low ratio are generally considered undesirable, as they do not serve as effective exemplars.
-
-    Next, @fig:input:statistics lays down the statistics over the identified relevant data, showing the distribution as bar plots as well as line plots with median and mean values.
-    Note that the plots do not show 7%, 11% and 12% of the values for overlapping building parts, area and bounding box area respectively for better visualisation.
-    The differences between median and mean are particularly striking.
-    It is normally expected that the data for each of the graphs will be approximately normally distributed.
-    The observed discrepancies between median and mean can be attributed to errors in the data.
 
     #subpar.grid(
       columns: 2,
@@ -109,6 +103,12 @@
       ],
       label: <fig:input:statistics>,
     )
+
+    Next, @fig:input:statistics lays down the statistics over the identified relevant data, showing the distribution as bar plots as well as line plots with median and mean values.
+    Note that the plots do not show 7%, 11% and 12% of the values for overlapping building parts, area and bounding box area respectively for better visualisation.
+    The differences between median and mean are particularly striking.
+    It is normally expected that the data for each of the graphs will be approximately normally distributed.
+    The observed discrepancies between median and mean can be attributed to errors in the data.
 
     The presence of buildings with close to zero area, the distribution of confidence values down to 50%, and the absence of overlapping building parts can be attributed to erroneous identification of buildings. 
     Additionally, these errors are not statistically independent, but rather exhibit a correlation with the fact that buildings of virtually negligible size are often also not present in the building part data set and of low confidence.
@@ -189,16 +189,6 @@
     Therefore, the dataset will be sorted according to the area size.
     The subsequent experiments will primarily utilise the initial 20 houses located at the 60th percentile.
 
-    The input data is processed so that the following algorithms receive an #abr("RGB")  image of the house, the #abr("nDSM") data within this area frame, and the building parts as an image mask.
-    Note that this mask may not reflect the structure of the building well, but can be used as a rough estimate of the building boundaries and as a basis for later analysis.
-    Its exact use will be explained later.
-
-    @fig:input:result_example shows two examples of the processed dataset.
-    Note that the masks shown are not the final product, as they will be pre-processed to exclude building parts that do not belong to the current building in question.
-    The second entry shows such an invalid overlap in the lower left corner, which will be filtered out before further use.
-
-    The #abr("nDSM") image is displayed using a terrain colour map for visual clarity, as the raw #abr("nDSM") data in a spectrum from white to black does not have enough contrast to show clear detail.
-
     #subpar.grid(
       columns: (2fr, 1fr),
       gutter: 0mm,
@@ -211,5 +201,15 @@
       ],
       label: <fig:input:result_example>,
     )
+
+    The input data is processed so that the following algorithms receive an #abr("RGB")  image of the house, the #abr("nDSM") data within this area frame, and the building parts as an image mask.
+    Note that this mask may not reflect the structure of the building well, but can be used as a rough estimate of the building boundaries and as a basis for later analysis.
+    Its exact use will be explained later.
+
+    @fig:input:result_example shows two examples of the processed dataset.
+    Note that the masks shown are not the final product, as they will be pre-processed to exclude building parts that do not belong to the current building in question.
+    The second entry shows such an invalid overlap in the lower left corner, which will be filtered out before further use.
+
+    The #abr("nDSM") image is displayed using a terrain colour map for visual clarity, as the raw #abr("nDSM") data in a spectrum from white to black does not have enough contrast to show clear detail.
   ]
 }
