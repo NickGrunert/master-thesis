@@ -52,7 +52,7 @@
     It appears that the employment of the derivative, which is known to yield the optimal outcome in @section:algorithm, serves to mitigate this effect.
     This establishes the hypothesis that the Sobel method may be suboptimal, although this remains to be proven.
     This risk is nevertheless deemed acceptable for the time being. The @section:ablation:derivative will address the selection of the appropriate derivative in greater detail.
-    
+
     #subpar.grid(
       columns: (1fr, 1fr, 1fr),
       gutter: 1mm,
@@ -80,10 +80,9 @@
 
 
     === Evaluation of Individual Segmentations
-    The evaluation of the segmentation is a critical step in the assessment of the performance of the algorithm.
-    Therefore, the subsequent section will provide a detailed exposition of the methodology that was employed to evaluate the segmentation.
-    Each subsection will be devoted to either a discussion of a specific component of the resulting algorithm or an analysis of an enhancement to one of these components.
-    This process will culminate in the development of a score function that will serve to evaluate the quality of the predicted segmentation in relation to the ground truth data.
+    This section will provide a detailed exposition of the methodology that was employed to evaluate individual segments.
+    The following discussion will focus on specific components, which will ultimately result in the formulation of a score function.
+    This function will be utilised to assess the predicted segments against the established ground truth data.
 
     ==== Comparing Segments via #abr("IoU")
     #heading(depth: 5, numbering: none, bookmarked: false)[Formula]
@@ -123,11 +122,13 @@
     #heading(depth: 5, numbering: none, bookmarked: false)[Explanation]
     There is more than one way to define data quality and it's fundamental components; one of such definitions being completeness, accuracy, and consistency @DataCompleteness.
     However, our primary concern at this stage is to prioritize completeness and accuracy, given the relatively low priority accorded to consistency in the current use case.
+
+    The degree of consistency will not be discussed further in this text, since doing so would entail an evaluation of the adequacy of the original geographical division and the representativeness of the buildings contained therein with respect to universal building types.
+    It can be stated, with a reasonable degree of certainty, that the data is assumed to demonstrate a sufficient degree of variability in terms of complexity with regard to typical roof types.
     The degree of consistency among the data sets would be challenging to precisely delineate in this context.
-    One possible description of the methodology would be capability of receiving reliable data across multiple roofs without significant deterioration in segmentation quality.
     An initial investigation was conducted to ascertain the presence of all roof types within the dataset.
-    Nevertheless, in this particular instance, maintaining consistency would also imply that the algorithms' scores can be relied upon, irrespective of the roof type.
-    Although extensive testing on the algorithm's performance on different roof types is not part of the current study, the testing examples do include a few non-normal roof types, on which the performance will be measured briefly.
+    However, in this particular instance, maintaining consistency would also imply that the algorithms' scores can be relied upon, irrespective of the roof type.
+    While the present study does not encompass extensive testing of the algorithm's performance on various roof types, the testing examples do include a few non-normal roof types, on which the performance will be measured briefly.
     For instance, given the prevalence of flat roofs in the input data and their relatively uncomplicated structural nature, the successful performance on a limited number of instances can be extrapolated to infer the efficacy on the entire dataset.
     This assertion is equally applicable to other roof types, given the substantial comparability of standard roof components.
 
@@ -175,7 +176,7 @@
     However, it should be noted that this will not be addressed through the implementation of an algorithm in the calculation of segmentation.
     Subsequent work may attempt to rectify this issue by dynamically merging surfaces and recalculating the score to identify areas for enhancement.
 
-    A more significant concern pertains to the issue of undersegmentation, which occurs when multiple roof surfaces are combined into a single prediction.
+    A more significant concern pertains to the issue of undersegmentation, which occurs when multiple ground truth roof surfaces are combined into one single prediction.
     This erroneous assumption can result in inaccurate estimations of the number of roof components, which, in turn, may prompt erroneous input prompts for #abr("SAM"). 
     It is imperative to refrain from such input prompts under any circumstances.
     The prior scoring algorithm, which employs the plateau algorithm, imposes a significant penalty on this issue, incentivizing the algorithm to avoid it.
@@ -185,7 +186,7 @@
 
     #heading(depth: 5, numbering: none, bookmarked: false)[Code Snippet]
     The optimal solution is the implementation of a precise one-to-one mapping between segments, as this would be the anticipated outcome of a flawless algorithm.
-    Nevertheless, the subsequent code explores the potentiality of associating numerous segments with a singular ground truth segment, which is delineated by the max_surfaces parameter.
+    The subsequent code explores the potentiality of associating numerous segments with a singular ground truth segment, which is delineated by the max_surfaces parameter.
 
     For each predicted surface, the algorithm identifies the ground truth segment with the highest #abr("IoU") value.
     Consequently, the ground truth segment is iterated in the inverse manner, collecting all their matches and taking the best matches by score.
@@ -248,24 +249,23 @@
       label: <fig:truth_compare:completeness>,
     )
 
-    @fig:truth_compare:completeness shows the results of an experiment in which the recall and precision were calculated for different numbers of calculated surfaces matched to one ground truth surface.
+    @fig:truth_compare:completeness shows the results of an experiment in which the recall and precision were calculated for different numbers of predicted surfaces matched to one ground truth surface.
     It is evident that the recall, here defined as correctness, is notably high, indicating a commendable accuracy in the classification of pixels.
     Although attaining a perfect score is arguably unfeasible, the sole outlier is discernible in the blue and light brown surfaces located in the lower left corner. 
     This area exhibits ambiguity in the delineation between the house and the ground, potentially compromising the clarity of the transition.
 
-    The algorithm's good performance is indicated by its high accuracy, even in @fig:truth_compare:completeness:d, where up to 10 surfaces are matched to one ground truth surface.
+    The algorithm's high accuracy, even when using up to 10 surfaces matched onto one ground truth surface, indicates its good performance.
     Therefore, in the event that one of the surfaces classified as incorrect is converted into a #abr("SAM") input prompt, it is expected that there will not be a significant issue with regard to the integrity of the data.
-    Nevertheless, a straightforward method for filtering out such surfaces is lacking. 
+    It is notable that a straightforward method for filtering out such surfaces is lacking.
     These surfaces are not erroneous in the sense of being misclassified; rather, they are excessively fragmented.
-    One potential solution to this issue is to implement actual improvements to the algorithm. 
-    However, for the time being, this problem will be disregarded.
+    The implementation of improvements to the algorithm, or the identification of more suitable hyperparameters for the algorithm, has been demonstrated to result in a significant reduction in the impact of this issue.
     
     It can be noted that the completeness of the surfaces is consistent with the expected level of complexity.
     The most significant enhancement is observed when increasing the limit from one match to two, indicating an unfortunate propensity to at least divide surfaces once.
-    In most cases, the addition of smaller surfaces when using high limits negligibly contributes to the overall structure.
+    In the majority of cases, the incorporation of smaller surfaces when utilising high limits results in only a marginal contribution to the overall structure.
     The impact of these elements on the overall score is negligible; therefore, they do not warrant significant concern.
-    This issue manifests only in certain instances, wherein thin connections result in the division of relevant elements. 
-    Nevertheless, given the fundamental cause most likely being the utilization of low-pixel images and the current absence of exhaustive analysis on the performance impact of the hyperparameter, this is not of great concern.
+    The issue under discussion manifests itself in specific instances only, wherein thin connections result in the division of subparts.
+    Once more, a thorough investigation into the performance implications of the hyperparameters may potentially diminish the consequences of the loss of thin roof components.
 
     ==== Creating the final score via the $F_ß$ Score method <section:fß>
     #heading(depth: 5, numbering: none, bookmarked: false)[Formula]
@@ -286,9 +286,9 @@
     While it may seem logical to exclude the completeness from this calculation altogether, it is useful for enhancing the comparability with the scoring system.
     In essence, our objective is to utilize this as a metric to assess the reliability of the scoring system. 
     Given that the algorithm employs a positive and negative scoring system, this approach is a logical one.
-    Nonetheless, it could be argued that the elimination of the negative score could similarly yield a non negative outcome, as the theoretical irrelevance of missing pixels was discussed at the beginning of this chapter.
-    Notwithstanding, the decision was made to not exclude recall, using the $F_0.5$ score when calculating the final scores out of positive and negative scores.
-    This introduces a bias in favor of surfaces being correct and mitigates the impact of missing surface area.
+    Nevertheless, it could be argued that the elimination of the negative score could similarly yield a non-negative outcome, as the theoretical irrelevance of missing pixels was discussed at the beginning of this chapter.
+    However, the decision was taken not to exclude recall and to continue using the $F_0.5$ score when calculating the final scores out of positive and negative scores.
+    This introduces a bias in favour of surfaces being correct and mitigates the impact of missing surface area.
     
     #heading(depth: 5, numbering: none, bookmarked: false)[Code Snippet]
     ```python
@@ -305,10 +305,12 @@
 
     Constraining the matching of generated segments and ground truth segments to being strictly 1-to-1 is essentially equivalent to using the #abr("HMA"), also called the Kuhn-Munkres algorithm @hungarian1.
     The #abr("HMA") is a computational optimization technique that addresses the assignment problem in polynomial time. 
-    It can be utilized to identify the optimal assignment of generated segments to ground truth segments by cost minimization @hungarian2.
-    A two-dimensional matrix of size $n*m$ is employed, wherein $n$ denotes the number of predicted segments and $m$ signifies the number of segments in the ground truth data. This matrix contains all #abr("IoU") values.
-    The algorithm's function is to calculate the optimal matching pairs between the two sets of segments.
-    Therefore, the #abr("IoU") matrix is simply inverted so that the task becomes minimizing, since typically, an #abr("IoU") would need to be maximized.
+    It can be utilized to identify the optimal assignment of predicted segments to ground truth segments @hungarian2.
+    A two-dimensional matrix of size $n*m$ is employed, where $n$ denotes the number of predicted segments and $m$ denotes the number of segments in the ground truth data.
+    This matrix contains all #abr("IoU") values.
+    The purpose of the algorithm is to calculate the optimal matching pairs between the two sets of segments.
+    In order to accomplish this objective, it is necessary to invert the #abr("IoU") matrix. 
+    This is because, in the typical case, the #abr("IoU") would need to be maximised; however, in this instance, the objective is to minimise the scores.
 
     The #abr("HMA") aligns with our objectives, demonstrating enhanced optimization compared to the self-implementation approach due to its status as established library code.
     Additionally, the algorithm inherently produces surfaces that have not been mapped. 
@@ -334,11 +336,11 @@
     However, a notable distinction between the two implementations lies in the methodology employed for handling unmatched segments.
     As illustrated by the implementation in @fig:truth_compare:hungarian_error, there is a discrepancy in the calculation of scores between the approaches.
     While the two approaches are similar in general, the new implementation utilizes unmatched segments to calculate #abr("FP") and #abr("FN"), a feature not present in the older approach.
-    Initially, an unmatched predicted surface was excluded from the #abr("FP") calculation due to the negligible impact of undersegmentation on the algorithm's performance.
-    The algorithm would only need to address the issue of oversegmentation, as this would result in fewer prompts than the number of truth surfaces.
+    Initially, an unmatched predicted surface was excluded from the #abr("FP") calculation due to the negligible impact of oversegmentation on the algorithm's performance.
+    The algorithm would only need to address the issue of undersegmentation, as this would result in fewer prompts than the number of truth surfaces.
     In the subsequent implementation using the #abr("HMA"), however, this concept is no longer utilized due to reevaluation of the approach.
     The objective is to ascertain the validity of the concept in relation to the ground truth. 
-    Consequently, the penalization of erroneous surfaces through undersegmentation is required to ensure the integrity of this endeavor.
+    Consequently, the penalization of erroneous surfaces in terms of undersegmentation is required to ensure the integrity of this endeavor.
     In the alternative, the score of segmentations could be overestimated to a considerable degree.
 
     As demonstrated by @fig:truth_compare:hungarian_compare, a new visualization method has been developed for the purpose of illustrating the handling of segments.
@@ -439,16 +441,12 @@
 
 
     === Metric-Based Evaluation
-    Originally, this section first presented all theoretical explanations, before combining their respective experimentation results together to create a final evaluation.
-    However, this approach was deemed impractical, as each approach was thoroughly considered and evaluated before conducting a comprehensive analysis of the results.
-    Each subsequent approach has been developed by incorporating the lessons learned from the results of the previous approaches and striving to improve upon them.
-    Consequently, the ensuing sections are dedicated to the following: the presentation of formulae for calculating the metric; an exposition of the rationale behind why it is used; the presentation of example results; and a discussion of the lessons learned.
-    It is hypothesized that the data is indeed correlated with each other, and that the relationship between them is linear.
+    It is hypothesised that the resulting score from the plateau algorithm will correlate with the results of the ground truth evaluation.
+    This subsection will explore that correlation in detail, in order to prove the validity of the plateau algorithm's score generation to be used even in the absence of ground truth.
 
-    The example images employed in the ensuing sections are all drawn from the same three example houses. 
-    This ensures that the outcome of @fig:truth_compare:metrics:a is equivalent to that of @fig:truth_compare:pearson:a and @fig:truth_compare:correlation:a, with the sole difference being the consideration of disparate metrics. 
-    These metrics are further elaborated upon in @fig:truth_compare:examples:a.
-    In the final section, a comparative analysis of the various metrics will be conducted, followed by a discussion of the aggregate results.
+    Each individual approach has been developed by incorporating the lessons learned from the results of the previous approaches and striving to improve upon them.
+    Consequently, the ensuing sections are dedicated to the following: the presentation of formulae for calculating the metric; an exposition of the rationale behind why it is used; the presentation of example results; and a discussion of the lessons learned.
+    The results for each metric will be demonstrated on the three example houses illustrated in @fig:truth_compare:examples.
 
     #subpar.grid(
       columns: 3,
@@ -484,10 +482,9 @@
     The incorporation of a greater number of data points, amounting to 840, is assumed to provide a more comprehensive representation of the quality of the algorithm to be measured.
     It is imperative to acknowledge that all data points mapping to the origin are excluded from the calculation, as they are considered outliers. 
     These outliers are attributed to executions where the algorithm's inability to accurately identify the house base area resulted in no predicted segments being generated.
-    Their inclusion would only hurt the further analysis.
+    The inclusion of these variables would compromise the integrity of further analysis by distorting the scale of the data and impeding the process of normalisation.
 
     ==== MAE, MSE, RMSE and R2 Score <section:metrics>
-
     #heading(depth: 5, numbering: none, bookmarked: false)[Formula]
     $ "MAE" = (1/n) * sum_(i=1)^n |y_i - accent(y, hat)_i| $ <formula:mae>
     $ "MSE" = (1/n) * sum_(i=1)^n (y_i - accent(y, hat)_i)^2 $ <formula:mse>
@@ -528,37 +525,9 @@
     ```
 
     #heading(depth: 5, numbering: none, bookmarked: false)[Results]
-    The following conclusions were derived from the experiments employing these metrics.
-
-    The results from the MAE and RMSE are highly congruent in this instance.
-    This phenomenon can be attributed to the inherent limitations of the data, which is constrained within the range of 0 to 1. Consequently, the utilization of the #abr("MAE") as a standalone metric is sufficient for data analysis in this context, as the impact of the #abr("RMSE") on outliers is deemed negligible.
-
-    The R2 score's open range of $(-infinity, 1]$ complicates analysis.
-    Interpreting the R2 Score poses a significant challenge, as it necessitates the creation of a valid interpretation of the relationship between the score's magnitude and the performance of the algorithm, a task that may not be feasible.
-    An evaluation indicates that the values predominantly manifest a negative tendency, with most instances exhibiting lower magnitudes. 
-    However, it is noteworthy that some instances display significantly higher magnitudes.
-    This observation strongly suggests that the algorithmic correlation does not align much with the suppositions made in this particular section.
-    However, the fundamental principle of the R2 Score and the assessment of the congruence between the data and a linear model remains an essential property of the algorithm, a consideration that will be pertinent to the subsequent steps.
-    
-    The R2 Score demonstrated by @fig:truth_compare:metrics:a is notably negative, suggesting a complete absence of correlation between the algorithm and the ground truth data.
-    However, an examination of the data suggests an alternative conclusion, indicating a linear relationship that is simply tilted, rather than originating from the origin (0, 0), as the R2 Score implemented here assumes.
-
-    In direct comparison, the @fig:truth_compare:metrics:c metric reveals a strong correlation with the ground truth data, as evidenced by it's calculated R2 score.
-    This observation indicates that the linear relationship between the scores and truth scores is more skewed towards the origin in comparison to the scenario depicted before, but does not generally depict a better linear relationship between the data itself.
-
-    @fig:truth_compare:metrics:b offers yet another perspective.
-    The R2 Score remains in a negative range, although it is less pronounced than in the first example but more significant than in the second.
-    Visual examination of the data reveals a more widespread distribution compared to the other two examples.
-    This demonstrates the challenge posed by a score of 0.8 in the scoring system being able to range from exemplary 0.5 to 0.9 within the truth scores.
-    This constitutes a clear violation of the requirement that the scores be reliable, meaning an accurate representation of the algorithm's performance and thereby truth scores.
-    However, given that the metrics are not capable of representing this discrepancy, it is imperative that this issue be addressed in subsequent iterations of the algorithm.
-
-    In summary, the metrics in question directly measure a non tilted linear one-to-one relationship between the scores and the truth scores.
-    However, this is not necessarily desired.
-    This is due to the fact that the assumption is too constrained.
-    It is imperative to establish a methodology for measuring the correlation between the two datasets without presuming a rigid 1-to-1 relationship.
-    Furthermore, the prevailing algorithmic framework is found to be deficient in its inability to accommodate variability in singular values. 
-    This shortcoming constitutes a flagrant infringement upon the algorithm's fundamental criteria, necessitating its rectification subsequent to the implementation of a more accurate validation technique.
+    The results from the #abr("MAE") and #abr("RMSE") are highly congruent in this instance.
+    This phenomenon can be attributed to the inherent limitations of the data, which is constrained within the range of 0 to 1. 
+    Consequently, the utilization of the #abr("MAE") as a standalone metric is sufficient for data analysis in this context, as the impact of the #abr("RMSE") on outliers is deemed negligible.
 
     #subpar.grid(
       columns: 4,
@@ -578,8 +547,34 @@
       label: <fig:truth_compare:metrics>,
     )
 
-    ==== Pearson Coefficient <section:pearson>
+    The R2 score's open range of $(-infinity, 1]$ complicates analysis.
+    Interpreting the R2 score poses a significant challenge, as it would necessitate the creation of a valid interpretation of the relationship between the score's magnitude and the performance of the algorithm.
+    An evaluation indicates that the values predominantly manifest a negative tendency, with most instances exhibiting lower magnitudes. 
+    However, it is noteworthy that some instances display significantly higher magnitudes.
+    This observation strongly suggests that the algorithmic correlation does not align much with the suppositions made in this particular section.
+    However, the fundamental principle of the R2 score and the assessment of the congruence between the data and a linear model remains an essential property of the algorithm, a consideration that will be pertinent to the subsequent steps.
+    
+    The R2 score demonstrated by @fig:truth_compare:metrics:a is notably negative, suggesting a complete absence of correlation between the algorithm and the ground truth data.
+    However, an examination of the data suggests an alternative conclusion, indicating a linear relationship that is simply tilted, rather than originating from the origin (0, 0), as the R2 score implemented here assumes.
 
+    In direct comparison, the @fig:truth_compare:metrics:c metric reveals a strong correlation with the ground truth data, as evidenced by it's calculated R2 score.
+    This observation indicates that the linear relationship between the scores and truth scores is more skewed towards the origin in comparison to the scenario depicted before, but does not generally depict a better linear relationship between the data itself.
+
+    @fig:truth_compare:metrics:b offers yet another perspective.
+    The R2 score remains in a negative range, although it is less pronounced than in the first example but more significant than in the second.
+    Visual examination of the data reveals a more widespread distribution compared to the other two examples.
+    This demonstrates the challenge posed by a score of 0.8 in the scoring system being able to range from exemplary 0.5 to 0.9 within the truth scores.
+    This constitutes a clear violation of the requirement that the scores be reliable, meaning an accurate representation of the algorithm's performance and thereby truth scores.
+    However, given that the metrics are not capable of representing this discrepancy, it is imperative that this issue be addressed in subsequent iterations of the algorithm.
+
+    In summary, the metrics in question directly measure a non tilted linear one-to-one relationship between the scores and the truth scores.
+    However, this is not necessarily desired.
+    This is due to the fact that the assumption is too constrained.
+    It is imperative to establish a methodology for measuring the correlation between the two datasets without presuming a rigid 1-to-1 relationship.
+    Furthermore, the prevailing algorithmic framework is found to be deficient in its inability to accommodate variability in singular values. 
+    This shortcoming constitutes a flagrant infringement upon the algorithm's fundamental criteria, necessitating its rectification subsequent to the implementation of a more accurate validation technique.
+
+    ==== Pearson Coefficient <section:pearson>
     #heading(depth: 5, numbering: none, bookmarked: false)[Formula]
     $ "cosine similiarty" = (arrow(x) dot arrow(y)) / (||arrow(x)|| dot ||arrow(y)||) $ <formula:cosine>
     $ "pearson coefficient" = (n * sum(x * y) - sum(x) * sum(y)) / sqrt((n * sum(x^2) - sum(x)^2) * (n * sum(y^2) - sum(y)^2)) $ <formula:pearson>
@@ -630,8 +625,7 @@
     A direct comparison of the Pearson Coefficient with @section:metrics reveals its superiority over the previous metrics.
     The relaxation of the assumption of a rigid 1-to-1 relationship between the two datasets signifies a substantial enhancement, as it allows for greater flexibility in accepting the correlation. 
 
-    The discrepancy in the values, with some at 0.6 and others at 0.8, remains to be explained. 
-    However, it is evident that both values serve as at least adequate indicators for the correlation of scores.
+    The discrepancy in the values, with some at 0.6 and others at 0.8, remains to be explained, but it is evident that both values serve as at least adequate indicators for the correlation of scores.
     It is reasonable to hypothesize that this phenomenon is attributable to the scoring system's strong penalization of undersegmentation segmentations, which scores are completely nullified.
     In contrast, the ground truth data's #abr("IoU") values exhibit only a marginal sensitivity to such inaccuracies.
 
@@ -659,23 +653,23 @@
     The subsequent stage of the research involved the formulation of a linear function, with the objective of calculating the correlation between the two datasets directly.
     The prerequisite for this endeavor entails the calculation of the most optimal linear relationship and the implementation of metrical comparison of the data in alignment with that relationship.
 
-    This objective was accomplished by using the LinearRegression class of the scikit-learn library @LinearRegressor, which facilitated the calculation of a linear regression line between the two datasets and enables the calculation of the R2 Score and the #abr("MAE") towards that linear regression line.
+    This objective was accomplished by using the LinearRegression class of the scikit-learn library @LinearRegressor, which facilitated the calculation of a linear regression line between the two datasets and enables the calculation of the R2 score and the #abr("MAE") towards that linear regression line.
     This fulfills the requirement of a non-strict 1-to-1 linear relationship between the two datasets, as well as returns the metrics that indicate the performance of the algorithm.
-    In addition, the R2 Score this time is effectively constrained to the range of 0 to 1 in this iteration, in contrast to previous iterations. 
+    In addition, the R2 score this time is effectively constrained to the range of 0 to 1 in this iteration, in contrast to previous iterations. 
     This is due to the fact that, under the most sub-optimal conditions, the algorithm would return 0, meaning the regressor essentially mimics an algorithm which simply takes the mean of the data.
-    This represents a marked enhancement over earlier iterations, in which the R2 Score was not constrained and could attain unconstrained negative values, leading to challenges in interpretation.
+    This represents a marked enhancement over earlier iterations, in which the R2 score was not constrained and could attain unconstrained negative values, leading to challenges in interpretation.
 
-    As previously outlined in @section:metrics, the #abr("MAE") is a reliable metric for assessing the accuracy of the algorithm, while the R2 Score is a valuable indicator of the suitability of the data for a linear model.
+    As previously outlined in @section:metrics, the #abr("MAE") is a reliable metric for assessing the accuracy of the algorithm, while the R2 score is a valuable indicator of the suitability of the data for a linear model.
     The #abr("MAE") is inherently an error metric that should be minimized. 
     It is thus normalized to the range of 0 to 1. 
     This is followed by inversion through subtraction from 1 to create a score that represents a maximization task.
-    This is performed to ensure that the calculated #abr("MAE") score is aligned with the R2 Score, thereby ensuring that the resulting score is optimized to 1.
+    This is performed to ensure that the calculated #abr("MAE") score is aligned with the R2 score, thereby ensuring that the resulting score is optimized to 1.
     The resulting correlation score is derived by calculation of the weighted average between the R2 and the #abr("MAE") scores.
 
     #heading(depth: 5, numbering: none, bookmarked: false)[Code Snippet]
     The resulting correlation score is then calculated by taking the weighted average of the R2 score and the #abr("MAE"), as illustrated in the following code example.
     The variable mae_norm_score is defined as the inverse of the #abr("MAE"), which subsequently is to be maximized.
-    The constrained range of the R2 Score is not immediately apparent.
+    The constrained range of the R2 score is not immediately apparent.
     Nonetheless, the resulting correlation score is effectively constrained to the range of 0 to 1, which is the desired property of the algorithm.
     To ensure simplicity, the alpha value is set to 0.5, thereby assigning equal weight to both metrics.
 
@@ -693,7 +687,7 @@
         model.fit(scores_reshaped, truth_scores_reshaped)
         # Trend line for later visualization
         trend = model.predict(scores_reshaped)
-        # Calculate R2 Score
+        # Calculate R2 score
         r2 = model.score(scores_reshaped, truth_scores_reshaped)
         # Calculate MAE
         mae = mean_absolute_error(truth_scores_reshaped, trend)
@@ -720,7 +714,7 @@
     This further substantiates the reliability of the Pearson coefficient values as a reliable metric for assessing the performance of the algorithm.
 
     The results indicate minimal absolute errors in relation to their respective linear fits.
-    An examination of @fig:truth_compare:correlation:a and @fig:truth_compare:correlation:c reveals the algorithm's capacity to generate satisfactory outcomes, as evidenced by the normalized #abr("MAE") and the R2 Score.
+    An examination of @fig:truth_compare:correlation:a and @fig:truth_compare:correlation:c reveals the algorithm's capacity to generate satisfactory outcomes, as evidenced by the normalized #abr("MAE") and the R2 score.
     However, it is evident that the fits are not perfect, or rather, do not align with expectations. 
     This deviation can be attributed to the presence of clear outliers in the scatter plot.
 
@@ -730,7 +724,7 @@
     The phenomenon can be explained by the equitable weighting of the two metrics. 
     The R2 score represents the poor linear correlation well, but the #abr("MAE") score does not. 
     The #abr("MAE") score measures distance from the fit, which itself is not of poor quality; but built upon substandard data.
-    Consequently, the MAE score is not a reliable metric for evaluating the linear relationship when compared to the R2 Score.
+    Consequently, the MAE score is not a reliable metric for evaluating the linear relationship when compared to the R2 score.
     The resulting score's meaning is not invalidated by this observation, since a lower score is still indicative of a lower quality. 
     However, the degree of decrease is not as pronounced as it should be.
 
@@ -742,9 +736,9 @@
     Conversely, a higher score that does not align with the expected outcome is not consistent with the principle of faithfulness to expectation.
     In @section:pearson, this was previously indicated by a negative correlation score; however, within this approach, there is no longer any indicator for this.
 
-    In light of the aforementioned issues and the inability to enhance the Pearson coefficient, this endeavor is not considered a success and will not be further pursued.
-    The sole viable enhancement in this section was the more straightforward method to visually depict the linear correlation between the two datasets.
-
+    In view of the aforementioned issues and the inability to enhance the Pearson coefficient, this specific metric is not regarded as a success and will not be utilised in the final evaluation.
+    The sole viable enhancement here was a straightforward method to visually depict the linear correlation between the two datasets.
+    
     #subpar.grid(
       columns: 4,
       gutter: 2mm,
@@ -764,7 +758,6 @@
     )
 
     ==== Spearman Coefficient <section:spearman>
-
     #heading(depth: 5, numbering: none, bookmarked: false)[Formula]
     $ "Spearman" r_s = 1 - (6 * sum(d_i^2)) / (n * (n^2 - 1)) $ <formula:spearman>
     $d_i$ signifies the difference in ranks between the two datasets and $n$ is the number of overall data points.
