@@ -80,7 +80,6 @@
 
 #pagebreak()
 #heading(depth: 5, numbering: none, bookmarked: false)[SAM Results]
-
 #subpar.grid(
   columns: 4,
   gutter: 1mm,
@@ -181,7 +180,7 @@
   figure(image("../data/6/18/sam/best/dilated.png")),
   numbering: (..nums) => [#counter(figure.where(outlined: true)).display((..num_figs)=>num_figs.pos().at(0))],
   caption: [
-    Best SAM results for Mask / Generated / Filtered / Dilated.
+    Best SAM results for mask, generated, filtered and dilated
   ],
   label: <fig:appendix:sam:results>,
 )
@@ -221,7 +220,7 @@ class Strategy:
     # Get input points from current strategies implementation
     input_point_lists = self.get_points(surfaces)
 
-    # Initialize empty lists
+    # Initialise empty lists
     input_points = []
     input_label = []
 
