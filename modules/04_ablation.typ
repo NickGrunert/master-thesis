@@ -148,6 +148,13 @@
     In order to facilitate a more robust comparison, the ensuing results will differentiate between version 1 and version 2 of the algorithm.
 
     === Clipping Values <section:ablation:clipping>
+    It is demonstrated in @fig:ablation:clipping that the clipping is largely unnecessary or obstructive.
+    As was predicted, the version 1 algorithm demonstrates a considerable reliance on the clipping values.
+    Consequently, buildings that do not necessitate clipping are forcibly elevated, thereby explaining the distribution the graph presented.
+    This assertion is further substantiated by the observed discrepancy in the utilisation of the revised base detection method.
+    In this instance, the majority of segmentations are received when no clipping is applied.
+    However, the graph also indicates that clipping can be beneficial in some cases.
+
     #subpar.grid(
       columns: 2,
       gutter: 1mm,
@@ -164,6 +171,26 @@
         [#it.body]
       },
       label: <fig:ablation:clipping>,
+    )
+
+    Further analysis has revealed that some of the segmentations remain reliant on clipping to a certain extent.
+    The underlying reasons for this occurrence remain unclear.
+    As demonstrated in the @fig:ablation:heatmap:clipping, this effect is evident in a segmentation.
+    It has been observed that this phenomenon manifests exclusively in instances where the gradient method is employed for the calculation of the derivative.
+    Nevertheless, it is not considered necessary to undertake further analysis on this particular matter, given that the impact on the overall results is negligible.
+
+    #subpar.grid(
+      columns: 2,
+      gutter: 1mm,
+      box(
+        figure(image("../data/6/19/v2/heatmap_medium.png")), clip: true, inset: (top: -2in, left: -6.0in, right: -0.7in)),
+      caption: [
+        Use of clipping after revised base area detection
+      ],
+      show-sub-caption: (num, it) => {
+        [#it.body]
+      },
+      label: <fig:ablation:heatmap:clipping>,
     )
 
     === Canny Values

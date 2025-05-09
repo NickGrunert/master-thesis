@@ -215,5 +215,19 @@
 
     The quality of these results is very promising.
     In particular, in the lower example, it can be seen that the individual surfaces are identified by individual executions on different input images, but that there is no single result that gives comparable performance.
+
+    A thorough analysis of the individual masks was conducted, yielding the following findings: The score created by SAM does not serve as a reliable indicator of quality.
+    It appears that there is no correlation between the confidence rating assigned by SAM and the actual quality of the mask.
+    It is important to note that SAM does not take into account all images, since they are calculated completely independently from each other.
+    Therefore, it is conceivable that a mask could attain a high score for a particular image, whilst other images clearly demonstrate that the mask is not an accurate representation.
+
+    The discrepancy remains unresolved.
+    In order to resolve the issue under discussion, it is necessary to employ a combination algorithm of a more sophisticated nature, or an alternative method, such as a confidence vote.
+    However, this would first require even distribution between approaches incorporating height data or not.
+    It is also conceivable that a small neural network could be trained to determine the optimal combination of masks.
+
+    The individual complete segmentations for each image were then compared by using the defined scoring system.
+    It is recommended that this be researched in order to determine its application to individual masks. 
+    This would result in a more sophisticated approach to the combination of the masks.
   ]
 }
