@@ -33,7 +33,6 @@
     As previously discussed, the images currently under consideration are characterized by suboptimal pixel quality. 
     This deficiency manifests particularly in thin roof regions, where the delineation of the edge is rendered indistinct.
     Additionally, certain edges are challenging to discern with the naked eye, and they are often imperceptible in both the #abr("nDSM") and RGB data.
-    Especially in the RGB data regions with large shadows, the edges are not clearly visible.
     However, these edges become clearly visible when utilizing the derivative and coloring the image with this data.
     This introduces an additional layer of complexity to the process of generating the ground truth segmentations.
     It must also again be noted that the RGB data and the #abr("nDSM") data are not perfectly aligned.
@@ -47,11 +46,13 @@
     Consequently, the derivative images were saved in advance to ensure the accuracy of subsequent analysis.
     This facilitates a more precise understanding of the roof segments' geometry than would be possible with other data sources.
 
-    However, it should be noted that the process of deriving these values may not always result in the creation of smooth segments, as is illustrated in the final example.
-    However, it is even more pronounced in other instances not shown here.
-    It is important to note that all derivatives for the images were calculated using Sobel because they were programmed in a different notebook, where the optimally calculated hyperparameters were not available.
-    Nevertheless, this is an accepted risk, given Sobel's consistent ability to produce results that are at least satisfactory.
-
+    The process of deriving these values may not always result in the creation of smooth segments, as illustrated in the last shown example in @fig:truth_compare:truth_example.
+    The Sobel filter is the derivative employed in this context.
+    The experimental results indicated that these errors manifested in a seemingly random manner in a subset of the image data.
+    It appears that the employment of the derivative, which is known to yield the optimal outcome in @section:algorithm, serves to mitigate this effect.
+    This establishes the hypothesis that the Sobel method may be suboptimal, although this remains to be proven.
+    This risk is nevertheless deemed acceptable for the time being. The @section:ablation:derivative will address the selection of the appropriate derivative in greater detail.
+    
     #subpar.grid(
       columns: (1fr, 1fr, 1fr),
       gutter: 1mm,

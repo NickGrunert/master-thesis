@@ -65,7 +65,10 @@
   ),
   "HMA": (
     long: "Hungarian Matching Algorithm",
-  )
+  ),
+  "DBSCAN": (
+    long: "Density-Based Spatial Clustering of Applications with Noise",
+  ),
 )
 
 #let get_key(key) = {

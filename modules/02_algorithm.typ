@@ -508,20 +508,19 @@
     In the preceding tests, the quality of the majority of surfaces could be adequately assessed by manual observation for initial parameter tuning and theory validation.
     However, as the general structure was being established, a greater necessity for objective evaluation criteria emerged.
     The methodology under consideration should possess the capacity to evaluate the quality of surfaces based on the following criteria:
-    - The surface's values must be coherent, meaning that the surface's values should be similar throughout its entirety.
+    - The values in a surface must be coherent, meaning that they should be similar throughout its entirety.
       While it is acknowledged that this value will not attain a perfect score due to the aforementioned noise and imperfection of input data, it is expected to be maximized.
       Preliminary experimental findings suggest that the majority of surfaces appear to exhibit a derivative that is not perfectly continuous across all values.
       The objective of this criterion is to guarantee that the algorithm does not undersegment the data.
-      In the event that the algorithm merges surfaces incorrectly, the resultant derivative values will be inconsistent, which will consequently lead to a lower score here.
+      In the event that the algorithm merges surfaces incorrectly, the resultant derivative values will be inconsistent, which will consequently lead to a lower score.
     - The surface area is a critical consideration in this analysis.
       In order to address the issue of the algorithm undersegmenting surfaces, it is proposed that a reward be allocated for surfaces of greater size.
       It is imperative that the augmentation of score through the implementation of this reward does not violate the established first criteria of coherence.
     
     ==== Experimental Usage of DBSCAN
-
-    An initial attempt was made to use the Density-Based Spatial Clustering of Applications with Noise (DBSCAN) algorithm @dbscan1.
-    This algorithm is employed to detect clusters in data, a common task in machine learning.
-    The interpretation of surface derivatives as a point cloud renders them applicable to this algorithm.
+    An initial attempt was made to utilise the Density-Based Spatial Clustering of Applications with Noise (DBSCAN) algorithm @dbscan1.
+    This algorithm is employed to detect coherent clusters in data, a common task in machine learning.
+    The interpretation of surface derivatives as a point cloud renders them applicable to this algorithm, in that the derivative values should exhibit a certain degree of spatial coherence.
 
     The algorithm's capacity to discern anomalies may be adequate; however, its precision is not sufficiently reliable for incorporation into the scoring system or for general evaluation purposes.
     The implementation of the algorithm is contingent upon two parameters: epsilon and the minimum sample number. 
@@ -529,7 +528,7 @@
     It is conceivable that further experimentation with the algorithms parameter may yield favorable outcomes; nevertheless, preliminary tests have demonstrated a strong correlation between the quality of the algorithms and the values of this parameter. 
     It appears that achieving satisfactory results is an unfeasible task.
     
-    To illustrate the problematic application, @fig:dbscan presents illustrative results of the DBSCAN algorithm on three disparate surfaces, yielding suboptimal outcomes in each instance.
+    @fig:dbscan presents illustrative results of the DBSCAN algorithm on three disparate surfaces, yielding suboptimal outcomes in each instance.
     Note that the label -1 is given to all points considered noise @dbscan2.
     The surface utilized in @fig:dbscan:a is comprised of three surfaces that have been erroneously merged.
     Nonetheless, the algorithm proved incapable of identifying this particular instance and instead labeled 17 different surfaces. 
@@ -655,7 +654,7 @@
     )
 
     @fig:plateau presents exemplary extracts from the graphs representing the algorithm's results.
-    The first example illustrates a flawless surface, which is identified as such by the algorithm.
+    In the first row, an example is illustrated which shows a flawless surface, which is identified as such by the algorithm.
     The three calculated scores are 98%, 97%, and 96%, respectively, for x, y, and magnitude direction.
     In all three directions, there is a single plateau that extends across the majority of the surface.
     It is important to acknowledge that the graphs are not normalized, which results in an apparent unevenness that does not accurately reflect the underlying data.
@@ -686,7 +685,8 @@
     )
 
     The performance of the algorithm on a more challenging roof shape, namely a spire, is demonstrated in @fig:scores2.
-    The algorithm exhibits clear indications of encountering challenges in processing the roof geometry, as evidenced by the coherent nature of the derivative values, which are monotonically increasing. 
+    The three rows presented here are an excerpt from an experiment conducted on a spire roof.
+    The algorithm displays evident indications of encountering challenges in processing the roof geometry, as demonstrated by the coherent nature of the derivative values, which are monotonically increasing.
     This inherent property is characteristic of roof types of this nature.
     Nevertheless, the data indicates that the functionality of the algorithms remains consistent with the expected operational parameters.
     The erroneous segmentation of the data results in the formation of distinct plateaus, which are subsequently identified by the algorithm. 
@@ -694,7 +694,6 @@
     The data indicates that, in these cases, the magnitude value is significantly impactful. 
     On a spire or rounded surfaces in general, the multiplication of the x and y directions generates a coherent plateau which is mathematically provable.
 
-    However, this data gives rise to inquiries that could potentially inform enhancements to the system's algorithms.
     Presently, the equitable distribution of points among the three directions results in the algorithm's minimal penalization of the two plateaus in the x direction, despite the fact that, in certain instances, this may serve as sufficient evidence of an erroneous surface segmentation.
     It may be necessary to consider the implementation of a more stringent penalty for instances where values are absent. However, it is important to note that imposing a penalty of zero for the entire surface area may prove to be overly severe.
     
@@ -770,7 +769,7 @@
     @fig:scores:squareornot:b prioritizes smaller surfaces over larger segments. This is due to the fact that the two smaller surfaces possess differing mean derivatives. Consequently, there is an indirect increase in the change for each value to be near the current mean.
     Consequently, the segmentation on the right, which is visibly suboptimal, exhibits an analogous positive score despite the discernible noise edges that divide large surfaces into multiple smaller ones.
     
-    The example demonstrates the operational dynamics of the negative score, whereby the score undergoes a reduction in proportion to the extent of clipping, as an increasing number of segments are systematically filtered out.
+    @fig:scores:squareornot also demonstrates the operational dynamics of the negative score, whereby the score undergoes a reduction in proportion to the extent of clipping, as an increasing number of segments are systematically filtered out.
     In addition, the absolute values of positive scores are not directly comparable between the two approaches. 
     This is due to the fact that the squared scores exhibit a greater range of values, given that the denominator in the calculation increases.
     However, the impact of the negative score on the resulting score becomes evident, as it offers a more accurate reflection of the quality of the segmentation compared to the previous example before its implementation.

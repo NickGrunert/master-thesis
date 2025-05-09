@@ -17,6 +17,8 @@
     Given that the #abr("nDSM") is derived from the #abr("DSM") and #abr("DEM"), inaccuracies in both data sources, such as interpolation artifacts or missing data, can compromise the integrity of the #abr("nDSM").
     A multitude of potential error sources have been identified, including the #abr("DSM") and #abr("DEM") being recorded not at the same time, the utilization of disparate sensors, and inherent inaccuracies in these sensors.
     Additionally, the integrity of #abr("nDSM") data may be compromised by the presence of temporary objects which are in the #abr("LiDAR") data @ndsm1 or residual noise stemming from algorithmic inaccuracies @ndsm2.
+    Temporal objects that were found to be prevalent in the data utilised for this research are cars. 
+    These often exhibited a misalignment between the RGB and #abr("nDSM") data.
 
     It will be necessary to exercise caution in subsequent evaluations and to be aware of the aforementioned limitations on the quality of the #abr("nDSM") data.
 

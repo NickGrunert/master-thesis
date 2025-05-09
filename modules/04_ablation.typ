@@ -95,7 +95,7 @@
       ],
     ) <fig:ablation:blurring_statistic>
 
-    === Derivative Method
+    === Derivative Method <section:ablation:derivative>
     The use of each derivative method is evaluated in the same way as the blur method.
     Therefore, @fig:ablation:derivative shows for each method how often it was used to achieve the best result.
     While the results are not quite as clear as for the blur method, it is quite obvious that using the gradient method is the best choice.
