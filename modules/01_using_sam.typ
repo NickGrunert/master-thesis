@@ -1,19 +1,19 @@
 #import "@preview/subpar:0.2.0"
 
-#let sam() = {
+#let sam(abr) = {
   text(lang:"en")[
     = Using SAM for zero-shot segmentation
-    In this chapter, we will initiate the experimental phase concerning the usability of SAM in the context of roof segmentation.
-    The objective is to ascertain the necessary input data to facilitate effective segmentations and to determine the optimal utilization of SAM to achieve this objective.
+    In this chapter, we will initiate the experimental phase concerning the usability of #abr("SAM") in the context of roof segmentation.
+    The objective is to ascertain the necessary input data to facilitate effective segmentations and to determine the optimal utilization of #abr("SAM") to achieve this objective.
 
     == Images <section:sam:images>
     This section will shortly list the types of images that will be used in the evaluation.
     While other concepts were briefly explored, none of these approaches represented novel methodologies and were met with very limited success.
-    The objective of this section is to identify promising candidates of images, data, or preprocessing steps that have the potential to serve as input data for the SAM model to subsequently generate segmentations displaying the roof shape.
+    The objective of this section is to identify promising candidates of images, data, or preprocessing steps that have the potential to serve as input data for the #abr("SAM") model to subsequently generate segmentations displaying the roof shape.
 
     #heading(depth: 5, numbering: none, bookmarked: false)[RGB Image]
-    One of the images that can be used is the original RGB image itself.
-    However, it should be noted that the utilization of RGB data does not provide additional height information and presents certain challenges.
+    One of the images that can be used is the original #abr("RGB") image itself.
+    However, it should be noted that the utilization of #abr("RGB")  data does not provide additional height information and presents certain challenges.
 
     For instance, the presence of shadows within the data can result in severe misclassifications, as the model may lack the capacity to differentiate between the shadow and the object.
     It has been observed that, due to geometric constraints, the majority of surfaces are either wholly shaded or wholly illuminated; however, this is not guaranteed.
@@ -21,8 +21,8 @@
     This phenomenon hinders the effectiveness of an algorithm in identifying similarities between segments that are not shaded and those that are shaded.
 
     Shadows are a prominent feature of the input data, attributable to the geographical location of Germany, which results in a sun position that casts shadows on a significant proportion of residential structures.
-    In order to enhance the utilization of the raw RGB data, an algorithm for shadow removal is implemented. 
-    This algorithm utilizes Gaussian kernels to identify and eliminate shadowed regions @shadows1 @shadows2 @shadows3.
+    In order to enhance the utilization of the raw #abr("RGB") data, an algorithm for shadow removal is implemented. 
+    This algorithm utilises Gaussian kernels to identify and eliminate shadowed regions @shadows1 @shadows2 @shadows3.
 
     #subpar.grid(
       columns: 2,
@@ -36,14 +36,14 @@
     )
 
     As demonstrated by @fig:sam:shadows, a clear distinction emerges between the original image and the shadow removed image.
-    It is evident that the algorithm modifies the overall coloration of the image. 
-    This modification may be advantageous in that it prevents the algorithm from being distracted by color changes across a coherent surface.
-    The presence of discernible boundaries within the color channels is indicative of a failure to effectively differentiate between surfaces.
+    It is evident that the algorithm has a profound effect on the overall colouration of the image.
+    This modification may be advantageous in that it prevents the algorithm from being distracted by colour changes across a coherent surface.
+    The presence of discernible boundaries within the colour channels is indicative of a failure to effectively differentiate between surfaces.
     This finding merits further consideration in subsequent experiments. 
-    The objective of these experiments is to ascertain whether the shadow removal algorithm can enhance the segmentation results of the SAM model.
+    The objective of these experiments is to ascertain whether the shadow removal algorithm can enhance the segmentation results of the #abr("SAM") model.
 
     #heading(depth: 5, numbering: none, bookmarked: false)[nDSM Image]
-    Due to the fact that the RGB data contains a substantial amount of information that is either not beneficial or even detrimental when provided to SAM, we will try to enhance the input data by using the nDSM data.
+    Due to the fact that the #abr("RGB")  data contains a substantial amount of information that is either not beneficial or even detrimental when provided to #abr("SAM"), we will try to enhance the input data by using the nDSM data.
     The nDSM data contains the height information of the current image frame.
     The incorporation of this data is expected to result in enhanced quality, as it is considered to be valuable information regarding the surface structure.
 
@@ -57,15 +57,15 @@
       label: <fig:sam:images:ndsm>,
     )
 
-    However, the utilization of nDSM data as SAM input appears to be not possible in a direct manner.
+    However, the utilization of nDSM data as #abr("SAM") input appears to be not possible in a direct manner.
     This hypothesis is the result of a thorough analysis of @fig:sam:images:ndsm.
     This phenomenon is evidenced by the minimal contrast present in the image, indicative of its limited information content.
     However, the value graph distinctly demonstrates the potential for differentiating between the roof and the ground.
     As this topic has not been the primary focus of the present discussion, further examination of it will be reserved for a later in @section:replace_clipping_by_sam.
 
     #heading(depth: 5, numbering: none, bookmarked: false)[Custom Derivative Image]
-    Since the nDSM data cannot be used directly, the aim here is to create a custom image that visually represents the derivative, so that it can be used as input for SAM.
-    SAM originally tries to find good matching segments across the given red, green and blue channels.
+    Since the nDSM data cannot be used directly, the aim here is to create a custom image that visually represents the derivative, so that it can be used as input for #abr("SAM").
+    #abr("SAM") originally tries to find good matching segments across the given red, green and blue channels.
     The task is to find a good mapping from the original derivative data to the red, green and blue channels.
 
     This was done by calculating the magnitude of the x and y directions.
@@ -79,7 +79,7 @@
 
     ```python
     def create_3d_derivative_image(...):
-      def get_color(x, y, max_magnitude):
+      def get_colour(x, y, max_magnitude):
         magnitude = np.sqrt(x**2 + y**2)
         magnitude = magnitude / max_magnitude if max_magnitude > 0 else 0
 
@@ -98,29 +98,29 @@
       max_magnitude = np.max(np.sqrt(derivative_x**2 + derivative_y**2))
       for r in range(height):
           for c in range(width):
-              image[r, c] = get_scaled_color(x[r, c], y[r, c], max_magnitude)
+              image[r, c] = get_scaled_colour(x[r, c], y[r, c], max_magnitude)
       image = (image * 255).astype(np.uint8)
 
       return image
     ```
 
     #heading(depth: 5, numbering: none, bookmarked: false)[Color Channel Swaps]
-    The original RGB data is rendered incomplete due to an absence of height information, and the derived image may itself be compromised by inaccuracies in the height data.
-    It can be argued that certain segments may be more effectively represented visually by the original RGB values.
+    The original #abr("RGB")  data is rendered incomplete due to an absence of height information, and the derived image may itself be compromised by inaccuracies in the height data.
+    It can be argued that certain segments may be more effectively represented visually by the original #abr("RGB")  values.
     For instance, two segments with analogous derivatives that are adjacent to each other yet situated at different heights may prove challenging to discern through the utilisation of solely the derived image.
-    In the context of RGB data, however, such transitions are frequently pronounced due to the presence of shadows or other chromatic variations.
+    In the context of #abr("RGB")  data, however, such transitions are frequently pronounced due to the presence of shadows or other chromatic variations.
 
-    In order to identify a solution that involves the merging of the colour channel information with the spatial data of the derivative image, it is proposed that the colour channels of the original RGB data be swapped with the derivative's magnitude.
+    In order to identify a solution that involves the merging of the colour channel information with the spatial data of the derivative image, it is proposed that the colour channels of the original #abr("RGB")  data be swapped with the derivative's magnitude.
     It should be noted that preliminary experiments were conducted in which two colour channels were substituted for the derivatives in the x and y directions.
-    Initial testing demonstrated an inability to convey any useful information to SAM.
+    Initial testing demonstrated an inability to convey any useful information to #abr("SAM").
     Furthermore, a similar outcome was observed in images of a greyscale.
 
-    However, utilising the full range of methodologies available for combining the derivative image and the original three channels of the RGB data, it is possible to create three distinct images.
-    It is hypothesised that each of these will hold some spatial information as well as colour information, which may be promising in augmenting the input data for SAM.
+    However, utilising the full range of methodologies available for combining the derivative image and the original three channels of the #abr("RGB")  data, it is possible to create three distinct images.
+    It is hypothesised that each of these will hold some spatial information as well as colour information, which may be promising in augmenting the input data for #abr("SAM").
 
     #heading(depth: 5, numbering: none, bookmarked: false)[Synopsis]
     As demonstrated in the @fig:sam:images, a selection of images for each house has been selected for use in the evaluation.
-    The initial hypothesis is that the RGB image and the RGB image with shadow removal will yield similar results, with the original image performing slightly worse.
+    The initial hypothesis is that the #abr("RGB")  image and the #abr("RGB")  image with shadow removal will yield similar results, with the original image performing slightly worse.
     It is hypothesised that the derivative image will demonstrate the strongest overall performance, given its possession of the most valuable height information.
     The quality of the images, in which the colour channels are substituted for derivative information, is yet to be determined through experimental investigation.
     The current hypothesis is that none of the three images will always perform optimally, but that there will be situations where individuals from these three will not be usable, while the others yield satisfactory results.
@@ -141,15 +141,15 @@
     )
 
     == Strategies for input prompt generation <section:sam:strategies>
-    The following discussion will address the methodology for prompting SAM.
+    The following discussion will address the methodology for prompting #abr("SAM").
     Firstly, it is important to note that prompting by bounding box will not be of assistance in this instance.
     The image has already been cropped to primarily depict the roof.
-    In the event of the bounding box provided to SAM being a bounding box around individual segments, it would be necessary to have the same segments that are being attempted to be calculated. This would also be an ineffective process.
+    In the event of the bounding box provided to #abr("SAM") being a bounding box around individual segments, it would be necessary to have the same segments that are being attempted to be calculated. This would also be an ineffective process.
     The utilisation of this method would facilitate the enhancement of segmentation, particularly in scenarios where accurate estimates of the segment and its boundaries have been previously determined.
     However, this topic will not be pursued further in this discussion.
 
     Instead, this evaluation will formulate strategies for input point prompting, since for this purpose, a rough estimate on the surface will suffice to ascertain that it is a single point definitively inside the correct segment.
-    This approach provides a significant advantage by eliminating the need to identify initial segments of moderate quality, particularly with regard to completeness. Instead, it focuses on locating segments that, in theory, do not span multiple true segments and persist, ideally capturing most of the useful points for SAM.
+    This approach provides a significant advantage by eliminating the need to identify initial segments of moderate quality, particularly with regard to completeness. Instead, it focuses on locating segments that, in theory, do not span multiple true segments and persist, ideally capturing most of the useful points for #abr("SAM").
     Further elaboration on the generation of these surfaces can be found in @section:ndsm_analysis.
 
     The following strategies will be employed to break down any given surface to a set of points.
@@ -217,7 +217,7 @@
     // TODO
 
     === Automatik Mask Generator
-    One simple way of using SAM is by using the automatic mask generator provided by the SAM2 implementation.
+    One simple way of using #abr("SAM") is by using the automatic mask generator provided by the #abr("SAM")2 implementation.
     This class lays a regular grid over the image and prompts the model with these points.
     Afterwards, the results are subject to multiple post processing steps like non-maxmimum suppression and thresholding to create the final segmentation over the entire image @sam4.
     This appraoch does not requier us to create reliable input prompts, but also disenables further control over the specific data used as input.
@@ -241,7 +241,7 @@
     )
 
     The @fig:sam:automatic illustrates the results of utilising the automatic mask generator on the established input images.
-    The results obtained are extremely encouraging, as they indicate with a high degree of certainty that SAM is capable of delivering the desired segmentations.
+    The results obtained are extremely encouraging, as they indicate with a high degree of certainty that #abr("SAM") is capable of delivering the desired segmentations.
     A substantial number of segments were detected, and the roof's overall shape is adequately captured.
     Nevertheless, certain segments are absent, and even minor surfaces appear to be subject to a high degree of certainty according to the scoring system.
 
@@ -253,7 +253,7 @@
 
     === Input Prompting
     #heading(depth: 5, numbering: none, bookmarked: false)[Results]
-    The following results, presented in @fig:sam:mask_all, represent example outcomes achieved through prompting SAM with the mask as the input.
+    The following results, presented in @fig:sam:mask_all, represent example outcomes achieved through prompting #abr("SAM") with the mask as the input.
     The second column shows the ground truth for visual confirmation of the expected result.
     Further elaboration on this topic can be found in @section:ground_truth.
     Whilst the general structure of the roof is adequately depicted, the individual segmentations are not without fault.
@@ -294,20 +294,20 @@
     For a number of houses, the impact of negative points was negligible.
     In other cases, the negative points had a highly detrimental effect on the results.
     However, these results are broadly in line with expectations.
-    The underlying principle of negative point is to provide indications to the SAM of regions within the image that fall outside the current surface.
+    The underlying principle of negative point is to provide indications to the #abr("SAM") of regions within the image that fall outside the current surface.
     In the event of the mask being segmented incorrectly, negative points selected in this manner may well be found in the real segment currently under investigation.
     Consequently, the evaluation of the effectiveness of the proposed measures will be postponed.
 
     #heading(depth: 5, numbering: none, bookmarked: false)[Analysing the individual masks per segment]
     As illustrated by @fig:sam:mask_masks, the results for each input image are demonstrated using the Center Point Strategy, with two positive input points per surface.
     The upper section of the figure illustrates the overall segmentation result.
-    In the section below, the performance of each individual mask by SAM is displayed, along with the score assigned by the model to that segmentation.
+    In the section below, the performance of each individual mask by #abr("SAM") is displayed, along with the score assigned by the model to that segmentation.
     For the purpose of illustration, solely the rows with the four largest input segments are displayed.
 
     It has been demonstrated that certain segments are capable of being effectively segmented by the use of specific input images. 
-    Conversely, SAM has been observed to be incapable of identifying the same segment when other input images are employed.
-    This is exemplified by the second row of masks, where SAM is incapable of identifying the segment on the derivative imag.
-    In the final row of masks, the results run on the images employing RGB data incorporate an erroneous segment to the right.
+    Conversely, #abr("SAM") has been observed to be incapable of identifying the same segment when other input images are employed.
+    This is exemplified by the second row of masks, where #abr("SAM") is incapable of identifying the segment on the derivative imag.
+    In the final row of masks, the results run on the images employing #abr("RGB")  data incorporate an erroneous segment to the right.
     However, the derivative image is able to clearly differentiate between the two with a high degree of certainty, as evidenced by the particularly high score of 0.937.
     This finding indicates the possibility of combining the masks in a manner that may yield a more effective segmentation.
     The evaluation of this suggestion is to be postponed until a later point in the research process.
@@ -324,12 +324,12 @@
     )
 
     #heading(depth: 5, numbering: none, bookmarked: false)[Premediary Conclusion]
-    The preliminary findings suggest that the utilisation of SAM for the purpose of generating high-quality segmentations is a promising avenue for exploration.
+    The preliminary findings suggest that the utilisation of #abr("SAM") for the purpose of generating high-quality segmentations is a promising avenue for exploration.
     A more in-depth analysis of the results is required in order to ascertain the most effective input data and input strategy.
     Prior to this, however, it will be necessary to replace the mask's utilisation for input prompt generation.
     It is essential to establish a robust methodology for generating reliable prompts from the input data, with a objective of enhancing the segmentations.
     The subsequent chapter will thus be dedicated to the analysis of the input data from an algorithmic perspective.
     The objective is to devise prompts that accurately reflect the real data. 
-    In the process, an objective method of evaluating segment quality is to be developed, since the confidence scores provided by SAM are not reliable indicators of the ground truth.
+    In the process, an objective method of evaluating segment quality is to be developed, since the confidence scores provided by #abr("SAM") are not reliable indicators of the ground truth.
   ]
 }

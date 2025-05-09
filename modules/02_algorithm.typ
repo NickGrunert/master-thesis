@@ -33,7 +33,7 @@
     Lastly, @section:ablation of this chapter will then return to said parameter and perform an ablation study on the actual effect of these, intended for the purpose of achieving a better understanding and filtering out those parameters with minor effect so that they will not be considered in further calculations on unseen data.
 
     == Algorithmic Identification of Roof Structures <section:algorithm>
-    In the following sections, the nDSM data will be utilized to calculate derivatives, process the data, and consequently detect edges inside the image.
+    In the following sections, the nDSM data will be utilised to calculate derivatives, process the data, and consequently detect edges inside the image.
     The derivatives are generally distinguished between x and y directions.
     The utilization of combined values, expressed as magnitudes, is not a viable approach. 
     In the context of mathematics, the operation of multiplying "x" by "-y" is equivalent to the inverse operation of multiplying "-x" by "y."
@@ -51,7 +51,7 @@
       This process ultimately yields the final, combined edges.
     - In summary, the last sub-section will delineate the combined steps constituting the entire edge detection pipeline together.
 
-    At the beginning and after every step, the algorithm will normalize the values.
+    At the beginning and after every step, the algorithm will normalise the values.
     This will be the range $[-255, 255]$ at first, to represent positive and negative derivatives, and later $[0, 255]$ to be in valid range for the Canny Edge Detection algorithm.
     This creates better comparability between different input data and will serve to increase the contrast of the values.
 
@@ -59,7 +59,7 @@
     Given the absence of assurance that the quantity of positive values is equivalent to the quantity of negative values, the algorithm may potentially displace the neutral value for flat surfaces away from zero.
     This phenomenon can be illustrated by examining @fig:algorithm:zero_moving, in which the neutral value is shifted to the right.
     As the contrast of the data is enhanced, the perceptibility of the effect increases. 
-    This phenomenon is illustrated on the right side of the figure, where the red coloration of the flat ground is more pronounced in comparison to the left side.
+    This phenomenon is illustrated on the right side of the figure, where the red colouration of the flat ground is more pronounced in comparison to the left side.
     To address this issue, the algorithm would need to implement a complete separation of positive and negative values during each normalisation.
     However, this effect has only been observed on rare occasions, and even in cases where it has been observed, its impact on the algorithm is not proven to be negative.
     The effect of this appears to be primarily visual, as the algorithm does not take into account the location of the zero value within the value spectrum.
@@ -104,15 +104,15 @@
     The Sobel and Scharr operators are common approximation method frequently employed for this purpose.
     The two methods under discussion are based on the idea of using convolution, whereby a specific kernel is slid over the image, calculating the derivative at each pixel.
     Given that the kernels employed are of sizes 3x3 or 5x5, these are approximations, since the derivative should typically consider only the two pixels directly adjacent to it.
-    In essence, the functionality of both operators is equivalent; the only discrepancy lies in the kernel utilized, as illustrated by @formula:sobel and @formula:scharr @ScharrOperator @SobelOperator @derivative_sobel1.
+    In essence, the functionality of both operators is equivalent; the only discrepancy lies in the kernel utilised, as illustrated by @formula:sobel and @formula:scharr @ScharrOperator @SobelOperator @derivative_sobel1.
 
     A more conventional way of calculating the derivative is to interpret each row and column as a function defining the values x and then to use the standard mathematical approach demonstrated by @formula:gradient. 
     Here, the derivative is calculated by taking the difference between two adjacent pixels and dividing it by the distance between them. 
     Since the distance between two pixels is always 1, the parameter h can be omitted. 
-    While this is theoretically the most mathematically accurate way of calculating the derivative, it is also the most computationally expensive, since the kernel convolution can be optimized quite efficiently. 
+    While this is theoretically the most mathematically accurate way of calculating the derivative, it is also the most computationally expensive, since the kernel convolution can be optimised quite efficiently. 
     Nevertheless, it is definitely a promising approach and will be included in the algorithm for later evaluation. 
     A fourth method, called the sliding window approach, mimics the novel approach of calculating the gradient without the mathematical correctness of the division by $2h$.
-    This approach was utilized as a form of exploratory experimentation, in combination with the other methods, to assess if it could be effective.
+    This approach was utilised as a form of exploratory experimentation, in combination with the other methods, to assess if it could be effective.
 
     #heading(depth: 5, numbering: none, bookmarked: false)[Implementation]
     While all of the following implementations do not distinguish between the x and y directions, in this single section it is necessary due to implementation details where they need to be handled separately.
@@ -131,7 +131,7 @@
       derivative = params.derivative
 
       # Initial normalisation
-      n = cv2.normalize(entry['ndsm'], None, 0, 255, cv2.NORM_MINMAX)
+      n = cv2.normalise(entry['ndsm'], None, 0, 255, cv2.NORM_MINMAX)
 
       ####### STEP 1 : DERIVATIVE
       match derivative:
@@ -188,7 +188,7 @@
 
     #heading(depth: 5, numbering: none, bookmarked: false)[Implementation]
     The following implementation stores the sign of each value first, because the logarithm is not defined for negative values.
-    Therefore, after applying the logarithm to the absolute derivative values, they are normalized and multiplied by the original sign.
+    Therefore, after applying the logarithm to the absolute derivative values, they are normalised and multiplied by the original sign.
     In this way, the logarithm can be applied while preserving the original sign of the derivative values, i.e. without losing the differentiability between positive and negative values.
 
     ```python
@@ -202,8 +202,8 @@
       # Apply log1p to the absolute values
       log = np.log1p(np.abs(derivative))
 
-      # Normalize the logarithmic values
-      derivative = cv2.normalize(log, None, 0, 255, cv2.NORM_MINMAX)
+      # Normalise the logarithmic values
+      derivative = cv2.normalise(log, None, 0, 255, cv2.NORM_MINMAX)
 
       # Reapply the original sign
       derivative = derivative * sign
@@ -302,7 +302,7 @@
     def edge_detection(...):
       # ... other steps
 
-      clipped = cv2.normalize(clipped, None, -255, 255, cv2.NORM_MINMAX)
+      clipped = cv2.normalise(clipped, None, -255, 255, cv2.NORM_MINMAX)
 
       ####### STEP 4 : GAUSSIAN BLURRING
       match apply_blur:
@@ -322,7 +322,7 @@
     #heading(depth: 5, numbering: none, bookmarked: false)[Theory]
     The concluding step of this section involves the implementation of the Canny Edge Detection algorithm @Canny1.
     The usage of the Canny algorithm enables the flexible adaptation of the system to the unique characteristics and requirements of each individual house.
-    The underlying rationale for this phenomenon stems from the implementation of a complex calculation method that utilizes two parameters, lower and upper thresholding, to filter out edges based on gradient magnitude @Canny2.
+    The underlying rationale for this phenomenon stems from the implementation of a complex calculation method that utilises two parameters, lower and upper thresholding, to filter out edges based on gradient magnitude @Canny2.
 
     It should be noted that alternative edge-detection algorithms could be considered.
     Algorithms of a simpler nature are based on the gradient value between the x and y directions of the image.
@@ -335,7 +335,7 @@
     The determination of the optimal values for the lower and upper threshold will necessitate a process of experimentation and will vary between houses.
     There have been suggestions of dynamically calculating the threshold values based on the gradient's median value @Canny3. 
     However, this was not implemented due to initial tests not yielding promising results.
-    Conversely, the algorithm will utilize dynamic percentage thresholds.
+    Conversely, the algorithm will utilise dynamic percentage thresholds.
     It is important to acknowledge that this approach will essentially replicate the utilization of absolute values directly, as the data undergoes normalisation to fall within the range of 0 to 255 prior to the application of the Canny algorithm.
 
     #heading(depth: 5, numbering: none, bookmarked: false)[Implementation]
@@ -345,7 +345,7 @@
     For instance, the values 255 and 254 are combined into a single value of 255 after the transformation process, becoming indistinguishable.
     However, this informational reduction is presumed to exert a negligible effect on the outcomes.
 
-    The threshold values are designated as the lower and upper percentiles of the normalized image.
+    The threshold values are designated as the lower and upper percentiles of the normalised image.
     While they are set at equal intervals in this instance for the sake of simplicity, they can be adjusted to allow for uneven percentiles in the future, should preliminary results prove unsatisfactory.
     For instance, setting the percentage to 35 will result in a threshold of $[89, 179]$, a representation that nearly perfectly aligns with the novel approach of setting the upper threshold at double the lower threshold.
 
@@ -357,13 +357,13 @@
       # ... other steps
 
       ####### STEP 5 : EDGE DETECTION
-      normalized = cv2.normalize(
+      normalised = cv2.normalise(
           blurred, None, 0, 255, cv2.NORM_MINMAX, cv2.CV_8U
       )
 
-      lower_threshold = int(np.percentile(normalized, lower))
-      upper_threshold = int(np.percentile(normalized, upper))
-      edges = cv2.Canny(normalized, lower_threshold, upper_threshold)
+      lower_threshold = int(np.percentile(normalised, lower))
+      upper_threshold = int(np.percentile(normalised, upper))
+      edges = cv2.Canny(normalised, lower_threshold, upper_threshold)
 
       # ... other steps
     ```
@@ -376,14 +376,14 @@
       ],
     ) <fig:algorithm:edges:pipeline>
 
-    @fig:algorithm:edges:pipeline demonstrates the full pipeline that was utilized for the edge detection step.
-    The derivatives for each step are assigned a color, ranging from blue to red, with blue signifying negative values and red denoting positive ones.
-    Given that these are divided into the x and y directions, this coloration method is adequate.
+    @fig:algorithm:edges:pipeline demonstrates the full pipeline that was utilised for the edge detection step.
+    The derivatives for each step are assigned a colour, ranging from blue to red, with blue signifying negative values and red denoting positive ones.
+    Given that these are divided into the x and y directions, this colouration method is adequate.
 
-    It should be noted that the parameters were not optimized for this specific image, but are exclusively utilized for illustrative purposes here.
+    It should be noted that the parameters were not optimised for this specific image, but are exclusively utilised for illustrative purposes here.
     For instance, given the absence of substantial outliers in the image, which would typically serve to diminish contrast, it is plausible that the clipping value was set at an excessively high value. 
     This hypothesis is substantiated by observation of the distribution charts.
-    The impact of blurring is discernible, as the surface coloration exhibits a more polished and smooth appearance subsequent to the application of this technique.
+    The impact of blurring is discernible, as the surface colouration exhibits a more polished and smooth appearance subsequent to the application of this technique.
 
     === Surface Growth <section:surface_growth>
 
@@ -466,7 +466,7 @@
     Nonetheless, the decision was made to exclusively examine and inspect the surfaces within the house's base area. 
     Consequently, this necessitated the implementation of a filtration process to remove external surfaces.
 
-    Given that the algorithm has already obtained the clipped pixels from the edge detection pipeline, it was determined that it was feasible to utilize this information in this particular step.
+    Given that the algorithm has already obtained the clipped pixels from the edge detection pipeline, it was determined that it was feasible to utilise this information in this particular step.
     The implementation of the surface growth algorithm on the clipped pixels image produces a set of surfaces that approximately define the areas of the image.
     By this set of segments, the house area can be identified.
     Due to practicality, the algorithm will simply check with overlap regarding the mask from the input data. However, a more sophisticated approach independent of the input data could be developed in future work.
@@ -509,7 +509,7 @@
     However, as the general structure was being established, a greater necessity for objective evaluation criteria emerged.
     The methodology under consideration should possess the capacity to evaluate the quality of surfaces based on the following criteria:
     - The values in a surface must be coherent, meaning that they should be similar throughout its entirety.
-      While it is acknowledged that this value will not attain a perfect score due to the aforementioned noise and imperfection of input data, it is expected to be maximized.
+      While it is acknowledged that this value will not attain a perfect score due to the aforementioned noise and imperfection of input data, it is expected to be maximised.
       Preliminary experimental findings suggest that the majority of surfaces appear to exhibit a derivative that is not perfectly continuous across all values.
       The objective of this criterion is to guarantee that the algorithm does not undersegment the data.
       In the event that the algorithm merges surfaces incorrectly, the resultant derivative values will be inconsistent, which will consequently lead to a lower score.
@@ -530,9 +530,9 @@
     
     @fig:dbscan presents illustrative results of the DBSCAN algorithm on three disparate surfaces, yielding suboptimal outcomes in each instance.
     Note that the label -1 is given to all points considered noise @dbscan2.
-    The surface utilized in @fig:dbscan:a is comprised of three surfaces that have been erroneously merged.
+    The surface utilised in @fig:dbscan:a is comprised of three surfaces that have been erroneously merged.
     Nonetheless, the algorithm proved incapable of identifying this particular instance and instead labeled 17 different surfaces. 
-    Notably, it failed to recognize the two outer surfaces as coherent entities and erroneously merged the inner surface with the edges surrounding the other two.
+    Notably, it failed to recognise the two outer surfaces as coherent entities and erroneously merged the inner surface with the edges surrounding the other two.
     
     In contrast, the other two examples are each a single, coherent surface.
     In @fig:dbscan:b, a perfectly normal surface affected by minor noise is shown, however, the entire surface is labeled as noise by the algorithm, with the actual noise being given labels.
@@ -657,7 +657,7 @@
     In the first row, an example is illustrated which shows a flawless surface, which is identified as such by the algorithm.
     The three calculated scores are 98%, 97%, and 96%, respectively, for x, y, and magnitude direction.
     In all three directions, there is a single plateau that extends across the majority of the surface.
-    It is important to acknowledge that the graphs are not normalized, which results in an apparent unevenness that does not accurately reflect the underlying data.
+    It is important to acknowledge that the graphs are not normalised, which results in an apparent unevenness that does not accurately reflect the underlying data.
     The values ranging from 80 to 100 are regarded as sufficiently proximate to be classified as a single, cohesive plateau.
 
     The second example row illustrates a surface that persists of two merged surfaces, which the algorithm detects in the x and magnitude directions. 
@@ -719,7 +719,7 @@
     The surface's score is calculated by multiplying the result score of the plateau algorithm by the surface's squared size.
     As previously stated, the algorithm calculates this in order to assign greater rewards to surfaces of greater size in comparison to smaller surfaces.
     Therefore, a surface with a large surface area and optimal values will achieve a higher score than two smaller surfaces with perfect values.
-    However, a small surface with imperfect values will likely demonstrate superior performance in comparison to a large surface characterized by numerous incoherent values.
+    However, a small surface with imperfect values will likely demonstrate superior performance in comparison to a large surface characterised by numerous incoherent values.
     This calculation is denoted as $#sym.Phi _"pos"$ in @formula:segment_score.
 
     #figure(
@@ -766,7 +766,8 @@
     Two examples are provided to illustrate the distinction between utilizing the square of the surface area and using the surface area directly, without any bias toward larger surfaces.
     Upon examination of the positive score, it becomes evident that the intended effect is indeed being achieved. 
     As illustrated in @fig:scores:squareornot:a, the larger surface is given greater value than the smaller one.
-    @fig:scores:squareornot:b prioritizes smaller surfaces over larger segments. This is due to the fact that the two smaller surfaces possess differing mean derivatives. Consequently, there is an indirect increase in the change for each value to be near the current mean.
+    @fig:scores:squareornot:b prioritises smaller surfaces over larger segments. 
+    This is due to the fact that the two smaller surfaces possess differing mean derivatives. Consequently, there is an indirect increase in the change for each value to be near the current mean.
     Consequently, the segmentation on the right, which is visibly suboptimal, exhibits an analogous positive score despite the discernible noise edges that divide large surfaces into multiple smaller ones.
     
     @fig:scores:squareornot also demonstrates the operational dynamics of the negative score, whereby the score undergoes a reduction in proportion to the extent of clipping, as an increasing number of segments are systematically filtered out.

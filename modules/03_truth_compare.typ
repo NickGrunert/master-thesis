@@ -30,10 +30,10 @@
     Furthermore, this particular section of the data set encompasses a diverse array of roof shapes, ranging from simple to complex designs, primarily consisting of normal roofs, in addition to a flat roof with a relatively uncomplicated design.
 
     @GroundTruth1 elaborates on the issues that emerge during the process of data generation.
-    As previously discussed, the images currently under consideration are characterized by suboptimal pixel quality. 
+    As previously discussed, the images currently under consideration are characterised by suboptimal pixel quality. 
     This deficiency manifests particularly in thin roof regions, where the delineation of the edge is rendered indistinct.
     Additionally, certain edges are challenging to discern with the naked eye, and they are often imperceptible in both the #abr("nDSM") and RGB data.
-    However, these edges become clearly visible when utilizing the derivative and coloring the image with this data.
+    However, these edges become clearly visible when utilizing the derivative and colouring the image with this data.
     This introduces an additional layer of complexity to the process of generating the ground truth segmentations.
     It must also again be noted that the RGB data and the #abr("nDSM") data are not perfectly aligned.
     Consequently, an attempt to create a ground truth based only on the RGB data would yield a different result than the #abr("nDSM") data, particularly with regard to the house outlines, where the misalignment becomes quite evident.
@@ -91,7 +91,7 @@
 
     #heading(depth: 5, numbering: none, bookmarked: false)[Explanation]
     A widely accepted approach for the comparison of two segments is the calculation of the #abr("IoU") @iou1 @iou2.
-    It is generally recognized as being computationally efficient and has become a staple component in the realm of computer vision workflows.
+    It is generally recognised as being computationally efficient and has become a staple component in the realm of computer vision workflows.
     The #abr("IoU") metric is a quantitative measure of the overlap between two segments.
     Although the algorithm is frequently employed for bounding box comparisons @iou3, it is also capable of performing a pixel-wise set comparison on the two surfaces.
     The resulting score is calculated by dividing the area of intersection by the area of union, as demonstrated in @formula:iou.
@@ -100,7 +100,7 @@
     Furthermore, it imposes a penalty on either of the two segments if their respective areas fall outside the boundaries of the other segment.
 
     It is acknowledged that @formula:iou2 is an alternative calculation approach that does not operate via set operations but via the confusion matrix.
-    The implementation of this would, in principle, be a rational course of action, given the subsequent section's introduction of the metrics within the formula. However, this approach was not adopted, as it would not lead to an improvement of the algorithms calculational efficiency that would rectify the work required to realize it.
+    The implementation of this would, in principle, be a rational course of action, given the subsequent section's introduction of the metrics within the formula. However, this approach was not adopted, as it would not lead to an improvement of the algorithms calculational efficiency that would rectify the work required to realise it.
 
     #heading(depth: 5, numbering: none, bookmarked: false)[Code Snippet]
     The following code shows a simple implementation of the #abr("IoU") calculation.
@@ -121,7 +121,7 @@
 
     #heading(depth: 5, numbering: none, bookmarked: false)[Explanation]
     There is more than one way to define data quality and it's fundamental components; one of such definitions being completeness, accuracy, and consistency @DataCompleteness.
-    However, our primary concern at this stage is to prioritize completeness and accuracy, given the relatively low priority accorded to consistency in the current use case.
+    However, our primary concern at this stage is to prioritise completeness and accuracy, given the relatively low priority accorded to consistency in the current use case.
 
     The degree of consistency will not be discussed further in this text, since doing so would entail an evaluation of the adequacy of the original geographical division and the representativeness of the buildings contained therein with respect to universal building types.
     It can be stated, with a reasonable degree of certainty, that the data is assumed to demonstrate a sufficient degree of variability in terms of complexity with regard to typical roof types.
@@ -135,13 +135,13 @@
     As we are not evaluating data sets but rather specific comparisons between a geometry representing a calculated surface and one representing a ground truth, it is possible to break down the problem to be analyzed via statistical metrics.
     Additionally, given the existence of interconnected geographical structures devoid of intricate information systems, the problem can be streamlined for resolution through the utilization of a confusion matrix.
     Object detection normally uses simple bounding box checks for this calculation @ConfusionMatrix.
-    In the context of this work, instead of bounding boxes, each pixel coordinate can easily be categorized as #abr("TP"), #abr("FP"), and #abr("FN") after matching predicted segments to ground truth segments.
+    In the context of this work, instead of bounding boxes, each pixel coordinate can easily be categorised as #abr("TP"), #abr("FP"), and #abr("FN") after matching predicted segments to ground truth segments.
 
     The three main metrics applicable for analysing in such a manner are accuracy, recall, and precision @DataCompleteness3.
     The utilization of accuracy, as demonstrated in @formula:accuracy, would, however, not be advantageous in this instance. 
     While the calculation of the number of true negatives is possible, its practical application is limited.
     The issue with this approach is that the algorithm is not attempting to differentiate between pixels as belonging to a roof or not, but rather is focused on the classification of each individual roof segment.
-    Nonetheless, it would be a possibility to evaluate the mask quality, which is utilized to filter out segments after edge detection, such that only roof segments remain.
+    Nonetheless, it would be a possibility to evaluate the mask quality, which is utilised to filter out segments after edge detection, such that only roof segments remain.
 
     In this particular instance, the completeness will be evaluated using the recall metric, which is defined as the ratio of true positives to the sum of true positives and false negatives, as shown in @formula:recall.
     This approach quantifies the proportion of correctly identified pixels in context to the entire ground truth surface, thereby estimating the completeness of the prediction.
@@ -182,7 +182,7 @@
     The prior scoring algorithm, which employs the plateau algorithm, imposes a significant penalty on this issue, incentivizing the algorithm to avoid it.
     This scoring system is not designed to perform the aforementioned function, as doing so would introduce significant complexity, since, for example, the #abr("IoU") does not directly account for #abr("FP").
     @section:fß outlines an approach to address this issue to a certain extent by placing a greater emphasis on precision over recall. 
-    In essence, it penalizes #abr("FP") to a greater extent than #abr("FN") when calculating the score.
+    In essence, it penalises #abr("FP") to a greater extent than #abr("FN") when calculating the score.
 
     #heading(depth: 5, numbering: none, bookmarked: false)[Code Snippet]
     The optimal solution is the implementation of a precise one-to-one mapping between segments, as this would be the anticipated outcome of a flawless algorithm.
@@ -280,11 +280,11 @@
     The $F_ß$ score is a generalization of the F1 score that incorporates a weighting coefficient, ß, into the formula @Fß. 
     This modification enables the dynamic prioritization of either input.
 
-    Given the necessity to prioritize precision, the $F_0.5$ score will be employed, representing the $F_ß$ score when $ß = 0.5$.
+    Given the necessity to prioritise precision, the $F_0.5$ score will be employed, representing the $F_ß$ score when $ß = 0.5$.
     Executed on the example segmentation from @fig:truth_compare:completeness:a the difference in resulting score is $F_0.5≈0.887$ compared to $F_1≈0.75$, which clearly illustrates that this change indeed has the expected impact of biasing towards the recall metric.
 
     While it may seem logical to exclude the completeness from this calculation altogether, it is useful for enhancing the comparability with the scoring system.
-    In essence, our objective is to utilize this as a metric to assess the reliability of the scoring system. 
+    In essence, our objective is to utilise this as a metric to assess the reliability of the scoring system. 
     Given that the algorithm employs a positive and negative scoring system, this approach is a logical one.
     Nevertheless, it could be argued that the elimination of the negative score could similarly yield a non-negative outcome, as the theoretical irrelevance of missing pixels was discussed at the beginning of this chapter.
     However, the decision was taken not to exclude recall and to continue using the $F_0.5$ score when calculating the final scores out of positive and negative scores.
@@ -305,7 +305,7 @@
 
     Constraining the matching of generated segments and ground truth segments to being strictly 1-to-1 is essentially equivalent to using the #abr("HMA"), also called the Kuhn-Munkres algorithm @hungarian1.
     The #abr("HMA") is a computational optimization technique that addresses the assignment problem in polynomial time. 
-    It can be utilized to identify the optimal assignment of predicted segments to ground truth segments @hungarian2.
+    It can be utilised to identify the optimal assignment of predicted segments to ground truth segments @hungarian2.
     A two-dimensional matrix of size $n*m$ is employed, where $n$ denotes the number of predicted segments and $m$ denotes the number of segments in the ground truth data.
     This matrix contains all #abr("IoU") values.
     The purpose of the algorithm is to calculate the optimal matching pairs between the two sets of segments.
@@ -335,10 +335,10 @@
 
     However, a notable distinction between the two implementations lies in the methodology employed for handling unmatched segments.
     As illustrated by the implementation in @fig:truth_compare:hungarian_error, there is a discrepancy in the calculation of scores between the approaches.
-    While the two approaches are similar in general, the new implementation utilizes unmatched segments to calculate #abr("FP") and #abr("FN"), a feature not present in the older approach.
+    While the two approaches are similar in general, the new implementation utilises unmatched segments to calculate #abr("FP") and #abr("FN"), a feature not present in the older approach.
     Initially, an unmatched predicted surface was excluded from the #abr("FP") calculation due to the negligible impact of oversegmentation on the algorithm's performance.
     The algorithm would only need to address the issue of undersegmentation, as this would result in fewer prompts than the number of truth surfaces.
-    In the subsequent implementation using the #abr("HMA"), however, this concept is no longer utilized due to reevaluation of the approach.
+    In the subsequent implementation using the #abr("HMA"), however, this concept is no longer utilised due to reevaluation of the approach.
     The objective is to ascertain the validity of the concept in relation to the ground truth. 
     Consequently, the penalization of erroneous surfaces in terms of undersegmentation is required to ensure the integrity of this endeavor.
     In the alternative, the score of segmentations could be overestimated to a considerable degree.
@@ -413,7 +413,7 @@
       if not matches:
           return 0.0
 
-      # Initialize counts
+      # Initialise counts
       tp, fp, fn = 0, 0, 0
 
       # Process matched pairs (account for partial matches via IoU)
@@ -469,7 +469,7 @@
     A limitation common to all subsections, particularly the first, is that they are based on an insufficient number of data points.
     The precise number of data points required for conducting an accurate statistical analysis of the correlation is dependent upon the anticipated magnitude of the correlation @correlation1.
     Initially, the outcomes were split according to the methodology employed in calculating the derivative. 
-    This classification system did not encompass data points pertaining to the variation in filter sizes utilized in the Gaussian Blurring process.
+    This classification system did not encompass data points pertaining to the variation in filter sizes utilised in the Gaussian Blurring process.
     The consequence of this phenomenon was an insufficient number of data points, which, due to excessive clustering, yielded good results, but failed to yield substantial correlation.
     Consequently, the experiment variables were expanded to include the following:
     The clipping values were subjected to testing within the range of zero to ten percent.
@@ -588,7 +588,7 @@
     This means the algorithm still assummes an identity mapping between the two datasets, a property that, as previously discussed, is not wanted.
     A potential solution to this issue is normalization of the data, which would result in the data falling within the full range of 0 to 1.
 
-    The calculation of cosine similarity on normalized data is analogous to the calculation of the Pearson coefficient @Pearson4 @Pearson2 @Pearson3.
+    The calculation of cosine similarity on normalised data is analogous to the calculation of the Pearson coefficient @Pearson4 @Pearson2 @Pearson3.
     The Pearson coefficient is another metric of linear correlation between two datasets.
     It ranges from -1 to 1, with 1 representing a perfect positive correlation and -1 representing a perfect negative correlation.
     The Pearson coefficient is calculated by taking the covariance of two datasets and dividing it by the product of the standard deviations of said datasets. This calculation can be performed using the @formula:pearson function.
@@ -598,7 +598,7 @@
     #heading(depth: 5, numbering: none, bookmarked: false)[Code Snippet]
     Nevertheless, given that Scipy provides the Pearson function @Pearson1, it is unnecessary to implement this function independently.
     The function accepts two arrays as inputs and produces the Pearson coefficient.
-    Note that the method also returns a p-value demonstrating confidence, which however will not be utilized in this context.
+    Note that the method also returns a p-value demonstrating confidence, which however will not be utilised in this context.
     The following example code snippet offers a small abstract of the code.
 
     ```python
@@ -626,7 +626,7 @@
     The relaxation of the assumption of a rigid 1-to-1 relationship between the two datasets signifies a substantial enhancement, as it allows for greater flexibility in accepting the correlation. 
 
     The discrepancy in the values, with some at 0.6 and others at 0.8, remains to be explained, but it is evident that both values serve as at least adequate indicators for the correlation of scores.
-    It is reasonable to hypothesize that this phenomenon is attributable to the scoring system's strong penalization of undersegmentation segmentations, which scores are completely nullified.
+    It is reasonable to hypothesise that this phenomenon is attributable to the scoring system's strong penalization of undersegmentation segmentations, which scores are completely nullified.
     In contrast, the ground truth data's #abr("IoU") values exhibit only a marginal sensitivity to such inaccuracies.
 
     #subpar.grid(
@@ -660,15 +660,15 @@
     This represents a marked enhancement over earlier iterations, in which the R2 score was not constrained and could attain unconstrained negative values, leading to challenges in interpretation.
 
     As previously outlined in @section:metrics, the #abr("MAE") is a reliable metric for assessing the accuracy of the algorithm, while the R2 score is a valuable indicator of the suitability of the data for a linear model.
-    The #abr("MAE") is inherently an error metric that should be minimized. 
-    It is thus normalized to the range of 0 to 1. 
+    The #abr("MAE") is inherently an error metric that should be minimised. 
+    It is thus normalised to the range of 0 to 1. 
     This is followed by inversion through subtraction from 1 to create a score that represents a maximization task.
-    This is performed to ensure that the calculated #abr("MAE") score is aligned with the R2 score, thereby ensuring that the resulting score is optimized to 1.
+    This is performed to ensure that the calculated #abr("MAE") score is aligned with the R2 score, thereby ensuring that the resulting score is optimised to 1.
     The resulting correlation score is derived by calculation of the weighted average between the R2 and the #abr("MAE") scores.
 
     #heading(depth: 5, numbering: none, bookmarked: false)[Code Snippet]
     The resulting correlation score is then calculated by taking the weighted average of the R2 score and the #abr("MAE"), as illustrated in the following code example.
-    The variable mae_norm_score is defined as the inverse of the #abr("MAE"), which subsequently is to be maximized.
+    The variable mae_norm_score is defined as the inverse of the #abr("MAE"), which subsequently is to be maximised.
     The constrained range of the R2 score is not immediately apparent.
     Nonetheless, the resulting correlation score is effectively constrained to the range of 0 to 1, which is the desired property of the algorithm.
     To ensure simplicity, the alpha value is set to 0.5, thereby assigning equal weight to both metrics.
@@ -692,7 +692,7 @@
         # Calculate MAE
         mae = mean_absolute_error(truth_scores_reshaped, trend)
         mae_norm = mae / (max(truth_scores) - min(truth_scores) + 1e-10)
-        mae_norm_score = 1 - mae_norm # Inverse the normalized MAE
+        mae_norm_score = 1 - mae_norm # Inverse the normalised MAE
 
         # Calculate resulting score
         result = (alpha * r2) + ((1 - alpha) * mae_norm_score)
@@ -714,7 +714,7 @@
     This further substantiates the reliability of the Pearson coefficient values as a reliable metric for assessing the performance of the algorithm.
 
     The results indicate minimal absolute errors in relation to their respective linear fits.
-    An examination of @fig:truth_compare:correlation:a and @fig:truth_compare:correlation:c reveals the algorithm's capacity to generate satisfactory outcomes, as evidenced by the normalized #abr("MAE") and the R2 score.
+    An examination of @fig:truth_compare:correlation:a and @fig:truth_compare:correlation:c reveals the algorithm's capacity to generate satisfactory outcomes, as evidenced by the normalised #abr("MAE") and the R2 score.
     However, it is evident that the fits are not perfect, or rather, do not align with expectations. 
     This deviation can be attributed to the presence of clear outliers in the scatter plot.
 
@@ -768,12 +768,12 @@
     In such instances, the Spearman coefficient can be employed to measure the coefficient of relation @spearman1.
     The Spearman coefficient is a non-parametric measure of rank correlation. 
     It assesses how well the relationship between two variables can be described by a monotonic function.
-    This approach is analogous to the Pearson coefficient, as discussed in @section:pearson, with the key distinction being that it does not utilize the raw values directly. 
+    This approach is analogous to the Pearson coefficient, as discussed in @section:pearson, with the key distinction being that it does not utilise the raw values directly. 
     Instead, it employs the rank order of the values, as demonstrated in @formula:spearman.
     The range and interpretation of the resulting score function similarly to the Pearson correlation coefficient @spearman2.
 
     #heading(depth: 5, numbering: none, bookmarked: false)[Code Snippet]
-    The implementation of the Spearman coefficient, much alike the implementation of the Pearson coefficient, also utilizes the Scipy library implementation @spearman3.
+    The implementation of the Spearman coefficient, much alike the implementation of the Pearson coefficient, also utilises the Scipy library implementation @spearman3.
 
     ```python
     from scipy.stats import spearmanr
@@ -814,19 +814,19 @@
     === Overall Assessment
     As previously stated, this section will employ the Pearson and Spearman coefficients to analyze the provided data.
     The scope of this initiative will expand beyond the initial three examples provided by @fig:truth_compare:examples, encompassing all twenty examples that include ground truth segmentations.
-    While neither coefficient necessitates normalization in theory, for enhanced comparability between different entries, they are nevertheless normalized.
+    While neither coefficient necessitates normalization in theory, for enhanced comparability between different entries, they are nevertheless normalised.
     This also renders the data more visually comprehensible and facilitates the consolidation of the datasets into a single entity, as otherwise, the consolidation of the rankings would be unfeasible.
     This means that the absolute values of each individual dataset are lost, which will lead to complications in the subsequent analyses.
     Contrary to the preceding sections, the present section does not entail the evaluation of the method of metric calculation. 
     Rather, the emphasis has shifted to the examination of the actual results and the entry data which gave rise to outlier.
 
     #heading(depth: 5, numbering: none, bookmarked: false)[Individual Entries]
-    As demonstrated by @fig:truth_compare:final, the aggregate data for all derivatives, subsequent to being normalized, is confined within the full spectrum of $[0, 1]$.
+    As demonstrated by @fig:truth_compare:final, the aggregate data for all derivatives, subsequent to being normalised, is confined within the full spectrum of $[0, 1]$.
     The majority of the results obtained lend substantial support to the assumption of up to very high correlation.
     As previously mentioned, each cell encompasses the aggregate of 840 data points, thereby meeting the requisite minimum of 250 points to ensure the attainment of stable results.
     The following observations can be made:
 
-    Firstly, three data sets did not optimally normalize the data due to the presence of one or more outliers, which resulted in the distortion of the data's maximum and minimum values.
+    Firstly, three data sets did not optimally normalise the data due to the presence of one or more outliers, which resulted in the distortion of the data's maximum and minimum values.
     The correlation scores of these data sets are satisfactory, irrespective of the metrics employed, as they are not dependent on the normalization process.
     However, this approach may present certain challenges when attempting to evaluate all datasets collectively. 
     Specifically, the inclusion of these datasets can result in a reduction of the overall score, as they contribute "worse" points to the graph within the overarching context.
@@ -835,7 +835,7 @@
     #figure(
       image("../figures/truth_compare/final_results/all_data.png"), 
       caption: [
-        Normalized point clouds with pearson and spearman coefficients
+        Normalised point clouds with pearson and spearman coefficients
       ],
     )<fig:truth_compare:final>
 
@@ -858,7 +858,7 @@
     #figure(
       image("../figures/truth_compare/final_results/combined_all_data.png"), 
       caption: [
-        Graph of the merged, normalized data points
+        Graph of the merged, normalised data points
       ],
     )<fig:truth_compare:final_all>
 
@@ -874,7 +874,7 @@
     It is fortunate that the specified area is not densely populated. While some points are in close proximity to it, they are not excessively proximate. It is hoped that the number of points is sufficiently limited to ensure that the algorithm remains valid.
     The population of this corner is predominantly attributable to the previously delineated unfortunate normalization of individual data sets due to outliers.
 
-    Given that this is normalized data, discrepancies between scores and truth scores that are initially smaller appear to be more problematic than in most cases.
+    Given that this is normalised data, discrepancies between scores and truth scores that are initially smaller appear to be more problematic than in most cases.
     The issue could only be resolved by ensuring that all original data sets contained a wider range of data points for comparison. 
     However, the algorithm currently outputs a limited number of segmentations which are of low quality, making it difficult to achieve this objective. 
     Changing the algorithm to do so would be nonsensical.

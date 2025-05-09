@@ -34,7 +34,7 @@
     long: "Digital Terrain Model",
   ),
   "nDSM": (
-    long: "normalized Digital Surface Model",
+    long: "normalised Digital Surface Model",
   ),
   "DL": (
     long: "Deep Learning",
@@ -68,6 +68,9 @@
   ),
   "DBSCAN": (
     long: "Density-Based Spatial Clustering of Applications with Noise",
+  ),
+  "RGB": (
+    long: "Red, Green, Blue",
   ),
 )
 

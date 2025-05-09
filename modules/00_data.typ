@@ -1,23 +1,25 @@
 #import "@preview/subpar:0.2.0"
 
-#let data() = {
+#let data(abr) = {
   text(lang:"en")[
     = Input Data Analysis <section:input_data>
     The input data for this research needs to be collected, described and analysed.
     The aim is to identify existing data and make an initial assessment of whether and how it can be used for the research.
 
     == Data Collection
-    @fig:input:image_and_ndsm shows the surface tile which will be used, split into RGB image and an image which illustrates the nDSM data.
-    The RGB data is derived from aerial imigery, provided by the State Office for Geoinformation and Surveying of Lower Saxony (LGLN).
+    @fig:input:image_and_ndsm shows the surface tile which will be used, split into #abr("RGB") image and an image which illustrates the #abr("nDSM") data.
+    The #abr("RGB")  data is derived from aerial imigery, provided by the State Office for Geoinformation and Surveying of Lower Saxony (LGLN).
 
     #figure(
       image("../figures/input/image_and_ndsm.png"), 
-      caption: [Image and nDSM Input Data],
+      caption: [
+        Image and nDSM input data
+      ],
     ) <fig:input:image_and_ndsm>
 
     Specifically, the tile chosen was 326045790, located in the city of Braunschweig, Germany.
     This was chosen for a number of reasons.
-    Most importantly, the LGLN was able to provide me with data from a building recognition AI, combined with other data that had already been collected on roof structures.
+    Most importantly, the LGLN was able to provide me with data from a building recognition #abr("AI"), combined with other data that had already been collected on roof structures.
     As the tile is on the outskirts of the city, it contains many "normal" houses, which range from low complexity to medium number of segments, and are therefore of average complexity, which is more suitable for analysis.
     Analysing a house with a very high number of segments is not helpful if no segments can be detected at all.
     It is therefore necessary to find relatively simple, but not too easily identifiable, roof structures to enable the most effective research.
@@ -27,12 +29,14 @@
     @fig:input:comparison shows the visual representation of the geometries present in the four data sets for one example house.
 
     On the left is a simple building base area.
-    These are the results of the building detection AI and contain some additional information in addition to the geometries.
+    These are the results of the building detection #abr("AI") and contain some additional information in addition to the geometries.
     Especially noteworthy are the detected area of the geometry and the algorithm's confidence in the detection.
 
     #figure(
       image("../figures/input/data_comparison.png"), 
-      caption: [Image and nDSM Input Data],
+      caption: [
+        Comparison of input data geometries
+      ],
     ) <fig:input:comparison>
 
     The other three geometries shown are related to each other via id references.
@@ -76,7 +80,7 @@
       figure(image("../figures/input/heatmaps.png")),
       figure(image("../figures/input/build_parts.png")),
       caption: [
-        Heatmaps over the data's geometries
+        Different heatmaps on the input buildings
       ],
       label: <fig:input:heatmaps>,
     )
@@ -116,7 +120,7 @@
       image("../figures/input/bbox_to_area.png"), 
       image("../figures/input/area_to_confidence.png"),
       caption: [
-        Area Correlation
+        Area correlations to bounding box size and confidence
       ],
       label: <fig:input:area_correlation>,
     )
@@ -185,7 +189,7 @@
     Therefore, the dataset will be sorted according to the area size.
     The subsequent experiments will primarily utilise the initial 20 houses located at the 60th percentile.
 
-    The input data is processed so that the following algorithms receive an RGB image of the house, the nDSM data within this area frame, and the building parts as an image mask.
+    The input data is processed so that the following algorithms receive an #abr("RGB")  image of the house, the #abr("nDSM") data within this area frame, and the building parts as an image mask.
     Note that this mask may not reflect the structure of the building well, but can be used as a rough estimate of the building boundaries and as a basis for later analysis.
     Its exact use will be explained later.
 
@@ -193,7 +197,7 @@
     Note that the masks shown are not the final product, as they will be pre-processed to exclude building parts that do not belong to the current building in question.
     The second entry shows such an invalid overlap in the lower left corner, which will be filtered out before further use.
 
-    The nDSM image is displayed using a terrain colour map for visual clarity, as the raw nDSM data in a spectrum from white to black does not have enough contrast to show clear detail.
+    The #abr("nDSM") image is displayed using a terrain colour map for visual clarity, as the raw #abr("nDSM") data in a spectrum from white to black does not have enough contrast to show clear detail.
 
     #subpar.grid(
       columns: (2fr, 1fr),

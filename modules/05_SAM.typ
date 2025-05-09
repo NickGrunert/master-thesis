@@ -162,7 +162,7 @@
 
     Secondly, the derivative data is still riddled with problemns stemming from noise and miscalculations from the height information.
     The small windows on the most top have a substantially wrong influence on the derivative.
-    In this case, the RGB data outperforms, the execution on the derivative image, since such noise is not present, or in the case of the color swapped image less previlant enough to result in a smooth, correct surface.
+    In this case, the RGB data outperforms, the execution on the derivative image, since such noise is not present, or in the case of the colour swapped image less previlant enough to result in a smooth, correct surface.
     On the other hand, the example also shows pretty well that it cuts the big surface to the right in half, since there is a clear visual line between the segments.
     It could be argued that this is not of high importance, since the two individual surfaces can still be used to later generate the accurate structure of the house pretty well, or could be algorithmically merged.
 
@@ -178,8 +178,8 @@
 
     Also, the RGB data serves in actually recognizing some edges between segments of equal derivative.
     This can be visually confirmed on the bottom right of the example house.
-    Since the derivatives are equal, almost all experiments solely run on data derived from the nDSM are unable to recognize the edge.
-    However, inclusion of the RGB data can solve this problem, as the colour swapped image and RGB image itself recognize this edge.
+    Given the equivalence of the derivatives, it is apparent that the vast majority of experiments exclusively utilising data derived from the nDSM are incapable of identifying the edge.
+    However, the incorporation of the RGB data has been demonstrated to resolve this issue, as the colour-swapped image and the RGB image itself are able to recognise this edge.
 
     Additionaly, it has become more apparent that the truth comparison should have a higher bias against segmentations which do not find generated segments for any ground truth segment.
     It has been proven that the mapping of score to ground score works.

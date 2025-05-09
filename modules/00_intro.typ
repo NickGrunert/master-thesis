@@ -15,12 +15,12 @@
 
     The advent of #abr("DL") has led to substantial progress in advanced semantic segmentation capabilities, particularly through the implementation of #abr("CNN") and #abr("FCN"), for example by U-Net @intro3 and SegNet @intro4.
     In circumstances where a sufficient amount of labeled data is available, these models have been shown to frequently exhibit superior performance in comparison to traditional methodologies by learning hierarchical features.
-    U-Net is a frequently utilized architecture for the purpose of detecting the base area of buildings and roof segmentation @intro5. 
+    U-Net is a frequently utilised architecture for the purpose of detecting the base area of buildings and roof segmentation @intro5. 
 
     Nevertheless, #abr("DL") approaches encounter substantial challenges in the domain of remote sensing.
     A primary concern is the scarcity of large-scale, diverse, and accurately labeled datasets, especially for complex tasks such as the accurate segmentation of roof planes.
     The manual creation of annotations and ground truth data requires a lot of manual labor, which severely restricts the size and variability of training sets.
-    Additionally, remote sensing data demonstrates a high degree of variability, attributable to various factors including, but not limited to, the utilized sensors, the resolution of the sensors, atmospheric conditions, and the inherent diversity of buildings across disparate geographical locations @intro6. 
+    Additionally, remote sensing data demonstrates a high degree of variability, attributable to various factors including, but not limited to, the utilised sensors, the resolution of the sensors, atmospheric conditions, and the inherent diversity of buildings across disparate geographical locations @intro6. 
     This makes model generalization difficult @intro7. 
     Roof segmentation presents a series of unique challenges, including the handling of complex geometries, the obstruction by overlapping trees and shadows, and the accurate delineation of specific internal rooflines such as ridges, hips, and valleys @intro8.
 
@@ -28,15 +28,15 @@
     The utilization of multiple data sources has become a prevalent approach to address the constraints imposed by a single data source. 
     Integration of information obtained from standard images with geometric information derived from elevation data has emerged as a common practice @intro7. 
     Elevation data, particularly the #abr("nDSM"), which represents height above ground, provides strong cues for distinguishing buildings from ground features and understanding their structure @intro9.
-    Common fusion strategies in #abr("DL") involve the incorporation of the #abr("nDSM") or features derived from #abr("LiDAR") as additional input channels alongside RGB or multispectral bands @intro10.
+    Common fusion strategies in #abr("DL") involve the incorporation of the #abr("nDSM") or features derived from #abr("LiDAR") as additional input channels alongside #abr("RGB") or multispectral bands @intro10.
     This enables networks to acquire knowledge collectively from spectral and geometric information, frequently resulting in enhanced segmentation accuracy, particularly for architectural structures such as buildings.
-    Other approaches utilize elevation data in post-processing steps. 
+    Other approaches utilise elevation data in post-processing steps. 
     One such approach employs a #abr("CRF") @intro_bonus1 @intro_bonus2 to refine segmentation boundaries generated from image-based models.
     While fusion generally improves results, it requires accurately co-registered multimodal datasets, which can also be challenging to acquire and label.
 
     #heading(depth: 5, numbering: none, bookmarked: false)[Foundational Models: The Segment Anything Model (SAM)]
     Recent advancements in #abr("AI") have resulted in the development of large "foundational models" that are trained on massive datasets. 
-    These models are designed to generalize, and they have been shown to exhibit remarkable generalization capabilities @intro11. 
+    These models are designed to generalise, and they have been shown to exhibit remarkable generalization capabilities @intro11. 
     A prominent example is the #abr("SAM") from Meta AI @intro10. 
     #abr("SAM") has been trained on a dataset comprising over one billion masks and has been developed as a promptable segmentation system.
     Given a prompt such as input points or bounding boxes, #abr("SAM") can segment any object in an image, even those unseen during training, demonstrating impressive zero-shot performance. 
@@ -74,18 +74,18 @@
     While the value of elevation data is well-established for traditional CV and standard #abr("DL") segmentation models, its integration specifically with foundational models like #abr("SAM") is still an emerging area.
     The following are examples of such approaches:
 
-    Elevation Data for Refinement: The STEGO @intro18 framework utilizes features from a self-supervised DINO model for initial segmentation and subsequently refines the results using a #abr("CRF") that incorporates #abr("nDSM") information in a post-processing step.
+    Elevation Data for Refinement: The STEGO @intro18 framework utilises features from a self-supervised DINO model for initial segmentation and subsequently refines the results using a #abr("CRF") that incorporates #abr("nDSM") information in a post-processing step.
 
-    #abr("SAM") for 3D Point Clouds: SAMNet++ @intro16 adapts #abr("SAM") for 3D LiDAR point clouds (SAM LiDAR) by segmenting a 2D rasterized, colorized representation based on color as well as texture information, followed by refinement via PointNet++ @intro17.
-    In this case, initial segmentation relies on color in the 2D projection rather than on 3D geometry directly.
+    #abr("SAM") for 3D Point Clouds: SAMNet++ @intro16 adapts #abr("SAM") for 3D #abr("LiDAR") point clouds (SAM LiDAR) by segmenting a 2D rasterised, colourised representation based on colour as well as texture information, followed by refinement via PointNet++ @intro17.
+    In this case, initial segmentation relies on colour in the 2D projection rather than on 3D geometry directly.
 
     == Tools <section:tools>
     A variety of tools were used during this work.
-    In the context of research, in addition to manual inquiries through search engines, Perplexity AI @perplexity was employed as a contemporary search engine that utilizes artificial intelligence to locate relevant sources.
-    Moreover, Connected Papers @connectedpaper was utilized to identify related publications for particular sources.
+    In the context of research, in addition to manual inquiries through search engines, Perplexity AI @perplexity was employed as a contemporary search engine that utilises artificial intelligence to locate relevant sources.
+    Moreover, Connected Papers @connectedpaper was utilised to identify related publications for particular sources.
     
     The implementation phase was executed through the utilization of Google Colab @colab, a cloud-based collaborative coding platform, to circumvent the necessity for local setup and to leverage cloud-based #abr("GPU").
-    The integrated Google Gemini AI @gemini was utilized for minor code completion; however, this was only the case for non-complex tasks of negligible importance.
+    The integrated Google Gemini AI @gemini was utilised for minor code completion; however, this was only the case for non-complex tasks of negligible importance.
     Additionally, it was used during debugging processes to identify errors. 
     However, this approach yielded at most modest success.
 
