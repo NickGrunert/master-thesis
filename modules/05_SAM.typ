@@ -188,7 +188,7 @@
 
     == Combining the best masks
     The final analysis of this research will address the question of whether the optimal combination of masks can be determined to yield a superior outcome.
-    The @fig:sam:filtered:all comparison demonstrates the difference between the bests of the individual results and the combined best masks.
+    @fig:sam:filtered:all demonstrates the difference between the bests of the individual results and the combined best masks.
     It should be noted that the creation of these was undertaken exclusively through the utilisation of the Center Point strategy, with a total of two points being employed.
     The individual masks, which are assembled to create the final result, are presented in the appendix.
     The combination of the masks is achieved by selecting the most suitable mask for each segment and then combining them to form a single segmentation.

@@ -8,7 +8,7 @@
 
     == Data Collection
     @fig:input:image_and_ndsm shows the surface tile which will be used, split into #abr("RGB") image and an image which illustrates the #abr("nDSM") data.
-    The #abr("RGB")  data is derived from aerial imigery, provided by the State Office for Geoinformation and Surveying of Lower Saxony (LGLN).
+    The #abr("RGB") data is derived from aerial imigery @dop20, provided by the State Office for Geoinformation and Surveying of Lower Saxony (LGLN).
 
     #figure(
       image("../figures/input/image_and_ndsm.png"), 
@@ -202,7 +202,7 @@
       label: <fig:input:result_example>,
     )
 
-    The input data is processed so that the following algorithms receive an #abr("RGB")  image of the house, the #abr("nDSM") data within this area frame, and the building parts as an image mask.
+    The input data is processed so that the following algorithms receive an #abr("RGB") image of the house, the #abr("nDSM") data within this area frame, and the building parts as an image mask.
     Note that this mask may not reflect the structure of the building well, but can be used as a rough estimate of the building boundaries and as a basis for later analysis.
     Its exact use will be explained later.
 
