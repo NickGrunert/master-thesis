@@ -24,13 +24,21 @@
     Prompts derived from geometric features consistently led to improved segmentation performance, offering a more informed basis for guiding SAM.
     Various prompt generation techniques were tested across different image contexts, revealing that no single method or image consistently outperformed others. 
     Segmentation outcomes exhibited considerable variability depending on input image characteristics and the spatial complexity of roof structures.
-
     Moreover, the SAM confidence scores were identified as ineffective predictors of actual mask quality, due to the frequent divergence between confidence and observed segmentation accuracy.
-    A promising direction that emerged during experimentation was the fusion of results from multiple prompting strategies, which yielded improved outcomes in most cases. 
-    The development of a more principled and robust method for combining prompts is an area that requires further research.
+    A promising direction that emerged during experimentation was the fusion of results from multiple prompting strategies, which yielded improved outcomes in most cases.
 
+    A range of potential future research initiatives have been identified.
+    Further investigation is indicated into the various strategies that have been established in this study for prompting SAM via input points.
+    This is particularly evident in the context of negative prompts, which remain under-explored but may hold untapped potential for improving segmentation precision.
+    Exploration of more dynamic decision-making processes for selecting the most effective prompting strategies would be advantageous.
+    This is particularly evident in the more sophisticated approach of identifying the most valuable negative inputs, as opposed to the approach that has been employed here.
 
-    // -> more extensive research on the configurations of sam input prompts especially negative ones
-    // -> more educated approach of combining the different sam input prompts
+    It is recommended that further investigation be conducted into the development of a more principled and robust method for combining prompts.
+    Whilst the present study demonstrated that the fusion of different prompts derived from distinct input images can lead to improved segmentation results, the process of combination was not conducted in a sufficiently sophisticated manner.
+    The utilisation of the proposed scoring system for individual mask evaluation as a substitute for the scores provided by SAM remains an unexplored prospect.
+    A more systematic approach has the potential to optimise the integration of diverse prompt sources and yield more consistent improvements.
+    Furthermore, the observed benefits of combining masks generated from multiple input images hold considerable promise.
+    It is indicated that a decision-based system could be utilised to combine different prompting strategies.
+    It is recommended that future research endeavours focus on the optimisation of the utilisation of the complementary strengths of diverse images and prompt types.
   ]
 }
