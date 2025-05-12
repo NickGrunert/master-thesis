@@ -17,7 +17,7 @@
   )
 
   align(top, grid(
-    columns: (30mm, 1fr),
+    columns: (40mm, 1fr),
     gutter: 2 * details.fontSize,
     ..all.flatten()
   ))

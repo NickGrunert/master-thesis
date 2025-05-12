@@ -194,6 +194,12 @@
     )
 
     === Canny Values
+    The implementation of the revised base area detection methodology has resulted in noticeable changes in the distribution of Canny values, as shown in @fig:ablation:canny. 
+    However, the specific effect of this change on the overall segmentation performance could not be clearly determined in the current analysis.
+
+    The present investigation was limited in scope and did not differentiate between the individual contributions of the lower and upper threshold parameters employed in the edge detection process.
+    While the findings suggest that the revised base area detection approach influences edge detection outcomes, the exact relationship between these threshold values and the resulting segmentation quality remains ambiguous.
+
     #subpar.grid(
       columns: 2,
       gutter: 1mm,
@@ -211,5 +217,8 @@
       ],
       label: <fig:ablation:canny>,
     )
+
+    Further differentiation of the roles of the lower and upper thresholds may assist in clarifying their contributions to segmentation accuracy.
+    A more detailed parameter analysis could support refinements of the current methodology and improve the quality of edge detection.
   ]
 }

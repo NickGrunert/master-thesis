@@ -48,7 +48,7 @@
     This is hypothesised to be due to the presence of additional fragments, which may have a less significant impact than the absence of specific surfaces, which may be critical.
     The subsequent section will present a detailed analysis of the outcomes, including the practical applications of #abr("SAM") in this context.
 
-    == Analysis of the results
+    == Result Analysis
 
     This section presents the findings from the experiments that employed the aforementioned methods, utilising input images and segmentation to generate the input prompts.
     The results of this study will be thoroughly analysed and compared to ascertain the viability of the proposed solutions.
@@ -185,6 +185,63 @@
     It has been proven that the mapping of score to ground score works.
     This is approved by the complete results of entire #abr("SAM") algorithm executions, where the best results by score matches the best results by ground truth score.
     However, here, the visual confirmation is given that the effects of missing matches would preferebly be stronger, to better invalidate some results.
+
+    == Segmentation of Rounded Houses
+    This concluding section provides an analysis of the algorithm's performance when used for rounded segments.
+    While the algorithm produced satisfactory results for the majority of roof segments, it was unable to do so for this particular case.
+    An illustration of this phenomenon can be observed in @fig:sam:rounded:heatmap.
+    It is evident that the quality of the results produced by the algorithm is substandard. 
+    Furthermore, the scoring system appears to be ineffective in this particular scenario.
+    It is interesting to note that the colourisation of the heatmap appears to be inverted in comparison to standard examples. 
+    Greater clipping and lower canny values appear to be more effective in producing high scores.
+
+    #subpar.grid(
+      columns: 1,
+      gutter: 1mm,
+      figure(image("../data/7/6/v2/heatmap_medium.png")),
+      show-sub-caption: (num, it) => {
+        [#it.body]
+      },
+      caption: [
+        Heatmap results for the rounded house
+      ],
+      label: <fig:sam:rounded:heatmap>,
+    )
+
+    Whilst the results presented in @fig:sam:rounded are not optimal and unmistakably demonstrate the potential for enhancement, they do bear a resemblance to the overall structure to a satisfactory degree.
+    While the majority of the geometric features are present, the algorithm is unable to identify the correct segments.
+    The edges are significantly impacted by the warping of the derivative values, which become distorted towards greater values when the axis is aligned.
+    It is evident that SAM is capable of producing highly promising individual masks. 
+    Nevertheless, the combination method, and indeed all individual best masks for each image, are unsuccessful in accurately identifying the optimal segments.
+
+    #subpar.grid(
+      columns: (1fr, 1fr, 1fr),
+      gutter: 1mm,
+      figure(image("../data/7/6/image.png", height: 16%), caption: [
+        Image
+      ]),
+      figure(image("../data/7/6/v2/generated.png", height: 16%), caption: [
+        Generated Segmentation
+      ]),
+      figure(image("../data/7/6/sam/filtered/all.png", height: 16%), caption: [
+        Best Result
+      ]),
+      show-sub-caption: (num, it) => {
+        [#it.body]
+      },
+      caption: [
+        Results for the rounded house
+      ],
+      label: <fig:sam:rounded>,
+    )
+
+    The presence of completely round buildings is an infrequent occurrence, both within the specified dataset and on a broader scale. 
+    Consequently, their significance can be regarded as negligible within the overarching analysis.
+    It is acknowledged that the algorithm may encounter difficulties with such cases; however, given their rarity, they will only be a cause for concern once standard roof segments have been accurately identified.
+    Furthermore, the presence of minor, rounded features, such as individual spires or minor architectural details, does not invalidate the algorithm's overall effectiveness.
+    It has been demonstrated that both the segmentation algorithm and #abr("SAM") possess the capacity to accurately detect small features, such as chimneys, under appropriate parameterisation or input prompts.
+    Errors in the recognition of such minute details are currently considered to be permissible, as they do not compromise the algorithm's capacity to accurately segment the primary structures.
+    It is possible that subsequent iterations will address these nuances with greater precision; for the time being, however, these are regarded as acceptable limitations.
 
     == Combining the best masks
     The final analysis of this research will address the question of whether the optimal combination of masks can be determined to yield a superior outcome.
